@@ -76,6 +76,7 @@ Note: "folder" == directory
 
 On your Mac, the typical directory strucutre looks something like this (with many directories removed):
 ![Mac directory structure](https://drive.google.com/uc?export=view&id=1P0NQ5OXx4I50SuiTgVIBQCDXr7kWyCyg)
+
 On CHPC, the directory structure is more complicated, and as you've seen your home directory is instead in `/uufs/chpc.utah.edu/common/home/<User_ID>`. However, it helps to understand that the directory structure is always a tree with root at the top level. 
 
 Because home is so common to refer to, it gets it's own special symbol: `~`
