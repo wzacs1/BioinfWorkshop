@@ -1,3 +1,34 @@
+<!-- TOC -->
+
+- [Main](#main)
+  - [Requirements:](#requirements)
+  - [Conventions and Setup](#conventions-and-setup)
+  - [Unix and Linux](#unix-and-linux)
+  - [The Command Line Interface](#the-command-line-interface)
+  - [Shells](#shells)
+  - [Open your first shell](#open-your-first-shell)
+  - [Other ways of accessing CHPC](#other-ways-of-accessing-chpc)
+    - [ssh from Terminal (Mac)](#ssh-from-terminal-mac)
+    - [Fastx web interface (Mac, Windows, Linux)](#fastx-web-interface-mac-windows-linux)
+  - [A very brief CHPC overview](#a-very-brief-chpc-overview)
+    - [Mounting your CHPC home space on your computer](#mounting-your-chpc-home-space-on-your-computer)
+  - [Root and Directory Structure](#root-and-directory-structure)
+  - [A Few Words on File(Directory) Naming Conventions](#a-few-words-on-filedirectory-naming-conventions)
+    - [Naming](#naming)
+    - [File extensions/suffixes](#file-extensionssuffixes)
+  - [First Linux Commands: Moving around and Creating Your Environment](#first-linux-commands-moving-around-and-creating-your-environment)
+    - [Tab autocompletion, history and a couple keyboard shortcuts aside:](#tab-autocompletion-history-and-a-couple-keyboard-shortcuts-aside)
+      - [Command Line History](#command-line-history)
+      - [A couple useful keyboard shortcuts](#a-couple-useful-keyboard-shortcuts)
+    - [Directory references and paths](#directory-references-and-paths)
+    - [More on file listing with `ls`  and options to commands](#more-on-file-listing-with-ls--and-options-to-commands)
+    - [Manual pages for commands](#manual-pages-for-commands)
+    - [The `chmod` command for file permissions.](#the-chmod-command-for-file-permissions)
+- [Practice / With Your Own Data](#practice--with-your-own-data)
+- [Notes & References](#notes--references)
+
+<!-- /TOC -->
+
 # Main
 We will work through some basic Linux commands using the OnDemand CHPC interface.
 ### Requirements:
@@ -18,18 +49,18 @@ Sometimes you will encounter similar looking short chunks in-line, or within the
 
 When you are meant to enter your own values specific to you, I will enclose a word or phrase in less-than and greater-than symbols such as this: `<Your_User_ID_Here>`
 
-Please try to make directories and filenames the same as listed here, so that we can all be on the same page. It's tempting to make your own naming, and fine if you insist, but it makes it slower to help troubleshoot if you haven't followed the same naming as the rest of the class. 
+Please try to make directories and filenames the same as listed here, so that we can all be on the same page. It's tempting to make your own naming, and fine if you insist, but it makes it slower to help troubleshoot if you haven't followed the same naming as the rest of the class.
 
-As most code is case-sensitive, it makes everything easier if you consider that everything from this point on in your life is now case-sensitive. 
+As most code is case-sensitive, it makes everything easier if you consider that everything from this point on in your life is now case-sensitive.
 
 ## Unix and Linux
-UNIX is a family of operating systems with a common lineage and many shared features.  Linux and Mac OSX are the Unix operating systems you have most likely encountered and have diverged longer ago than most.  Linux is open-source and comes in many "distributions" you may have heard of including CentOS, RedHat and Debian or Ubuntu. 
+UNIX is a family of operating systems with a common lineage and many shared features.  Linux and Mac OSX are the Unix operating systems you have most likely encountered and have diverged longer ago than most.  Linux is open-source and comes in many "distributions" you may have heard of including CentOS, RedHat and Debian or Ubuntu.
 Complicated history and relationships but from a biologists point of view, most of what you learn on one Unix system can be directly applied to another, with the most frequent differences encountered between Mac OSX and Linux distributions. This interoperability is thanks in part to the original Unix philosophy of "do one thing, and do it well".  Instead of complicated functions, it is better to chain, or pipe, simple functions together.  The wonderful result of this is that the same basic commands work the same throughout the years, but get extended functionality rather than altered.
 Linux commands are generally input through the command line interface (CLI).
 
 ## The Command Line Interface
-The command line interface, or CLI, is where commands are typed, as opposed to a point-and-click interface you are used to in a graphical user interface, or GUI (often spoken as "gooey"). The command line commands are interpreted through a program called a **shell**, which itself is displayed in applications on your computer usually called something like **terminal**. Phew. The terminology gets a little fuzzy and is often inconsistently or broadly used such that terminal, shell, and CLI often are used interchangeably. This is due to some historical reasons and beyond the scope of this course, but is some interesting reading. For our purpose, know that you use a shell to interpret commands on the command line. 
-On your local Mac, you can find the Application called "Terminal" which will open a new shell. 
+The command line interface, or CLI, is where commands are typed, as opposed to a point-and-click interface you are used to in a graphical user interface, or GUI (often spoken as "gooey"). The command line commands are interpreted through a program called a **shell**, which itself is displayed in applications on your computer usually called something like **terminal**. Phew. The terminology gets a little fuzzy and is often inconsistently or broadly used such that terminal, shell, and CLI often are used interchangeably. This is due to some historical reasons and beyond the scope of this course, but is some interesting reading. For our purpose, know that you use a shell to interpret commands on the command line.
+On your local Mac, you can find the Application called "Terminal" which will open a new shell.
 Note that we will instead use a terminal-like web-based interface on CHPC throughout this course, but in the future if you want to work on your local computer you can generally use Terminal, and all or most of what you learn here will apply directly because Mac-Terminal's default shell (bash) is the same as we will use on Linux.
 
 Why learn the CLI? Won't there be a GUI developed for that if it's really useful?
@@ -37,27 +68,49 @@ The short answer is yes, there probalby will be a GUI and it won't be as useful.
 
 
 ## Shells
-The shell is the actual command-line interpreter within the terminal that you use. It interprets what you write. You should be aware that there are several shell languages including bash, zsh, tcsh and fish.  bash is the most commonly used and we will use it throughout the course. Technically, everything we are doing in the Linux/Unix parts of this workshop is actually scripting in `bash`. 
+The shell is the actual command-line interpreter within the terminal that you use. It interprets what you write. You should be aware that there are several shell languages including bash, zsh, tcsh and fish.  bash is the most commonly used and we will use it throughout the course. Technically, everything we are doing in the Linux/Unix parts of this workshop is actually scripting in `bash`.
 
 ## Open your first shell
-In your browser, navigate to CHPC OnDemand. 
+In your browser, navigate to CHPC OnDemand.
 [https://ondemand.chpc.utah.edu/](https://ondemand.chpc.utah.edu/)
 Login with your usual UNID credentials.
 
 This is a really nice, clean (and fairly new) interface that can be accessed anywhere without special program install and gives access to your CHPC files, a shell to access CHPC, as well as job submission and monitoring. It also simplifies teaching a lot because we all work on the same interface and thus I asked that you all sign up for a CHPC account before beginning (besides, you should anyways. CHPC is an awesome resource available to you all!).
 
-Look around the OnDemand interface: 
+Look around the OnDemand interface:
 1. Open your home space to view files. Top left "Files" drop down then "Home Directory". Should open a new window with a fairly self-explanatory interface for your files. Not much here yet if you are new CHPC user. We will return to this later. For now, just note the text string at the top when you are in your home directory. It will look similar to this `/uufs/chpc.utah.edu/common/home/<Your_UNID>`
-2. Access the Lonepeak cluster in a new shell. At the top middle menu "Clusters", click on the ">_Lonepeak Shell Acess". A new window pops up and asks you for your password. Same password as your usual UNID credentials. 
-3. Determine which directory you are in. Enter the "print working directory" command as shown below. This tells you where you are, and it should return a result identical to the text you saw for your home directory in step 1 because you always start off in your home directory. 
+2. Access the Lonepeak cluster in a new shell. At the top middle menu "Clusters", click on the ">_Lonepeak Shell Acess". A new window pops up and asks you for your password. Same password as your usual UNID credentials.
+3. Determine which directory you are in. Enter the "print working directory" command as shown below. This tells you where you are, and it should return a result identical to the text you saw for your home directory in step 1 because you always start off in your home directory.
 ```bash
-$ pwd 
+$ pwd
 ```
 Keep this window open.
 
+## Other ways of accessing CHPC
+In class the OnDemand interface struggled with the full class logging in at once. Because the first parts of Intro to Linux will mostly work in Mac's terminal as well, this is a fine solution to understand the basics of commands, but will be a problem when we are trying to work on the same files hosted on CHPC or referring to any other CHPC-specific resources. Fortunately, there are a number of other solutions to get shell access to CHPC. The [CHPC help page](https://www.chpc.utah.edu/resources/access.php) on the subject is a useful resource, and I will list them with basic instructions here, in order of my preferred solutions.
 
+### ssh from Terminal (Mac)
+I provided instructions for this method during class that many users were able to use, and this is how I usually like to connect. It's tried and true and most reliable, but doesn't have a conventient file explore interface that OnDemand has. Coupled with mounting your CHPC home space on your local machine though (which requires U of U network or VPN), this works really well.
+1. Open the "Terminal" application.
+2. Type in the following command to establish a secure shell connection to the lonepeak cluster (just change cluster name for other clusters)
+```bash
+$ ssh <UNID>@lonepeak.chpc.utah.edu
+```
+3. Answer "yes" if asked about adding a key fingerprint.
+4. Done. Use `pwd` to see you are connected and in your CHPC home space.
 
-## A brief CHPC overview
+### Fastx web interface (Mac, Windows, Linux)
+I totally forgot that Fastx has a web client and this could have gotten our Windows users online. There is an application you can install instead if you prefer (https://www.chpc.utah.edu/documentation/software/fastx2.php#utwc). I'm not a huge fan though. Here I'll just provide instructions for the web interface.
+1. Open browser and navigate to lonepeak1.chpc.utah.edu:3000 (OR lonepeak2.chpc.utah.edu:3000)
+2. Use UNID credentials to login.
+3. Click the big "Launch Session" button, or choose one of your previous sessions.
+4. If launcing new session, Choose one of the terminals (or desktops if you like).
+5. Click "Launch". The default settings are generally fine.
+6. If you chose a terminal, you are done. If you chose a Desktop, a desktop interface appears and you'll need to look for "terminal" or "terminal emulator" app.
+   1. On XFCE Desktop, it's the black icon with prompt in the bottom tray
+   2. On MATE Desktop, it's a small icon on the very top, to the right of "Applications Places System"
+
+## A very brief CHPC overview
 The University of Utah Center for High-Performance Computing (CHPC) is an outstanding resource where your high-throughput sequencing data is most likely being processed already, whether you know it or not. It actually consists of multiple computing **clusters** that each contain many **nodes** which themselves are each powerful computers. These nodes are all can connected to multiple file systems including your home directory. Thus, by separating the computing and files you can scale easily and also use whichever resources are currently available on any cluster you have access to, but it is a differnt concept than your single laptop or desktop. It *conceptually* looks a bit like this:
 
 
@@ -76,8 +129,7 @@ Note: "folder" == directory
 
 On your Mac, the typical directory strucutre looks something like this (with many directories removed):
 ![Mac directory structure](https://drive.google.com/uc?export=view&id=1P0NQ5OXx4I50SuiTgVIBQCDXr7kWyCyg)
-
-On CHPC, the directory structure is more complicated, and as you've seen your home directory is instead in `/uufs/chpc.utah.edu/common/home/<User_ID>`. However, it helps to understand that the directory structure is always a tree with root at the top level. 
+On CHPC, the directory structure is more complicated, and as you've seen your home directory is instead in `/uufs/chpc.utah.edu/common/home/<User_ID>`. However, it helps to understand that the directory structure is always a tree with root at the top level.
 
 Because home is so common to refer to, it gets it's own special symbol: `~`
 
@@ -92,7 +144,7 @@ You might ask why these 2 solutions and  not other symbols?  Well, almost every 
 
 ###  File extensions/suffixes
 It is often misunderstood that the file extension (for example, ".txt" or ".docx") defines the content or format of a file. This is not the case and in fact the *file extension is simply part of the name*. Thus, really it is a misnomer to say this is a "file extension" or "suffix". The confusion arises because operating systems use the extension to inform which program should be used to open and/or interpret a file. This is quite handy, but as you may be aware you can change these associations in your OS as well.  There are 3 important points here though:
-1. The content of the file does not change if the extension is changed. For example, if I exported a table as a tab-separated plain text file, I could change the extension to .tsv, .txt, .xls or anything I wanted and the content of the file does not change. 
+1. The content of the file does not change if the extension is changed. For example, if I exported a table as a tab-separated plain text file, I could change the extension to .tsv, .txt, .xls or anything I wanted and the content of the file does not change.
 2. The "extension", if present, must be included when referring to a file because, again, it is part of the filename.
 3. Only the extension after the last `.` matters for most OS recognition. So, there is generally no problem having `.` throughout the filename and it can be helpful to do so. For example, `sequences.fasta.gz` is perfectly fine and refers to a gzip compressed file of fasta-formatted sequences which would unzip naturally on a Mac OS if double-clicked.
 
@@ -104,7 +156,7 @@ It is generally a good idea to include file extensions so you or others know wha
 - `.py`: a Python script
 
 ## First Linux Commands: Moving around and Creating Your Environment
-Now that we have a little background, let's create a more useful environment for you to explore and understand Linux commands more in the next section. For most of you, as new users your home likely appears empty right now. Let's start by ensuring we are in our home directory, then creating a directory that will contain all the work for this course. 
+Now that we have a little background, let's create a more useful environment for you to explore and understand Linux commands more in the next section. For most of you, as new users your home likely appears empty right now. Let's start by ensuring we are in our home directory, then creating a directory that will contain all the work for this course.
 
 In your shell in your terminal window, you should still be in your home directory. If you moved around already, make sure to move back to home first.
 
@@ -134,7 +186,7 @@ Make a directory for this part of the course within this directory:
 ```bash
 $ mkdir Part1_Linux
 ```
-Directory structures are key to efficient bioinformatic analysis (and speed!). It's quite common, and a good idea, to make many directory levels for a project.  We just made 2 levels, but it took us three commands to do so. (`mkdir`, `cd` to new directory `mkdir` again). It's not that bad, but it can become tedious, and worse we changed our location, which in non-interactive settings can end up with commands run in the wrong place. We will return to `mkdir` shortly to show how we can make it more useful. 
+Directory structures are key to efficient bioinformatic analysis (and speed!). It's quite common, and a good idea, to make many directory levels for a project.  We just made 2 levels, but it took us three commands to do so. (`mkdir`, `cd` to new directory `mkdir` again). It's not that bad, but it can become tedious, and worse we changed our location, which in non-interactive settings can end up with commands run in the wrong place. We will return to `mkdir` shortly to show how we can make it more useful.
 
 ### Tab autocompletion, history and a couple keyboard shortcuts aside:
 Before we move any further let's talk about your new best friend - the tab key. You can probably already see there is going to be a lot of typing.  There is also going to be a lot of room for small/hard-to-see errors in typing what you see on the screen. Such as, capital I or l. Tab autocompletion is here to help and is part of any Linux system. 2 ways to use this:
@@ -173,7 +225,7 @@ The up and down arrows can be used to scroll through the histroy of your command
 $ cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part1_Linux/read2.fastq ./
 ```
 #### A couple useful keyboard shortcuts
-It can be useful to move to the end or the beginning of a very long command. 
+It can be useful to move to the end or the beginning of a very long command.
 - Ctrl+A: Moves cursor to the beginning of command line
 - Ctrl+E: Moves cursor to the end command line.
 
@@ -183,10 +235,10 @@ Now that we have seen a bit about how files and directories are referred to, let
 
 - "Path": Generally, a path is, as you might expect, the route or path one takes to a given file or directory. It can be absolute or relative.
 - "Absolute Path": Refers to when the path to a file is listed beginning with root, and thus tends to contain the full text for each directory leading to the file or directory of interest. For example, instead of `~`, we would have `/uufs/chpc.utah.edu/common/home/<UNID>/` as the absolute path to your home directory. It is always safer to use absolute paths, but the lengths can become cumbersome, thus...
-- "Relative Paths": The path to a file *relative* to the directory you are in or some other shortcut/link (such as `~`). 
+- "Relative Paths": The path to a file *relative* to the directory you are in or some other shortcut/link (such as `~`).
 - `./`: The current directory you are in
 - `../`: The directory up one level from what you are in.
-- `~`: Your home directory. 
+- `~`: Your home directory.
 
 Use `ls` with iterations of `../` to list the contents of directories further and further up in your directory structure:
 ```bash
@@ -212,7 +264,7 @@ $ ls -l
 $ ls -l -h
 $ ls -lh
 ```
-Notice how `ls -l -h` and `ls -lh` procuce the same output. Many Linux command options can be put together like this.  This only works for those that are "flags", which act like switches turning something on, as most Linux options do. 
+Notice how `ls -l -h` and `ls -lh` procuce the same output. Many Linux command options can be put together like this.  This only works for those that are "flags", which act like switches turning something on, as most Linux options do.
 ```bash
 $ ls -l -a ~/
 ```
@@ -221,7 +273,7 @@ This last command listed the file contents of your home directory, INCLUDING the
 Manual pages are built in and available for nearly all commands. They have a common format and list the availalbe options for a command up front. They are accessible by using the `man` command.
 - `man`: Format `man <command>`
 
-Open the manual page for the `ls` command to see all the options. 
+Open the manual page for the `ls` command to see all the options.
 ```bash
 $ man ls
 ```
@@ -235,7 +287,7 @@ Finally, for this part, lets talk about what all those `-`'s and `r`'s mean when
 - Position 1: What type of listing is it. `-` for a regular file, `d` for directory, `l` for links
 - Position 2,3,4: File permission for the user `u`
 - Position 5,6,7: File permission for the group `g`
-- Position 8,9,10: File permission for others `o` 
+- Position 8,9,10: File permission for others `o`
 
 In the file permission sections, there are 3 positions which indicate read (`r`), write (`w`) or execute (`x`) permissions. If it's a directory, `x` indicates whether it is searchable or not. For files `x` is generally irrelevant, but needed for programs or executable files. To summarize with image example:
 
@@ -248,7 +300,7 @@ The `chmod` command can be used to change file permissions of a file or director
 
 Because you 'copied ' the previous read1, read2 and table.txt files, creating a new file with yourself as the owner, you should have read and write permissions for them already. However, often depending on how you get a file from someone else you may often encounter situations where you lack write permission, for example. You may also want to remove write permissions (even from yourself, you can always add back later) from important files to prevent accidentally deleting them.
 
-# With Your Own Data
+# Practice / With Your Own Data
 Little to do for the intro parts. But you can still setup some things and practice moving around
 - Create a project directory.
 - Upload metadata files or sequence files to your project directory.
@@ -258,6 +310,8 @@ Little to do for the intro parts. But you can still setup some things and practi
 
 # Notes & References
 - CHPC overview lecture slides Spring 2020: [https://www.chpc.utah.edu/presentations/CHPCOverviewSpring2020.pdf](https://www.chpc.utah.edu/presentations/CHPCOverviewSpring2020.pdf)
+- CHPC help page for connecting: [https://www.chpc.utah.edu/resources/access.php](https://www.chpc.utah.edu/resources/access.php)
+- CHPC help page for mounting CHPC home space: [https://www.chpc.utah.edu/documentation/data_services.php](https://www.chpc.utah.edu/documentation/data_services.php)
 - Key commands in this part:
 	- `pwd`
 	- `ls`
@@ -265,12 +319,3 @@ Little to do for the intro parts. But you can still setup some things and practi
 	- `cd`
 	- `cp`
 	- `chmod`
-<!--stackedit_data:
-eyJoaXN0b3J5IjpbLTcxMTUzNzIzNCwtMTcwOTc3NzQzLC0zND
-E2MjA3NDQsMTUyMzI5MDYxLC0xNjkzNTg4Njk0LDcyMjAyNjYx
-MCwxNjQzNDc3NzQ1LDExNjU2ODk0MjMsMTA1MjA3OTk5MSw4Nj
-I0MTk1NzMsLTEyMTQ1MTIxNiw1MTA0MDk1MTksMjMxMTczMjc5
-LDQzODAwNDI5OCwtOTM5ODY4NDQxLDExMTg1OTEyNTcsLTEzNT
-A1ODMwNywyNzM5ODY0NTgsMTk1MTAzNTA1LDE0MjQ1NzE4NjZd
-fQ==
--->
