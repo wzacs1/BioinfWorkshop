@@ -18,7 +18,6 @@
   - [Variables](#variables)
     - [An aside on single and double quotes](#an-aside-on-single-and-double-quotes)
     - [Back to variables and Isolating Variables.](#back-to-variables-and-isolating-variables)
-  - [Intro to Loops. The `for` loop.](#intro-to-loops-the-for-loop)
 - [Practice / With Your Own Data](#practice--with-your-own-data)
 - [Notes & References](#notes--references)
 
@@ -392,7 +391,7 @@ That's not the behaviour you were probably aiming for with that statement, but i
 We saw that some environmental variables contain directory paths because these paths are just text strings. They can contain any other text strings as well, but may need quotes. They can also contain numbers (though in actuality, aren't stored as such), and can be inside of other text. Go ahead and define a variable for the shared basename of our read1 and read2 fastq files (`read1.fastq` and `read2.fastq`):
 ```bash
 $ BaseName="read"
-$ echo $read
+$ echo $BaseName
 ```
 
 Now, print a message along with that base to describe which file contains contains read 1:
@@ -416,47 +415,6 @@ $ head -n 4 ${ReadOne}
 ```
 
 Of course, we could have gotten away with not isolating ReadOne the second time since it's all by itself, but let's get in the habit.
-
-## Intro to Loops. The `for` loop.
-Loops are a family of statements that iterate through items in different manners. This is where we really start to do some programming and see the power of the command line or scripting. Loops are nearly always at the core of coding, and I am introducing them early because they are so helpful to understand. We will use just one simple examples here and then frequently expand on them as we move forward. Their syntax varies a bit from language to language, but the basic structure is the same: A condition and something to do for that condition. The main loops you will likely use in bash are:
-
-- `for` loop: Takes in a number of values and does something **for** each one.
-- `while` loop: **while** the condition is true do the function.
-
-These loops will be written over mulitple lines. They aren't just a long single entry separated by a `\` like we've seen before, but multiple command-line entries. When entering a `for` loop bash knows to expect more input for the command after you type the for statement, so does not return anything and provides the `>` prompt for more entry. To tell bash you're done with the loop you enter the (you guessed it!) `done` statement.  The basic structure of a for loop is like this (don't enter this):
-```bash
-for VARIABLE_NAME in LIST
-do
-SOME_COMMANDS
-done
-```
-
-A list of variables is simply provided with spaces in between them. Let's just make a list of column numbers in our `table.txt` as variables. As bash iterates through the list it assigns it to a new varialble. Thus, the VARIABLE_NAME part is not defined to start with and so doesn't take a `$` for its initial call, but will require it for the subsequent command. In order to print the names of the first 3 columns in our table let's to do a simple for loop with 2 command we learned earlier.
-
-```bash
-$ for Column in 1 2 3
-$ do
-$ cut -f ${Column} table.txt | head -n 1
-$ done
-```
-
-If you got stuck or misentered something and bash is still giving you the `>` prompt, you can get out of it with `Ctrl + c`. This is called a signal interrupt and is the best way to kill a command or incorrect entry that has you stuck and needing to get back your command prompt.
-
-Now, let's do something more useful and add in another command we previously learned. Building up functions like this is a good method to make more complicated functions. Let's count unique entries in each column:
-
-```bash
-$ for Column in 1 2 3
-$ do
-$ cut -f ${Column} table.txt | head -n 1
-$ cut -f ${Column} table.txt | sort | uniq -c
-$ done
-```
-
-Note here that mulitple command line entries can be entered at once if separated by a semi-colon `;`. I do this frequently, but it is much harder to read. For example this is the exact same for loop as above:
-
-```bash
-$ for Column in 1 2 3; do; cut -f ${Column} table.txt | head -n 1; cut -f ${Column} table.txt | sort | uniq -c; done
-```
 
 # Practice / With Your Own Data
 - Tail can be very handy for taking all except the first n lines to remove the header of files. Use the man page of tail to figure out how to take all EXCEPT the first line of a file (such as the header in table.txt) and write it to a file. Assume you don't know how many lines are in the file.
