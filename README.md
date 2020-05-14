@@ -9,5 +9,5 @@ We use the OnDemand interface at the University of Utah's Center for High-Perfor
 Here I provide detailed workthroughs from each workshop day as .html files. Each served as the basis for the slides from each day and have more written explanation so that they can hopefully be worked through alone. I will likely update them at the end of each day, depending on how far we get.
 
 1. [Part 1: Introduction to Linux Command-Line Interface 1](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part1_IntroToUnixCLI.md)
-2. Part 1: Introduction to Linux Command-Line Interface 2
+2. [Part 1: Introduction to Linux Command-Line Interface 2](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part1_IntroToUnixCLI_2.md)
  
