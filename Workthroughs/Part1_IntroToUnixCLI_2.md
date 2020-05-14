@@ -45,7 +45,7 @@ We've been given a reservation on the lonepeak cluster for this course. As noted
 1. Connect to lonepeak cluster
 2. Use `srun` to obtain an interactive session on compute node for the class time duration:
 ```bash
-$ srun -A MIB2020 -p lonepeak -n 2 --reservation MIB2020 --time 2:00:00 --pty /bin/bash -l
+$ srun -A MIB2020 -p lonepeak-shared -n 2 --reservation MIB2020 --time 2:00:00 --pty /bin/bash -l
 ```
 If this command was entered correctly, you will see a message indicating you are in the queue, then after a bit the message should change and say your job has been allocated resources.
 
