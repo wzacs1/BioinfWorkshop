@@ -1,3 +1,28 @@
+<!-- TOC -->
+
+- [Main](#main)
+  - [Requirements:](#requirements)
+  - [Expected Inputs:](#expected-inputs)
+  - [Connecting to CHPC (again) and obtaining an interactive shell session](#connecting-to-chpc-again-and-obtaining-an-interactive-shell-session)
+    - [Start an interactive session on CHPC](#start-an-interactive-session-on-chpc)
+  - [Less is not more. Viewing file contents within the CLI](#less-is-not-more-viewing-file-contents-within-the-cli)
+  - [Making `head`s and `tail`s of big files](#making-heads-and-tails-of-big-files)
+  - [The `cat` command and standard input, output and error.](#the-cat-command-and-standard-input-output-and-error)
+  - [Pipes and redirects](#pipes-and-redirects)
+  - [Cleaning up (and making) messes. `rm`, a potentially dangerous command.](#cleaning-up-and-making-messes-rm-a-potentially-dangerous-command)
+  - [Aliases](#aliases)
+  - [Nano - A command-line text editor.](#nano---a-command-line-text-editor)
+  - [Renaming or moving files.](#renaming-or-moving-files)
+  - [Table manipulation with `cut`, `sort`, `uniq`](#table-manipulation-with-cut-sort-uniq)
+  - [Clean Data and Controlled Vocabularies](#clean-data-and-controlled-vocabularies)
+  - [Variables](#variables)
+    - [An aside on single and double quotes](#an-aside-on-single-and-double-quotes)
+    - [Back to variables and Isolating Variables.](#back-to-variables-and-isolating-variables)
+  - [Intro to Loops. The `for` loop.](#intro-to-loops-the-for-loop)
+- [Practice / With Your Own Data](#practice--with-your-own-data)
+- [Notes & References](#notes--references)
+
+<!-- /TOC -->
 # Main
 These excercises will continue to work through basic Linux commands with the OnDemand interface. As before, these could largely be done on any Unix/Linux interface, but the locations and file references will be different.
 ### Requirements:
