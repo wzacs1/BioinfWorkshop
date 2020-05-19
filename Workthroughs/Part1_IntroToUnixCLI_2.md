@@ -29,7 +29,7 @@ These excercises will continue to work through basic Linux commands with the OnD
 - A CHPC account.
 
 ### Expected Inputs:
-- A project directory `/BioinfWorkshop2020/Part1_Linux/` containing 3 files:
+- A project directory `~/BioinfWorkshop2020/Part1_Linux/` containing 3 files:
   1. read1.fastq
   2. read2.fastq
   3. table.txt
