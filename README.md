@@ -10,4 +10,4 @@ Here I provide detailed workthroughs from each workshop day as .html files. Each
 
 1. [Part 1: Introduction to Linux Command-Line Interface 1](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part1_IntroToUnixCLI.md)
 2. [Part 1: Introduction to Linux Command-Line Interface 2](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part1_IntroToUnixCLI_2.md)
- 
+3. [Part 1, Part 2: Intro to Linux CLI and CHPC (cont.), Documentation and QIIME2 with Conda](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part1-2_UnixContinued_CHPCEnvironment_QIIME2Intro.md) 
