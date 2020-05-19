@@ -19,17 +19,8 @@
       - [The `$PATH` environmental variable](#the-path-environmental-variable)
   - [Adding to your $PATH](#adding-to-your-path)
   - [A reminder on mounting CHPC space on your computer](#a-reminder-on-mounting-chpc-space-on-your-computer)
-  - [Documentation, Project Directories and Atom](#documentation-project-directories-and-atom)
-    - [Atom](#atom)
-    - [Putting it all together. How to build a simple pipeline](#putting-it-all-together-how-to-build-a-simple-pipeline)
-      - [A batch script using bash](#a-batch-script-using-bash)
-  - [Our First Bioinformatics Project](#our-first-bioinformatics-project)
-    - [Step 1: Setup a Project Directory](#step-1-setup-a-project-directory)
   - [Installing QIIME2 in a conda environment](#installing-qiime2-in-a-conda-environment)
-    - [While we wait for Qiime2 installing:](#while-we-wait-for-qiime2-installing)
-      - [Why QIIME2?](#why-qiime2)
-      - [Find / show project on SRA](#find--show-project-on-sra)
-  - [Installing QIIME2 in a conda environment (finishing up the install)](#installing-qiime2-in-a-conda-environment-finishing-up-the-install)
+    - [Installing miniconda into your own module on CHPC](#installing-miniconda-into-your-own-module-on-chpc)
 - [Practice / With Your Own Data](#practice--with-your-own-data)
 - [Links, Cheatsheets and Today's Commands](#links-cheatsheets-and-todays-commands)
 
@@ -370,73 +361,15 @@ Now, to complete it and see if it worked, source the `.bash_profile` file, and u
 $ source ~/.bash_profile
 $ which seqkit
 ```
-
 ## A reminder on mounting CHPC space on your computer
 If you are on campus or on a campus VPN, you can mount CHPC homespace directly on your computer. The way I wrote this would have worked much better if we were all on campus because it's easier to save your markdown from the Atom GUI on your computer directly to your CHPC project directory. Still helpful to practice this habit, you just need to upload/download your markdown file to/from your local project directory. Outside of class time, I encourage you to get your CHPC home space mounted as well described on CHPC page: [Direct mounts on CHPC](https://www.chpc.utah.edu/documentation/data_services.php#Direct_mounts).
-
-## Documentation, Project Directories and Atom
-I certainly don't intend to lecture other scientists on the importance of documentation here at all. Rather, I want to try to highlight the importance, ease and differences of documentaton while coding. The methods I describe here are one way of doing it, and you will likely find your own eventually. The cool thing about documentation for bioinformatics is that the method you are performing is being typed anyways, so you are sort of creating your lab notebook at the same time you perform the task. How nice would that be at the lab bench! It doesn't leave much excuse for poor documentation. Though bad organization and references can destroy even the best documentation. You may be able to guess that it's really easy to create A LOT of files fast in bioinformatics. You've probably had a lab project that ballooned and had so many files in it's project directory it became difficult to find a specific file. This problem will be magnified several fold in bioinformatics. So:
-- **Make extensive use of directories for organization**
-- Start with a "project-centric" organization.
-
-Many of you may already have (or attempt) organization by projects in your computer files. This is a great way to organize and is how you will see software projects always organized. In reality, science is quite different than software engineering and projects more frequently split or merge in unexpected ways, but this should still be your goal and you'll see that a lot of the software we will use expect this type of organization to some degree. Also, if you start out this way, you can copy or move directories to maintain a project centric structure when these splits and merges do happen. Let's introduce Atom as our text editor which also shows how project directory mentality can make it easier to use Atom.
-
-There's 2 easy ways to document your code that we will go over.
-1. Comments in your submitted job scripts. This is easiest because you're typing the commands already and the script is your documentation. Needs comments to make it useful as a "notebook" others can make sense of.
-2. Markdown. This looks nicer and easier to browse if used properly. We'll use it in R and show it for Linux commands when we are working interactively for analysis.
-
-### Atom
-Really any plain text editor can be used to facilitate your documentation. I have recently come to like Atom for it's easy add-in/package manager and pleasing format. I really just want make sure we are all using the same editor for simplicity though. Atom has many possible add-in/extension/packages provided by the community which makes it super useful. We'll add a couple packages shortly.
-- Open Atom and open a folder on your computer (`File -> Open Folder...`). Let's say just your Documents folder at first. This shows again the Project directory centric mentality as the sidebar lists all the files in this folder, and even labels this sidebar "Project"! You can easily open other files in your project directory with a click. They should open in new tabs in Atom by default. Nice, but this is just to illustrate Atom's behavior.
-
-We will return to atom frequently, and use it to build our scripts and to document our code. Keep it open.
-
-### Putting it all together. How to build a simple pipeline
-Now that we understand differences between interactive and batch/non-interactive jobs and have learned more about CHPC, you may start to see how you might put together a pipeline that could be run through batch submission. A common process goes like this:
-1. Work with a small subset of data in an interactive session to test out commands.
-2. As you get each command working, copy the working commands to a new file in the order they will run. This will be your batch script.
-3. Add the required SBATCH directives and submit the job to the slurm scheduler on CHPC.
-
-Let's follow this process, and start with a file to copy the commands to.
-
-#### A batch script using bash
-Remember, "bash" is the shell we are using. So, in order to have these commands interpreted when submitted as we are doing interactively, we need to specify in our script we want "bash" to do the interpreting. This is accomplished in the first line of our batch script.
-1. Open a new file in Atom and save it with the .sh extension to a project folder on your local computer. The .sh extension will let atom know it is a shell script, letting Atom highlight syntax in a relevant manner.
-   - Let's call it "PreProcess_16S.sh"
-2. Add this text to the very first line to indicate it should be read by bash
-```bash
-#!/bin/bash
-```
-Notice how this is the same as we use in the `srun` command, but it has the 2 characters `#!`. This is called a **shebang** and directs what program should interpret it. If this was a python script, for example, you would add the path to python after the `#!` for example. We are working in bash for this course.
-
-3. As we build up commands in succession in the following interactive session, copy your commands to this file. This will then serve as your template for your batch job submission. As it's really a bash script, it could be run on any computer with the required programs. We just add SBATCH specific options (aka "directives") to it later to make it work on CHPC with the slurm scheduler.
-4. As you add commands, add comments about what the commands do, expected inputs or anything else you like. To do this, just preface the comment with a `#`. These lines won't be interpreted by the program. Every language has such a comment character. Thankfully, for both bash and R it is the `#`.
-
-Now, for submitted bash scripts you have documentation and the script in the same place. Make useful comments for good documentation! For interactive work (no submitted script) we'll use another method to document what we are doing.
-
-You may ask why we use Atom locally and not the built-in text editor nano. Well, this is actually a good idea. I'm just having you use Atom because it's easier to keep a different window open in another program and may be an easier setup to document while working on command line too.
-
-## Our First Bioinformatics Project
-Now that we've finally learned a whole bunch of linux commands and created a nice bash shell environment, we will workthrough a dataset to get practice and reinforce some of these commands, as well as learn a really useful sotware package for microbiologists (and others really). We will work for the rest of this part on a 16S sequence dataset within QIIME2. In order to maximize our time, I'm going to jump in and out of the data at first while I explain a couple other concepts as well, so the organization may appear a bit funny / non-linear.
-
-### Step 1: Setup a Project Directory
-- Create your project directory
-```bash
-$ mkdir -p ~/BioinfWorkshop2020/Part2_Qiime_16S
-```
-- Make a `jobs` directory within that where we will eventually put our job submission script. I like having this separate because I'll save the outputs there as well, which can sometimes build up if a lot of troubleshooting is required.
-```bash
-$ mkdir -p ~/BioinfWorkshop2020/Part2_Qiime_16S/jobs
-```
-- Make a `metadata` directory as well
-```bash
-$ mkdir -p ~/BioinfWorkshop2020/Part2_Qiime_16S/metadata
-```
 
 ## Installing QIIME2 in a conda environment
 Here is another part where we are doing this to address the workshop objectives. QIIME2 already has a CHPC module, but in order to address common ways of installing bioinformatics packages we will work through an install with the most recent version of QIIME2.
 
 QIIME2 is a particularly good example of a software package that can benefit from a managed virtual environment because (at least right now) it is updated or added to frequently (so far, every couple months) and it has many 3rd party plugins which require install privileges. Also, these plugins might interfere with each other, so you may at times need to create different environments for them. Conda is a package manager that sets up a virtual environment within your main environment (CHPC in this case). This allows you to install anything you want inside the virtual environment and keeps it safely isolated from your main environment. This is really cool and empowering! But, it can be a bit confusing at first for sure. Anaconda and Miniconda are the main programs that you'll see to run Conda. We will use miniconda, and follow exactly [the instructions CHPC has provided](https://www.chpc.utah.edu/documentation/software/python-anaconda.php) to first setup a miniconda3 environment into which we will then install QIIME2.
+
+### Installing miniconda into your own module on CHPC
 
 1. Create a new directory for your miniconda3 install:
 ```bash
@@ -458,65 +391,6 @@ $ cp /uufs/chpc.utah.edu/sys/installdir/python/modules/miniconda3/latest.lua ~/M
 $ module use ~/MyModules
 $ module load miniconda3/latest
 ```
-5. Install QIIME2. Instructions for installing in a conda environment are provided on [QIIME's install page](https://docs.qiime2.org/2020.2/install/)
-  A)  Make sure conda is updated. Note: may need to activate conda first.
-  ```bash
-  $ conda update conda
-  $ conda install wget
-  ```
-  B) Install QIIME2 with the provided scripts into a virtual environment called "qiime2-2020.2":
-  ```bash
-  $ wget https://data.qiime2.org/distro/core/qiime2-2020.2-py36-linux-conda.yml
-  $ conda env create -n qiime2-2020.2 --file qiime2-2020.2-py36-linux-conda.yml
-  ```
-This is going to take a bit. QIIME2 has a huge amount of dependencies. These should now be scrolling by. If you wanted to truly "manually" install QIIME2 you would have to install all of these! Let's move on while this is installing.
-
-### While we wait for Qiime2 installing:
-#### Why QIIME2?
-If you intend to do any 16S sequencing analysis the answer is obvious, but otherwise might be unclear. Truthfully, mainly I think it is a pretty easy to use program on the Linux CLI so I think it's a good opportunity to practice our skills and build a batch script for, and learn some other things about methods in bioinformatics (like the conda environment we are setting up for it).
-
-QIIME stands for "Quantitative Insights Into Microbial Ecology" so you can guess it's main intent. However, if we take a step back and consider what it's doing, you may notice that it actually could be quite useful for many non-microbial ecology questions as well. Broadly, I break QIIME (and other microbial ecology packages) into 2 groups of functions:
-1. Processing of marker genes sequences.
-2. Analysis of feature tables.
-
-While QIIME is built around analysis of 16S rRNA gene sequences any single gene sequence could benefit from some of it's tools, in particular those resulting from PCR amplification/detection methods. This could include ITS, 18S or other functional marker genes. It could even extend to things like TCR and BCR sequences, though likely with advent of single cell seq technologies this won't be the case. It also has methods to facilitate phylogenetic tree construction and classification. Most have absolutely nothing to do with microbial ecology specifically, and you'll see that a huge chunk of QIIME2 actually calls functions that wrap around other programs not made for microbial ecological analyses.
-
-Next, a feature table is just a general term for features counts (microbial taxa, genes, traits) by samples. In fact, until recently, we called these OTU tables which was specific to microbial ecology, but it was not lost on many that most of the functions and metrics don't really care what the features are. Many (most?) microbial ecology metrics actually are not ecology specific at all, and often were never developed with this in mind, or even with biology in mind (a lot are from economics originally!). Thus, any feature table can benefit from some of the analyses in QIIME2. Whether microbial ecology dataset or not, the user needs to know if the metric/index is appropriate.
-
-We'll talk about some of the other neat features in QIIME2 as we use them as well. For now, let's return to the install if it's done, or find some sequences on SRA if it is not still.
-
-#### Find / show project on SRA
-I go through this because I'm often asked how to pull SRA datasets. It's incredibly easy now, but the sra-toolkit has some historical terminology that makes it seem more confusing than it is. I'm not trying to spend time showing you how to browse some website's interface, as this type of thing is always changing, but still will walk through this to show *one way* of pulling an SRA-hosted dataset and make sure we are all on the same page.
-
-NCBI, The National Center for Biotechnology Information, includes everything from PubMed to chemical and sequence repositories. Many of you have probably already published a paper in which the authors were required to deposit sequences at the NCBI or some other public repository. This was likely also accomplished with the SRA-toolkit, though you still may never need to do it yourself. It used to be a bit of catch-all for raw sequecnes, and was more difficult to make use of anything there becasue of a frequent lack of associated metadata. Now, sequences are required to be associated with BioSamples and BioProjects, making them much more easy to both search and tie metadata to in common formats across NCBI. The structure looks something like this:
-
-- **BioProject** (sometimes an "umbrella" BioProject can encopass >1 BioProjects):
-  - *BioSample 1* [with sample metatdata]
-  - *...*
-  - *BioSample N*
-    - SRA deposited Illumina NovaSeq RNAseq reads (for example)
-    - SRA deposited Illumina MiSeq 16S reads (for example)
-
-First, let's find a SRA deposited dataset of interest. The SRA has a neat new interface that makes this much easier, called run selector. I've already found one that is a neat example for this class because it has paired 16S and RNAseq. It is BioProject [PRJNA434133](https://www.ncbi.nlm.nih.gov//bioproject/PRJNA434133). If you follow this link and click on the number next to "SRA experiments" it takes you to the list of all SRA entries for the project. Click on the link at the top that says "Send results to Run selector". You can see this is a more useful interface allowing clearer filter of samples. For now we just want to get a couple of this project's 16S sequence files to develop our pipeline. You can explore the website to understand it's use better, but since this isn't the point of this course I'll leave this up to you and just provide the accessions list for you later when we get to the whole dataset. To show the example though follow this procedure to get the accessions and their associated data.
-1. Click the checkbox next to 2 entries with the assay type "AMPLICON". These are 16S amplicons for this project. Doesn't matter which 2 as these are tests, but number 2 and 3 are a bit smaller than the first so I grabbed those.
-2. Click the switch above the selected entries that says "Selected". The links under download are updated in the "Selected" row to only download data for those 2 entries.
-3. Click on the "Metadata" button under "Downloads" on the "Selected" row. This downloads the metadata locally. Save the file as it's named, but add `_test` to give the filename `SraRunTable_test.txt`.
-4. Do the same for "Accessions List", to give the filename `SRR_Acc_List_test.txt`.
-5. Upload both these files from your local computer to the metadata directory we created (`~/BioinfWorkshop2020/Part2_Qiime_16S/metadata/`). Use OnDemand's file explorer (you can just drag them into that folder) if possible.
-   -  If you are having trouble uploading them you can just copy them from my workshop space on CHPC:
-   ```bash
-   $ cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part2_Qiime_16S/metadata/*_test.txt ~/BioinfWorkshop2020/Part2_Qiime_16S/metadata/
-   ```
-
-Now we can use these with SRA toolkit and qiime to pull the sequences from the SRA and analyze them in qiime with the associated metadata. First, let's finish our QIIME2 install.
-
-## Installing QIIME2 in a conda environment (finishing up the install)
-  5. (continued) Install QIIME2. Instructions for installing in a conda environment are provided on [QIIME's install page](https://docs.qiime2.org/2020.2/install/)
-    C)  After the install is done, activate your new virtual environment with QIIME2 and test that the installation worked.
-    ```bash
-    $ source activate qiime2-2020.2\
-    $ qiime --version
-    ```
 
 # Practice / With Your Own Data
 - `grep` can take a file with a list of patterns to search for as well, using the `-f` option. Can you modify the final grep command in the grep section to just get the sequence identifiers in a new file, then use this file to extract the 4 lines for each sequence from the original read 1 file?
