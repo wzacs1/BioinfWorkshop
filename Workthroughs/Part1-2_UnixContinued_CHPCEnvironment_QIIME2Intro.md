@@ -272,7 +272,7 @@ Currently, there are 3 main scratch files systems, which are now all accessible 
 - /scratch/kingspeak/serial
 - /scratch/general/nfs1
 
-There are differences among these that do matter for speed, but we won't get into it. You're unlikely to care much about the read/write access speed differences for quite awhile in your bioinformatics. For now, setup a directory for yourself on lustre:
+There are differences among these that do matter for speed, but we won't get into it. You're unlikely to care much about the read/write access speed differences for quite awhile in your bioinformatics. For now, setup a directory for yourself on lustre. Remember, when I show <VALUE>, this indicates you should enter your own value and NOT the `<` and `>`.
 ```bash
 $ mkdir -p /scratch/general/lustre/<YOUR_UNID>/
 ```
@@ -340,12 +340,12 @@ You should see the path where sra-toolkit resides now at the beginning of your p
 ## Adding to your $PATH
 Previously, we added the executable `seqkit` to our `bin` folder in our homespace. It would be great to have this show up in our autocomplete as well as just be able to type the seqkit command without specifying where it is. Additionally, as other components of a software package (or other software) may depend on each other, they also may need to just call the program and won't know where it is. Let's add seqkit to our path. We can do this for a session only, and the commands are the same, but it usually is going to make more sense to always have this in your path.
 
-Add the bin directory you created to your path. You could just use $HOME in the filepath, but it's safer to use your full home file path so get this first and copy it (note that in the ondemand shell interface if you highlight a line it copies it automatically).
+Add the bin directory you created to your path. You could just use $HOME variable in the filepath and append '/bin', but it's safer to use your fully listed absolute file path so copy this first while in the bin directory you are trying to add the path to. Note that in the ondemand shell interface if you highlight a line it copies it automatically.
 ```bash
-$ cd ~/
+$ cd ~/bin
 $ pwd -P
 ```
-Copy the full path to your home. Open ~/.bash_profile with nano, but first make a backup copy of it just in case.
+Copy that full path as it printed. Open ~/.bash_profile with nano, but first make a backup copy of it just in case.
 ```bash
 $ cp ~/.bash_profile ~/.bash_profile_backup
 $ nano ~/.bash_profile
@@ -353,7 +353,7 @@ $ nano ~/.bash_profile
 Arrow down to the end and add this line at the end (you may have a section that says "# User specific environment and startup programs"). Paste in your absolute path to your home directory where it is noted below without the `<` and `>`:
 
 ```bash
-export PATH=$PATH:<PASTE_HOME_PATH_HERE>/bin/
+export PATH=$PATH:<PASTE_PATH_HERE>
 ```
 Save and exit nano with `Ctrl + X` as we did before when adding aliases. This file works similarly and is sourced on initialization of a bash shell.
 Now, to complete it and see if it worked, source the `.bash_profile` file, and use the `which` command to see if your session is aware of the installed program now. It should return the path to it.

@@ -8,9 +8,9 @@ We use the OnDemand interface at the University of Utah's Center for High-Perfor
 
 Here I provide detailed workthroughs from each workshop day as individual pages. Each served as the basis for the slides from each day, and have more written explanation so that they can hopefully be worked through alone. I will upload them before each class and then, likely, update them at the end of each day according to how far we get.
 
-1. [Part 1: Introduction to Linux Command-Line Interface 1](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part1_IntroToUnixCLI.md)
-2. [Part 1: Introduction to Linux Command-Line Interface 2](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part1_IntroToUnixCLI_2.md)
-3. [Part 1, Part 2: Intro to Linux CLI and CHPC (cont.), Documentation and QIIME2 with Conda](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part1-2_UnixContinued_CHPCEnvironment_QIIME2Intro.md) 
+1. [Part 1-1: Introduction to Linux Command-Line Interface](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part1_IntroToUnixCLI.md)
+2. [Part 1-2: Introduction to Linux Command-Line Interface](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part1_IntroToUnixCLI_2.md)
+3. [Part 1-3, Part 2-1: Intro to Linux CLI and CHPC (cont.), Documentation and QIIME2 with Conda](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part1-2_UnixContinued_CHPCEnvironment_QIIME2Intro.md) 
 
 Tentative Schedule:
 
