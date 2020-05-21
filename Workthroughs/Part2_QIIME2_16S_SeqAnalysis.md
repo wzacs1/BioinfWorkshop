@@ -232,7 +232,8 @@ Now, use the qiime command to import these sequences. This first import tends to
 
 ```bash
 $ cd ${SCRATCH}
-
+```
+```bash
 $ qiime tools import \
  --type 'SampleData[PairedEndSequencesWithQuality]' \
  --input-path ~/BioinfWorkshop2020/Part2_Qiime_16S/metadata/manifest.txt \
@@ -294,7 +295,8 @@ Let's again also get a visualizer and summarize the output:
 $ qiime demux summarize \
   --i-data seqs_trim_join.qza \
   --o-visualization seqs_trim_join.qzv
-
+```
+```bash
 $ cp seqs_trim_join.qzv ${WRKDIR}/
 ```
 
