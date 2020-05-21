@@ -1,8 +1,46 @@
+<!-- TOC -->
+
+- [Main](#main)
+	- [Requirements](#requirements)
+	- [Install QIIME2](#install-qiime2)
+		- [Load miniconda module](#load-miniconda-module)
+		- [Install QIIME2.](#install-qiime2)
+	- [While we wait for Qiime2 installing:](#while-we-wait-for-qiime2-installing)
+		- [Why QIIME2?](#why-qiime2)
+			- [Installing QIIME2 in a conda environment (finishing up the install)](#installing-qiime2-in-a-conda-environment-finishing-up-the-install)
+	- [Documentation, Project Directories and Atom](#documentation-project-directories-and-atom)
+		- [Atom](#atom)
+		- [Putting it all together. How to build a simple pipeline](#putting-it-all-together-how-to-build-a-simple-pipeline)
+		- [A batch script (using bash) for 16S seq processing](#a-batch-script-using-bash-for-16s-seq-processing)
+	- [Our First Bioinformatics Project](#our-first-bioinformatics-project)
+		- [Step 0: Draw out your methods and project goals](#step-0-draw-out-your-methods-and-project-goals)
+		- [Step 1: Setup a Project Directory](#step-1-setup-a-project-directory)
+			- [(aside) Find / show project on SRA](#aside-find--show-project-on-sra)
+		- [Step 2: Pull sequences with SRA](#step-2-pull-sequences-with-sra)
+		- [Step 3: Import sequences into a QIIME2 artifact](#step-3-import-sequences-into-a-qiime2-artifact)
+		- [Step 4: Trim primers and join sequences](#step-4-trim-primers-and-join-sequences)
+		- [Step 5: Denoise with Deblur and create a table](#step-5-denoise-with-deblur-and-create-a-table)
+			- [OTUs versus ASVs/ESVs](#otus-versus-asvsesvs)
+		- [Step 6: Build phylogeny](#step-6-build-phylogeny)
+		- [Step 7: Call Taxonomies](#step-7-call-taxonomies)
+		- [Step 8: Cleanup!](#step-8-cleanup)
+		- [Final Step: Finish the batch script and submit.](#final-step-finish-the-batch-script-and-submit)
+			- [Change the sra-toolkit command to pull all the 16S sequences.](#change-the-sra-toolkit-command-to-pull-all-the-16s-sequences)
+			- [Add sbatch/slurm directives](#add-sbatchslurm-directives)
+				- [Note on partition, processes and time](#note-on-partition-processes-and-time)
+	- [Submit Your Batch Script on CHPC](#submit-your-batch-script-on-chpc)
+- [Practice / With Your Own Data](#practice--with-your-own-data)
+- [Links/Cheatsheets/Today's Commands](#linkscheatsheetstodays-commands)
+
+<!-- /TOC -->
+
 # Main
 Today's Objectives:
 1. Finish install of QIIME2 virtual environment
 2. Pull sequences from SRA
 3. Process sequences through QIIME2 to create table, repseqs, phylogeny and taxonomy.
+
+**NOTE**: The in class session for this markdown only got to importing sequences into QIIME2. We will go very quickly through the remaining portion in next class, mostly I'll just have you copy some result files to move along more quickly. So, if you'd like more practice and a better understanding of 16S seq processing steps go through it more carefully here. Build up the batch script and submitting it for full dataset 16S processsing is a great goal.
 
 ## Requirements
 - CHPC account and *bash* shell session through preferred connection method (prefer OnDemand)
@@ -55,7 +93,7 @@ We'll talk about some of the other neat features in QIIME2 as we use them as wel
   3. (continued) After the install is done, activate your new virtual environment with QIIME2 and test that the installation worked.
 
     ```bash
-    $ source activate qiime2-2020.2\
+    $ source activate qiime2-2020.2
     $ qiime --version
     $ conda deactivate
     ```
@@ -196,12 +234,10 @@ Qiime2 uses it's own unique format of files, which they call **artifacts**. They
 
 Qiime2 has a few different ways to import files and I'll leave it up to you to look at their documentation. We will use the "**manifest**" file format, which takes an input manifest file that lists the location and orientation of the input fastq files. It's pretty easy to create in a spreadsheet program, along with commands you have learned like `pwd` to get file paths. Let's practice some of our newfound linux skills to make this table "on the fly".
 
-- First, create the header line for the file. It is a comma-separated value file. Move to metadata folder where manifest file shoudl probably reside
+- First, create the header line for the file. It is a comma-separated value file. Save the output to metadata folder where manifest file should probably reside
+
 ```bash
-$ cd ~/BioinfWorkshop2020/Part2_Qiime_16S/metadata
-```
-```bash
-$ echo "sample-id,absolute-filepath,direction" > manifest.txt
+$ echo "sample-id,absolute-filepath,direction" > ${WRKDIR}/metadata/manifest.txt
 ```
 
 Now that you see the columns expected, let's create an entry for each file using a for loop. It's a good idea to use `echo` command without directing the output to your file at fist, in order to check the output is as expected first. In class we will build this up piece-by-piece.
@@ -210,7 +246,7 @@ The `%` after a variable name, when inside `{}`, says to strip the characters af
 
 ```bash
 $ for read1 in *_1.fastq
-$ do echo "${read1%_1.fastq},${SCRATCH}/${read1},forward" >> manifest.txt
+$ do echo "${read1%_1.fastq},${SCRATCH}/${read1},forward" >> ${WRKDIR}/metadata/manifest.txt
 $ done
 ```
 
@@ -218,7 +254,7 @@ Now, do the same for read2:
 
 ```bash
 $ for read2 in *_2.fastq
-$ do echo "${read2%_2.fastq},${SCRATCH}/${read2},reverse" >> manifest.txt
+$ do echo "${read2%_2.fastq},${SCRATCH}/${read2},reverse" >> ${WRKDIR}/metadata/manifest.txt
 $ done
 ```
 
@@ -430,7 +466,7 @@ Normally, any line that starts with a # in a bash script would be a comment, but
 #SBATCH --partition=lonepeak-shared
 #SBATCH -n 2
 #SBATCH -J Q2_PreProcess16S
-#SBATCH --time=48:00:00
+#SBATCH --time=10:00:00
 #SBATCH -D ${HOME}/BioinfWorkshop2020/Part2_Qiime_16S
 #SBATCH -o ${HOME}/BioinfWorkshop2020/Part2_Qiime_16S/jobs/PreProcess_16S.outerror
 
@@ -444,6 +480,8 @@ Normally, any line that starts with a # in a bash script would be a comment, but
 Unless you go back and change everytime you referred to number of processes (or better yet use a variable for it), there's no sense in taking more than 2 processes. Be nice! Your job will take awhile with only 2 processes, but will finish. Feel free to change this though if you like. Notice we did not include the `--reservation` option this time. Our reservation is only Tues-Thurs. In regards to time, standard limit on CHPC is 72 hours, but there are ways to run longer. If you request really long you may wait longer in queue though. CHPC has a formula that determines your job priority. Generally, the less resources/time you request the sooner you will run.
 
 ## Submit Your Batch Script on CHPC
+
+**Note to Windows Users**: If you used a text editor in Windows to make your sbatch script, you probably have Windows line endings and need to make sure you have Unix line endings before submitting to slurm scheduler. In Atom, at the bottom-right there is a "CRLF". If you click this you can then choose to change to "LF" then save the file and it wil have Unix line-endings. In BBEdit, there is a similar functionality in one of the small arrow dropdowns along the top or bottom (though I forget exactly where it is).
 
 ```bash
 $ sbatch ~/BioinfWorkshop2020/Part2_Qiime_16S/jobs/PreProcess_16S.sh
