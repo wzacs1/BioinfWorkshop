@@ -18,6 +18,7 @@
 			- [(aside) Find / show project on SRA](#aside-find--show-project-on-sra)
 		- [Step 2: Pull sequences with SRA](#step-2-pull-sequences-with-sra)
 		- [Step 3: Import sequences into a QIIME2 artifact](#step-3-import-sequences-into-a-qiime2-artifact)
+		    - [(optional) Loading the CHPC Qiime2 module](#(optional)-loading-the-chpc-qiime2-module)
 		- [Step 4: Trim primers and join sequences](#step-4-trim-primers-and-join-sequences)
 		- [Step 5: Denoise with Deblur and create a table](#step-5-denoise-with-deblur-and-create-a-table)
 			- [OTUs versus ASVs/ESVs](#otus-versus-asvsesvs)
