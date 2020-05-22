@@ -100,6 +100,9 @@ We'll talk about some of the other neat features in QIIME2 as we use them as wel
 
 Notice how your prompt changed after running the `source activate` command. This shows that you are inside of a separate virtual environment now. Changes you make to your files will still show up and be present, and you are still the same user, but a separate virtual environment sits on top of (kind of) your CHPC environment. No irritating file share folder setup and movement of files between them as in Virtual Box, VMware, etc.
 
+**! If you could not install your miniconda virtual environment and/or qiime2-2020.2 you can follow along with the older module installed on CHPC. It's a little odd right now b/c the message is misleading when tryig to load it (I've contacted CHPC). See how to load this, when qiime needs to be loaded in the later section.**
+
+
 ## Documentation, Project Directories and Atom
 I certainly don't intend to lecture other scientists on the importance of documentation here at all. Rather, I want to try to highlight the importance, ease and differences of documentaton while coding. The methods I describe here are one way of doing it, and you will likely find your own eventually. Whatever you do, don't think you can get away with not documenting your code. The cool thing about documentation for bioinformatics is that the method you are performing is being typed anyways, so you are sort of creating your lab notebook at the same time you perform the task. How nice would that be at the lab bench! It doesn't leave much excuse for poor documentation. Though bad organization and references can destroy even the best documentation. You may be able to guess that it's really easy to create A LOT of files fast in bioinformatics. You've probably had a lab project that ballooned and had so many files in it's project directory it became difficult to find a specific file. This problem will be magnified several fold in bioinformatics. So:
 - **Make extensive use of directories for organization**
@@ -176,9 +179,10 @@ It's easy enough to refer to these directories all the time when working interac
 ```bash
 $ SCRATCH=/scratch/general/lustre/<YOUR_UNID>/Part2_Qiime_16S
 $ mkdir -p ${SCRATCH}
-$ WRKDIR=${HOME}/BioinfWorkshop2020/Part2_Qiime_16S
+$ WRKDIR=~/BioinfWorkshop2020/Part2_Qiime_16S
 $ ls ${WRKDIR}
 ```
+It's worth noting that it is generally safer to instead use absolute paths when setting directories and file names as variables. The `~` in this case should work, but as you start passing these to different environments (virtual env) it may lead to unexpected behavior. Similarly if relative to your current directory, the variable won't behave as expected as you move around. Also, we built this up interactively so made the directories first. This will work so long as we are exact in our typing, but if you flip it around and instead define the directory as a variable first, then `mkdir` it, this will ensure that directory exists and commands that need it will run, even if you mistyped.
 
 #### (aside) Find / show project on SRA
 I'll go through this because I'm often asked how to pull SRA datasets. It's incredibly easy now, but the sra-toolkit has some historical terminology that makes it seem more confusing than it is. I'm not trying to spend time showing you how to browse some website's interface, as this type of thing is always changing, but still will walk through this to show *one way* of pulling an SRA-hosted dataset and make sure we are all on the same page.
@@ -229,6 +233,15 @@ $ module use ~/MyModules
 $ module load miniconda3/latest
 $ source activate qiime2-2020.2
 ```
+
+#### (optional) Loading the CHPC Qiime2 module
+**! If you could not install your miniconda virtual environment and/or qiime2-2020.2 you can follow along with the older module installed on CHPC. It's a little odd right now b/c the message is misleading when tryig to load it (I've contacted CHPC), but it should load properly like this. Only use the following command if you are using this older module!**
+```bash
+module load anaconda3/2019.03
+source activate qiime2-2019.4
+```
+
+### Step 3: Import sequences into a QIIME2 artifact (continued)
 
 Qiime2 uses it's own unique format of files, which they call **artifacts**. They are a pain to just view files because they are binaries, but they are really a neat solution to the build up and difficulty of file tracking. They allow so-called "provenance" tracking, or tracking the origin and functions performed on each file. This is really great for documentation, and really pushed me to loving QIIME. They even provide a reference for the functions you used! Cool. We'll look at this later but, for now, just know you can't operate directly on raw fastq files in QIIME and instead need to import them as QIIME2 artifact files. Make sure your QIIME2 environment loaded. If not, or you had unresolvable problem with the install, use CHPC's module instead (`module load qiime2/2019.1`).
 
@@ -346,7 +359,7 @@ This is the core of what I call the "sequence preprocessing" part, and it can ta
 
 ```bash
 $ qiime deblur denoise-16S \
-  --i-demultiplexed-seqs seqs_trim_join.qzv \
+  --i-demultiplexed-seqs seqs_trim_join.qza \
   --p-trim-length 250 \
   --p-jobs-to-start 2 \
   --o-table table.qza \
@@ -467,13 +480,11 @@ Normally, any line that starts with a # in a bash script would be a comment, but
 #SBATCH -n 2
 #SBATCH -J Q2_PreProcess16S
 #SBATCH --time=10:00:00
-#SBATCH -D ${HOME}/BioinfWorkshop2020/Part2_Qiime_16S
-#SBATCH -o ${HOME}/BioinfWorkshop2020/Part2_Qiime_16S/jobs/PreProcess_16S.outerror
+#SBATCH -o <YOUR_ABSOLUTE_PATH_TO_HOME_HERE>/BioinfWorkshop2020/Part2_Qiime_16S/jobs/PreProcess_16S.outerror
 
 # your commands begin here..
 ```
-- The `-o` option specifies a file to save the standard output to. By default sbatch actually combines standard eror and standard output, hence the extension I like to add, but you can add any extension you want as well. It usually makes sense to name this at least with the same name as script it came from.
-- The `-D` is your working or starting directory where this script will start from. Normally your home, but we tested this testing from your class part 2 directory. We should use absolute paths usually.
+- The `-o` option specifies a file to save the standard output to. By default sbatch actually combines standard eror and standard output, hence the extension I like to add, but you can add any extension you want as well. It usually makes sense to name this at least with the same name as script it came from
 - `-J` is the jobname that it will be under when you view the queue.
 
 ##### Note on partition, processes and time
