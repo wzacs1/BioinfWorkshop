@@ -5,6 +5,7 @@
     - [Requirements:](#requirements)
     - [Inputs:](#inputs)
   - [Following along](#following-along)
+  - [Using QIIME2 in a container](#using-qiime2-in-a-container)
   - [Markdown for awesome documentation](#markdown-for-awesome-documentation)
   - [Step 1: Remove poorly sequenced samples](#step-1-remove-poorly-sequenced-samples)
     - [1.1 Summarize Table](#11-summarize-table)
@@ -60,7 +61,7 @@ Because today's session is heavier on analysis, I want to ensure you can follow 
 
 It may be easier to make a soft link to it to avoid a lot of typing and keep it available to you.
 
-``bash
+```bash
 $ cd ~/BioinfWorkshop2020/Part2_Qiime_16S/
 $ ln -s /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part2_Qiime_16S/ answers_Part2
 ```
