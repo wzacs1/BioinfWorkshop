@@ -21,12 +21,12 @@ Day #  |  Date  | Title  | Topics
 1 | May 12 | Part 1-1: Intro to Linux | Basic commands, moving around CLI 
 2 | May 14 | Part 1-2: Intro to Linux | More commands, moving around CLI, file manipulation
 3 | May 19 | Part 1-3: Linux and CHPC, Part 2-1: Documentation & Intro to QIIME2 |  for loops, grep, CHPC, paths, Atom intro, conda install
-4 | May 21 | Part 2-2: 16S seq process with QIIME2 | sra-toolkit, QIIME2 install, 16S seq processing, batch job submission on CHPC
-5 | May 26 | Part 2-3: 16S seq analysis with QIIME2 | microbiome data analysis in QIIME2, markdown
-6 | May 28 | Part 3-1: RNAseq process and alignments | sequence QC and alignments 
-7 | June 2 | Part 4-1: Intro to R and R Studio | basic R, R packages, bioconductor
-8 | June 4 | Part 4-2: Intro to R and R Studio. | basic R, R markdown
-9 | June 9 | Part 5-1: RNAseq analysis 1: DE analysis | differential expression analysis
-10 | June 11 | Part 5-2: RNAseq analysis 2: GSEA and higher-level results interpretation | fgsea, term enrichment, clusterprofiler
-11 | June 16 | Part 6-1: Containers with Singularity | containers overview, singularity, humann2
-12 | June 18 | Part 6-2: Continued Analysis and Plotting in R | ...
+4 | May 21 | Part 2-2: 16S seq process with QIIME2 | sra-toolkit, QIIME2 install, 16S seq processing
+5 | May 26 | Part 2-2 (cont.): 16S seq process with QIIME2 | 16S seq preprocessing, batch job submission, intro to markdown
+6 | May 28 | Part 2-3: 16S seq analysis with QIIME2 | microbiome data analysis in QIIME2, markdown
+7 | June 2 | Part 3-1: RNAseq process and alignments | sequence QC and alignments 
+8 | June 4 | Part 4-1: Intro to R and R Studio | basic R, R packages, bioconductor
+9 | June 9 | Part 4-2: Intro to R and R Studio. | basic R, R markdown
+10 | June 11 | Part 5-1: RNAseq analysis 1: DE analysis | differential expression analysis
+11 | June 16 | Part 5-2: RNAseq analysis 2: GSEA and higher-level results interpretation | fgsea, term enrichment, clusterprofiler
+12 | June 18 | Part 6-1: Containers with Singularity | containers overview, singularity, humann2
