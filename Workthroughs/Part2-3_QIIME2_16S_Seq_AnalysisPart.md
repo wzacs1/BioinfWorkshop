@@ -194,8 +194,8 @@ $ qiime diversity alpha-group-significance \
 ```bash
 $ qiime diversity alpha \
  --i-table core-div/rarefied_table.qza \
- --p-metric dominance \
- --o-alpha-diversity core-div/dominance_vector.qza
+ --p-metric mcintosh_e \
+ --o-alpha-diversity core-div/mcintosh_vector.qza
 ```
 ```bash
 $ qiime diversity alpha-group-significance \
@@ -208,8 +208,8 @@ $ qiime diversity alpha-group-significance \
 
 ```bash
 $ qiime diversity alpha-group-significance \
- --i-alpha-diversity core-div/mcintosh_vector.qza \
- --o-visualization core-div/mcintosh_SampleType.qzv \
+ --i-alpha-diversity core-div/observed_otus_vector.qza \
+ --o-visualization core-div/observed_otus_SampleType.qzv \
  --m-metadata-file metadata/SraRunTable_full.txt
 ```
 
@@ -257,6 +257,7 @@ $ qiime feature-table filter-samples \
 # Practice / With Your Own Data
 - Go through analysis with the newly subsetted BAL samples only and explore associations of diversity with asthma and obesity status.
 - Use the subsetted BAL (or full if you like) data to create barplots of taxa and use one of the methods described on QIIME2's site to explore associations of taxa with asthma and/or obesity status. Use the `taxonomy_full.qza` file in my shared class folder (not the test taxonomy.qza file). Hint, gneiss and ANCOM are 2 plugins. Gneiss can take a general linear model equation.
+- Write a for loop with a list of alpha diveristy metrics of interest to quickly calculate them. Use another for loop to create visualizers of the results with a metadata category. How should you correct for multiple hypothesis testing now?
 
 # Links / Cheatsheets / Today's New Commands
 - QIIME2's tutorial's page: [https://docs.qiime2.org/2020.2/tutorials/](https://docs.qiime2.org/2020.2/tutorials/)
