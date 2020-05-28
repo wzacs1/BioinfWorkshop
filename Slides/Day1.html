@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Title</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+			img {
+				max-width: 100%;
+				max-height: 70%;
+			}
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+			.large { font-size: 130% }
+			.small { font-size: 70% }
+      table {
+          border-collapse: collapse;
+      }
+      th, td {
+          padding: 5px;
+          border: 1px solid gray;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+name: title
+
+# Part 1: Intro to Unix
+### 2020-05-12
+### Instructor: Zac Stephens
+
+---
+
+# Requirements:
+- An internet connection with a browser.
+- A CHPC account.
+- (optional) These slides as github markdown:
+https://github.com/wzacs1/BioinfWorkshop (click on link for Part 1)
+---
+
+# Conventions and Setup
+- Code that to be entered will be set aside in a "code chunk" like this, with a command prompt `$` at the beginning (you don't need to enter this):
+```bash
+$ cd $HOME
+$ ls
+```
+
+--
+- You do not enter the `$`.  This is the command line prompt.
+
+--
+- Short chunks in-line, or within the written text like `this`. Not usually meant to be entered but is just to highlight a command or output.
+
+---
+# Conventions and Setup 2
+- When intended to enter your own values: `<Your_User_ID_Here>`
+
+--
+- Make directories and filenames the same as listed here
+
+--
+- Consider everything to be case-sensitive
+
+---
+# Unix and Linux
+- UNIX is a family of operating systems with a common lineage and many shared features.
+
+--
+- Linux and Mac OSX are the Unix operating systems you have most likely encountered and have diverged longer ago than most.
+
+--
+- Other Linux Distributions:
+	- CentOS, RedHat and Debian or Ubuntu.
+
+--
+- Most of what you learn on one Unix system can be directly applied to another.
+	- Interoperability is thanks in part to the original Unix philosophy of "do one thing, and do it well".
+- Linux commands generally input through the **command line interface (CLI)**.
+
+---
+
+# The Command Line Interface
+- Contrast to GUI.
+	- Interpreted through a **shell**,
+	 	- Itself displayed in applications on your computer usually called something like **terminal**.
+
+--
+- On your local Mac (desktop, laptop), the Application called "Terminal" will open a new shell.
+
+--
+- We will use a terminal-like web-based interface on CHPC throughout this course.
+	- In the future, if you want to work on your local computer you can generally use Terminal, and all or most of what you learn here will apply directly because Mac-Terminal's default shell (bash) is the same as we will use on Linux.
+
+--
+- Why learn the CLI? Won't there be a GUI developed for that if it's really useful?
+
+---
+
+# Shells
+- The shell is the actual command-line interpreter within the terminal that you use.
+
+	- Interprets what you write.
+
+--
+
+	- There are several shell languages: bash, zsh, tcsh and fish.
+	- We will use `bash` throughout the course.
+
+---
+
+# Open your first shell
+- In your browser, navigate to CHPC OnDemand, login with UNID and credentials.
+
+[https://ondemand.chpc.utah.edu/](https://ondemand.chpc.utah.edu/)
+Login with your usual UNID credentials.
+
+
+--
+- Advantages:
+	- Accessible anywhere with internet connection
+
+--
+	- Simple interface (opposed to virtual desktops)
+
+--
+	- Files and basic editing in the same place as well
+
+--
+	- Templates, monitoring of jobs
+
+--
+	- Start graphical R Studio interface in same place
+
+---
+
+# Explore the OnDemand interface
+
+1. Open your home space to view files.
+	- Note text string at top: `/uufs/chpc.utah.edu/common/home/<Your_UNID>`
+
+--
+2. Access the Lonepeak cluster in a new shell.
+```bash
+$ srun -A MIB2020 -p lonepeak --reservation MIB2020 -n 2 --time 2:00:00 --pty /bin/bash -l
+```
+
+--
+3. Determine which directory you are in. Enter the "print working directory" command as shown below. Tells you where you are currently.
+```bash
+$ pwd
+```
+
+---
+
+# A brief CHPC overview
+
+- The University of Utah Center for High-Performance Computing (CHPC) is an outstanding resource available to all researchers at the U.
+
+--
+- Consists of multiple computing **clusters** that each contain many **nodes**, which themselves are each powerful computers.
+
+---
+
+# A brief CHPC overview
+
+- It *conceptually* looks *a bit* like this:
+
+<img src="https://drive.google.com/uc?export=view&id=15FtdIKUWeIyWCLZT39xx_R5mRI-q0DIC" width="550">
+
+---
+
+# A brief CHPC overview
+
+- Head node (or login node) **not to be used for major computing** tasks!
+
+<img src="https://drive.google.com/uc?export=view&id=15FtdIKUWeIyWCLZT39xx_R5mRI-q0DIC" width="550">
+
+---
+
+# Mounting your CHPC home space on your computer
+
+- OnDemand interface provides a way to download and upload files directly, so really is all you need.
+- However, it can be handy to mount your CHPC space directly on your computer and have it show up as another folder, allowing easy drag and drop of files.
+- Must be connnected to the University of Utah network for this to work.
+- Procedure is different depending on your OS, so I will not go through it (path-IT can help - networking can be confusing especially on Windows!)
+- CHPC provides information on how to do this here, under the "Direct Mounts of CHPC file systems" section:
+[https://www.chpc.utah.edu/documentation/data_services.php](https://www.chpc.utah.edu/documentation/data_services.php)
+
+---
+
+# Root and Directory Structure
+- "**Root**": the absolute highest/top/base level of a file system
+	- Referred to by the very first forward slash `/`.
+
+--
+	- You will not have access here on CHPC *or your own computer normally*.
+		- Must be kept isolated.
+
+--
+		- Everything else starts here though.
+
+--
+- Directory Structur (Note: "folder" == directory):
+
+--
+- On Mac, the typical directory structure looks something like this (with many directories removed):
+![Mac directory structure](https://drive.google.com/uc?export=view&id=1P0NQ5OXx4I50SuiTgVIBQCDXr7kWyCyg)
+
+--
+- On CHPC, the directory structure more complicated,
+ 	- Your home directory is instead in `/uufs/chpc.utah.edu/common/home/<User_ID>`.
+
+--
+- Because home is so common to reference, it gets it's own special symbol: `~`
+
+---
+# A Few Words on File(Directory) Naming Conventions
+
+--
+
+## Naming:
+
+- Spaces are used to identify discrete commands, options, identifiers, etc. in all programming languages to some degree (or entirely).
+
+--
+	- Spaces in names are major problem, or at least frequent annoyance.
+		- Require a special "escape" character written.
+
+--
+- Two major solutions exist (or some combination of the two):
+
+--
+	- "**Camel case**": Capitalize the first letter of everyword.
+		- For example: MyFileName.txt
+
+--
+	- **Underscores** ( _ ):
+		- For example: My_File_Name.txt
+
+--
+ - Note that the dash "-" is frequently used as well.
+ 	- Generally OK
+	- I recommned staying away from it's use where possible.
+		- Often interepreted as a range (eg.  from one to three is `1-3`)
+
+---
+class: left, top
+
+#  File extensions/suffixes
+
+- The file extension (for example, ".txt" or ".docx") **DOES NOT** define the content or format of a file.
+	- The *file extension is simply part of the name*. Misnomer.
+
+--
+
+- 3 important points here though:
+	1. The content of the file does not change if the extension is changed.
+
+--
+
+	2. The "extension", if present, must be included when referring to a file.
+
+--
+
+	3. Only the extension after the last `.` matters for most OS recognition.
+		- No problem with multiple **`.`**'s. For example, `sequences.fasta.gz`
+
+---
+
+#  File extensions/suffixes
+
+- Generally, good idea to include file extensions so you or others know what the format or content of the file is.
+- Only works if you follow conventions. Examples:
+	- `.txt`: A general, plain text file
+	- `.tsv`: A tab-separated value file. Quite frequently, these are also just listed as .txt
+	- `.csv`: comma-separated value file.
+	- `.md`: A markdown file
+	- `.py`: a Python script
+
+---
+
+# First Linux Commands: Moving around and Creating Your Environment
+
+- In your shell in your terminal window make sure you are in home directory still and make a directory:
+	- `mkdir`: "**m**a**k**e **dir**ectory"
+
+--
+
+```bash
+$ mkdir BioinfWorkshop2020
+```
+
+--
+
+- Use the `ls` command to list the directory contents of your home directory in 2 different ways.
+
+```bash
+$ ls /uufs/chpc.utah.edu/common/home/<Your_User_ID>/
+$ ls ~/
+```
+
+---
+
+# First Linux Commands: Moving around and Creating Your Environment
+
+- Move into your new course directory using the change directory command:
+	- `cd`: **c**hange **d**irectory
+
+```bash
+$ cd BioinfWorkshop2020
+```
+
+--
+
+- Use `pwd` to show where you are and verify you have changed directories:
+```bash
+$ pwd
+```
+
+--
+
+- Make a directory for this part of the course within this directory:
+```bash
+$ mkdir Part1_Linux
+```
+
+---
+
+# Tab autocompletion, history and a couple keyboard shortcuts aside:
+
+- Lots of typing. Lots of ways to **save keystrokes** and **reduce errors**!
+
+--
+
+- Press Tab key ONCE when start typing.
+	- Autocompletes IF only 1 possible match.
+
+--
+
+- Press Tab key TWICE quickly after you start typing.
+	- Your shell lists the possible matches and maintain what you have already typed.
+
+--
+
+- Try this out.
+	- First, `cd` to your new `Part1_Linux` directory by starting to type it then tab autocomplete.
+
+```bash
+$ cd Par
+```
+--
+
+- Use `pwd` to make sure you are in the `Part1_Linux` directory.
+```bash
+$ pwd
+```
+
+---
+
+# Tab-autocomplete continued and copying files
+
+- `cp`: **c**o**p**y. Format: `cp <File_To_Be_Copied> <Where_to_copy_the_file>`
+- Copy a test file from my group's space to your directory
+```bash
+$ cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part1_Linux/table.txt \
+~/BioinfWorkshop2020/Part1_Linux/
+```
+
+--
+
+- The command above is the same as this command (you don't need to enter this, but it won't hurt):
+```bash
+$ cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part1_Linux/table.txt \
+~/BioinfWorkshop2020/Part1_Linux/table.txt
+```
+- If given a directory only, `cp` will copy the file to that directory maintaining the filename. If pointing to a file name, `cp` can be used to copy and rename the file at the same time.
+
+---
+
+# Command Line History
+
+- Up and down arrows can be used to scroll through the histroy of your commands.
+	- Saving A LOT of typing.
+
+--
+
+- Use the up arrow to get your previous command and change the read1.fastq to read2.fastq. Changing table.txt to read1.fastq or read2.fastq:
+
+```bash
+$ cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part1_Linux/read1.fastq ./
+$ cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part1_Linux/read2.fastq ./
+```
+
+#### A couple useful keyboard shortcuts
+It can be useful to move to the end or the beginning of a very long command.
+- Ctrl+A: Moves cursor to the beginning of command line
+- Ctrl+E: Moves cursor to the end command line.
+
+---
+
+# Directory references and paths
+
+--
+
+- "Path": The route or path one takes to a given file or directory. It can be absolute or relative.
+
+--
+
+- "Absolute Path": When the path to a file is listed beginning with root.
+ 	- Thus tends to contain the full text for each directory leading to the file or directory of interest.
+	- Example: Instead of `~`, we would have `/uufs/chpc.utah.edu/common/home/<UNID>/` as the absolute path to your home directory.
+	- Always safer to use absolute paths, but the lengths can become cumbersome, thus...
+
+--
+
+- "Relative Paths": The path to a file *relative* to the directory you are in or some other shortcut/link (such as `~`).
+	- `./`: The current directory you are in
+	- `../`: The directory up one level from what you are in.
+	- `~`: Your home directory.
+
+--
+
+- Use `ls` with iterations of `../` to list the contents of directories further and further up in your directory structure:
+
+```bash
+$ ls ../
+$ ls ../../
+```
+Try combining with `~` and names of directory to explore the behavior more.
+
+---
+
+# More on file listing with `ls` and options to commands
+
+- `ls` is most common command you will type.
+
+--
+- Options are given directly after the command, separated by a space, and proceeded by a dash `-`.
+	- Convention, not a rule.
+	- `--` for "long listing" of options. Return to later.
+
+--
+
+- `ls` options:
+	- `-l`: This is the long listing format which gives file permissions and sizes, and lists one file per line.
+	- `-h`: Human-readable format for file sizes.
+	- `-t`: sort them by timestamp
+	- `-a`: Show all files (including those hidden: files that start with a `.`)
+
+---
+
+# `ls` options
+
+- `ls` options:
+	- `-l`: This is the long listing format which gives file permissions and sizes, and lists one file per line.
+	- `-h`: Human-readable format for file sizes.
+	- `-t`: sort them by timestamp
+	- `-a`: Show all files (including those hidden: files that start with a `.`)
+
+- Add these options to your file listings. From the `Part1_Linux` directory
+
+```bash
+$ ls -l
+$ ls -l -h
+$ ls -lh
+```
+
+--
+
+- Notice how `ls -l -h` and `ls -lh` produce the same output.
+	- Only works for "flags", turning an option on or off.
+
+--
+
+```bash
+$ ls -l -a ~/
+```
+
+---
+
+# Manual pages for commands
+
+- Manual pages are built in and available for nearly all commands.
+	- They are accessible by using the `man` command.
+- `man`: Format `man <command>`
+
+--
+
+Open the manual page for the `ls` command to see all the options.
+```bash
+$ man ls
+```
+
+--
+
+- Scroll through it with
+	-`spacebar` to move a full page down
+	- `d` and `u` keys to move 1/2 page down and up.
+	- Use `q` to exit the manual page.
+	- Use `/` to bring up a text input and search within the manual page.
+
+---
+
+# The `chmod` command for file permissions.
+
+- What are all those `-`'s and `r`'s when you do the long file listings?
+
+--
+
+	- The type of listing, as well as the file permissions for three different user groups.
+
+--
+class: left, middle
+
+- There are 10 spaces. In order from left to right:
+	- Position 1: What type of listing is it. `-` for a regular file, `d` for directory, `l` for links
+	- Position 2-10: File permission for different groups
+- Each position indicate read (`r`), write (`w`) or execute (`x`) permissions.
+	- If it's a directory, `x` indicates whether it is searchable or not.
+
+---
+class: left, middle
+
+# The `chmod` command for file permissions.
+
+- There are 10 spaces. In order from left to right:
+	- Position 1: What type of listing is it. `-` for a regular file, `d` for directory, `l` for links
+	- Position 2,3,4: File permission for the user `u`
+	- Position 5,6,7: File permission for the group `g`
+	- Position 8,9,10: File permission for others `o` or all `a`
+
+- To summarize with image example:
+
+![File Permisssions](https://drive.google.com/uc?export=view&id=1Nyi8364J2jLBm-27Z3bHSppEOi-zGnbV)
+
+---
+
+# The `chmod` command for file permissions.
+
+- `chmod` command can be used to change file permissions of a file or directory.
+	- Options do not take a dash.**UNIQUE**
+
+--
+
+- Options use a formula instead:
+	- Single letter indicates user, group or other or all
+	- Then, `+` or `-` to indicate add or remove
+	- Then, permissions (one, two or three) to add or remove
+- Examples:
+	- `chmod u+w <FILENAME>`: Add the write permission (`w`) for the user.
+	- `chmod a+wrx <FILENAME>`:  Add the write(`w`), read (`r`) and execute (`x`) permissions for all `a`.
+	- `chmod g-w <FILENAME>`: Remove the write (`w`) permissions from the group (`g`).
+
+---
+
+# With Your Own Data
+Little to do for the intro parts. But you can still setup some things and practice moving around
+- Create a project directory.
+- Upload metadata files or sequence files to your project directory.
+- Change the file permissions. Try removing read permissions from a file and then try to copy it.
+- How can you change permissions for a directory?
+- Explore options on the manual page for `mkdir` and `pwd`.
+
+# Notes & References
+- CHPC overview lecture slides Spring 2020: [https://www.chpc.utah.edu/presentations/CHPCOverviewSpring2020.pdf](https://www.chpc.utah.edu/presentations/CHPCOverviewSpring2020.pdf)
+- Key commands in this part:
+	- `pwd`
+	- `ls`
+	- `mkdir`
+	- `cd`
+	- `cp`
+	- `chmod`
+
+</textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/FitText.js/1.2.0/jquery.fittext.min.js"></script>
+<script>
+	var slideshow = remark.create({
+	highlightLanguage: 'bash',
+	highlightLines: 'true',
+	highlightStyle: 'zenburn',
+	countIncrementalSlides: false,
+	});
+	$('.remark-slide-content').fitText(1.2, { minFontSize: '18px', maxFontSize: '36px' });
+</script>
+</body>
+</html>
