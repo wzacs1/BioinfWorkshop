@@ -150,7 +150,7 @@ One way to assess if your level of sequencing is covering the community is to lo
 $ qiime diversity alpha-rarefaction \
  --i-table table_full.qza \
  --o-visualization collector_curve.qzv \
- --p-metrics observed_otus -\
+ --p-metrics observed_otus \
  --p-max-depth 5000 \
  --p-steps 20
 ```
@@ -223,7 +223,7 @@ $ qiime diversity beta-group-significance \
  --i-distance-matrix core-div/weighted_unifrac_distance_matrix.qza \
  --m-metadata-file metadata/SraRunTable_full.txt \
  --m-metadata-column sample_type \
- --o-visualization core-div/weighted_unifrac_SigTest_SampleType.qz \
+ --o-visualization core-div/weighted_unifrac_SigTest_SampleType.qzv \
  --p-pairwise
 ```
 
