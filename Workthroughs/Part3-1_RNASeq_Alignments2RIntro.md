@@ -1,3 +1,29 @@
+<!-- TOC -->
+
+- [Main](#main)
+  - [Requirements / Inputs](#requirements--inputs)
+  - [Plan Overall Method](#plan-overall-method)
+  - [Step 0: Setup directory structure](#step-0-setup-directory-structure)
+  - [Step 1: Obtain sequences](#step-1-obtain-sequences)
+    - [Step 1 - test dataset: Copy the raw fastq sequences to your scratch directory.](#step-1---test-dataset-copy-the-raw-fastq-sequences-to-your-scratch-directory)
+    - [Step 1 - full dataset: Copy the raw fastq sequences to your scratch directory.](#step-1---full-dataset-copy-the-raw-fastq-sequences-to-your-scratch-directory)
+    - [(optional) Step 1 - full dataset: Pull the full dataset from SRA](#optional-step-1---full-dataset-pull-the-full-dataset-from-sra)
+  - [Step 2: Trim adapters, low quality sequences and create quality plots](#step-2-trim-adapters-low-quality-sequences-and-create-quality-plots)
+    - [Step 2: test dataset](#step-2-test-dataset)
+    - [Step 2: full dataset](#step-2-full-dataset)
+  - [Step 3: Run alignments](#step-3-run-alignments)
+    - [Step 3 - test dataset](#step-3---test-dataset)
+    - [Step 3 - full dataset](#step-3---full-dataset)
+  - [Step 4: Summarize your sequences and alignments with MultiQC](#step-4-summarize-your-sequences-and-alignments-with-multiqc)
+    - [Step 4 - test dataset](#step-4---test-dataset)
+    - [Step 4 - full dataset](#step-4---full-dataset)
+  - [Step 5: Cleanup](#step-5-cleanup)
+  - [Step 6: Submit batch script](#step-6-submit-batch-script)
+- [Practice / With Your Own Data](#practice--with-your-own-data)
+- [Links / Cheatsheets](#links--cheatsheets)
+
+<!-- /TOC -->
+
 # Main
 **Objectives**
 1. Workthrough a test RNAseq dataset to QC and align reads, adding to batch script as we go.

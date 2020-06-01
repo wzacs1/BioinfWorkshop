@@ -13,6 +13,7 @@ Here I provide detailed workthroughs from each workshop day as individual pages.
 3. [Part 1-3, Part 2-1: Intro to Linux CLI and CHPC (cont.), Documentation and QIIME2 with Conda](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part1-2_UnixContinued_CHPCEnvironment_QIIME2Intro.md) 
 4. [Part 2-2: SRA pull seqs and QIIME2 16S seq process](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part2_QIIME2_16S_SeqAnalysis.md)
 5. [Part 2-3: QIIME2 16S seq analysis](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part2-3_QIIME2_16S_Seq_AnalysisPart.md)
+6. [Part 3-1: RNAseq Process and Alignments](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part3-1_RNASeq_Alignments2RIntro.md)
 
 Tentative Schedule:
 
