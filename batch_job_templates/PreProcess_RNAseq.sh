@@ -16,6 +16,8 @@ mkdir -p TestSet
 cd TestSet
 cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part3_R_RNAseq/TestSet/*.fastq ./
 
+# the path to full BiopsyOnly dataset is here: /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part3_R_RNAseq/BiopsyOnly/
+
 module purge
 module load cutadapt/1.14
 module load fastqc/0.11.4

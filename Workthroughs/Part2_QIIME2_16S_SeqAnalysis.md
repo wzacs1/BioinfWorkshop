@@ -37,10 +37,12 @@
 <!-- /TOC -->
 
 # Main
-Today's Objectives:
+Today's Objectives (this ended up as 2 classes):
 1. Finish install of QIIME2 virtual environment
 2. Pull sequences from SRA
 3. Process sequences through QIIME2 to create table, repseqs, phylogeny and taxonomy.
+4. Submit batch script to process full dataset
+	- The template for this is here: [PreProcess_16.sh](https://github.com/wzacs1/BioinfWorkshop/blob/master/batch_job_templates/PreProcess_16S.sh)
 
 **NOTE**: The in class session for this markdown only got to importing sequences into QIIME2. We will go very quickly through the remaining portion in next class, mostly I'll just have you copy some result files to move along more quickly. So, if you'd like more practice and a better understanding of 16S seq processing steps go through it more carefully here. Build up the batch script and submitting it for full dataset 16S processsing is a great goal.
 

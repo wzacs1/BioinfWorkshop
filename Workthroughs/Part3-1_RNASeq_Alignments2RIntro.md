@@ -28,6 +28,7 @@
 **Objectives**
 1. Workthrough a test RNAseq dataset to QC and align reads, adding to batch script as we go.
 2. Submit full batch script.
+	- The template for this is here: [PreProcess_RNAseq.sh](https://github.com/wzacs1/BioinfWorkshop/blob/master/batch_job_templates/PreProcess_RNAseq.sh)
 
 ## Requirements / Inputs
 1. A CHPC account and interactive session on compute node (obtained as in previous classes with `srun` command)

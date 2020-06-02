@@ -5,15 +5,15 @@
 #SBATCH -n 2
 #SBATCH -J PreProcess16S
 #SBATCH --time=12:00:00
-#SBATCH -o <YOUR_ABSOLUTE_PATH_TO_HOME>/BioinfWorkshop2020/Part2_Qiime_16S/jobs/PreProcess_16S_QIIME2019_2020Classifier.outerror
+#SBATCH -o <YOUR_ABSOLUTE_PATH_TO_HOME>/BioinfWorkshop2020/Part2_Qiime_16S/jobs/PreProcess_16S.outerror
 
 mkdir -p ~/BioinfWorkshop2020/Part2_Qiime_16S
 mkdir -p ~/BioinfWorkshop2020/Part2_Qiime_16S/jobs
 mkdir -p ~/BioinfWorkshop2020/Part2_Qiime_16S/metadata
 
-SCRATCH=/scratch/general/lustre/u0210816/Part2_Qiime_16S_2019Module
+SCRATCH=/scratch/general/lustre/<Your_uNID>/Part2_Qiime_16S
 mkdir -p ${SCRATCH}
-WRKDIR=~/BioinfWorkshop2020/Part2_Qiime_16S_2019Module
+WRKDIR=~/BioinfWorkshop2020/Part2_Qiime_16S
 ls ${WRKDIR}
 
 module load sra-toolkit
@@ -26,9 +26,16 @@ while read line
 do fasterq-dump ${line} -e 2 -t ${SCRATCH}
 done < ~/BioinfWorkshop2020/Part2_Qiime_16S/metadata/SRR_Acc_List_full.txt
 
-module unload sra-toolkit
-module load qiime2
-conda activate qiime2-2019.1
+# If using the CHPC installed module, uncomment (remove the '#') from the lines below, and comment out the 2020.2 commands after this:
+# module purge
+# module load anaconda3/2019.03
+# source activate qiime2-2019.4
+
+# For user installed miniconda and Qiime2 environment (2020.2):
+module purge
+module use ~/MyModules
+module load miniconda3/latest
+source activate qiime2-2020.2
 
 echo "sample-id,absolute-filepath,direction" > ${WRKDIR}/metadata/manifest_full.txt
 
@@ -104,7 +111,11 @@ qiime phylogeny align-to-tree-mafft-fasttree \
 
 cp tree*.qza ${WRKDIR}
 
+# Use this classifier if using the QIIME2 2020.2 version
 CLASSIFIER=/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part2_Qiime_16S/gg_13_8_515F806R_classifier_sk0.22.1.qz
+
+# Use this classifier (uncomment) if using the CHPC module 2019 version of qiime2
+# CLASSIFIER=/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part2_Qiime_16S/gg_13_8_515F806R_classifier_ForQIIME_v2019.4.qza
 
 qiime feature-classifier classify-sklearn \
 --i-classifier ${CLASSIFIER} \
