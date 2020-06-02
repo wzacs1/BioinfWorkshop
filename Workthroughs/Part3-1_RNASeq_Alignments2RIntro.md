@@ -40,6 +40,7 @@
 ## Plan Overall Method
 - For this workthrough, I will specifically highlight code chunks that should add to your bash script (once you've verified they are working of course).
 - Open a new file (Atom or whatever text editor you like) and call it "PreProcess_RNAseq.sh". This will be your batch script.
+![Preprocess_RNASeq_Image](https://drive.google.com/uc?export=view&id=1lo0z6rmlXHK5PCviu8UwAXVut9gd5x9l)
 
 ## Step 0: Setup directory structure
 There was a bit of confusion as to directories structures I had you setup for 16S analysis and the assigning of variables to directories. The confusion is partly because as you were still learning commands we did things in slightly different order than we might normally in order to illustrate commands better. Also, because the concept of scratch space still seems a bit foreign and since I name the directories in both home and scratch locations the same. This time, I will go through them more like would make sense in a submitted batch script and go through the setup outside a bit to illustrate how we are aiming to create a similar structure in our scratch and home (or working directory) locations.
@@ -107,7 +108,7 @@ As this is just for the test dataset, you won't add this to your batch script. S
 $ cd $SCRATCH
 $ mkdir TestSet
 $ cd TestSet
-$ cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part3_R_RNAseq/TestSet/*.fastq \
+$ cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part3_R_RNAseq/TestSet/*.fastq.gz \
  ./
 ```
 
@@ -118,7 +119,7 @@ Below we copy the full biopsy dataset to your scratch directory.
 $ cd $SCRATCH
 $ mkdir -p BiopsyOnly
 $ cd BiopsyOnly
-$ cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part3_R_RNAseq/BiopsyOnly/*.fastq \
+$ cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part3_R_RNAseq/BiopsyOnly/*.fastq.gz \
  ./
 ```
 
@@ -145,9 +146,14 @@ $  prefetch -O ./ -X 90G ${line}
 $  fastq-dump --split-3 ${line}.sra
 $  rm ${line}.sra
 $ done < ~/BioinfWorkshop2020/Part3_R_RNAseq/metadata/SRR_Acc_List_RNASeq_BiopsyOnly.txt
+$ for fastq in *.fastq
+$  do
+$  pigz ${fastq}
+$ done
 $ cd ../
 $ module unload sra-toolkit
 ```
+If you do this, also keep in mind that I gzipped the files for the input for the rest of the class to save space. fastq-dump like this outputs the files uncompressed, so I added a compression (`pigz`; a multiprocess compression utility) command as well.
 
 ## Step 2: Trim adapters, low quality sequences and create quality plots
 It is always a good idea to perform this step to filter out adapter reads in particular. As with 16S, we are going to use cutadapt program that is great for this. For our 16S seqs we were trimming primers as adapter sequences mainly and using QIIME2 which wrapped the cutadapt program. Here, we are trimming actual Illumina adapters which will be auto-recognized by cutadapt, and we are using the "trim_galore" tool to wrap cutadapt. First, we load trim_galore which is installed as a CHPC module.
@@ -163,12 +169,14 @@ Note that the order here matter. In fact, module system will error if you try to
 
 Trim_galore will do the quality trimming and create a quality plot for you with fastqc. We will largley leave the default options because they are pretty good and it recognizes the Illumina adapters well. By default, no "unpaired" sequences will be retained. These are sequences with a pair that did not pass QC. There's often situations where you would want to retain these, but generally having unpaired seqs will cause problems in other applications and unpaired seqs tend to be of lower quality so we do not usually retain them.
 
+Trim_galore will recompress the outputs with gzip if given input gzipped files (as we did here). Most programs will happily take in gzipped files like this and unzip and rezip them before and after (respectively) operating on them. In this case, we'll leave them unzipped after trim_galore though by adding the `dont_gzip` option.
+
 ### Step 2: test dataset
 ```bash
 $ cd ${SCRATCH}/TestSet
-$ for read1 in *_1.fastq
+$ for read1 in *_1.fastq.gz
 $   do
-$   trim_galore --paired --fastqc --length 20 -q 20 -o ./ ${read1} ${read1%_1.fastq}_2.fastq
+$   trim_galore --paired --fastqc --dont_gzip --length 20 -q 20 -o ./ ${read1} ${read1%_1.fastq.gz}_2.fastq.gz
 $ done
 ```
 
@@ -178,9 +186,9 @@ As I've mentioned before, it is a good idea to work through this for loop to und
 **Add to batch script**.
 ```bash
 $ cd ${SCRATCH}/BiopsyOnly
-$ for read1 in *_1.fastq
+$ for read1 in *_1.fastq.gz
 $   do
-$   trim_galore --paired --fastqc --length 20 -q 20 -o ./ ${read1} ${read1%_1.fastq}_2.fastq
+$   trim_galore --paired --fastqc --length 20 -q 20 -o ./ ${read1} ${read1%_1.fastq.gz}_2.fastq.gz
 $ done
 ```
 
@@ -316,5 +324,6 @@ $ sbatch <Full_Path_To_Your_Home>/BioinfWorkshop2020/Part3_R_RNAseq/jobs/PreProc
 - Upload your own RNAseq data and work through the day's commands. You may need to modify settings depending on your organism and sequencing setup. This is an excellent opportunity to ensure you know each command well.
 
 # Links / Cheatsheets
+- Node sharing page on CHPC: [https://www.chpc.utah.edu/documentation/software/node-sharing.php](https://www.chpc.utah.edu/documentation/software/node-sharing.php)
 - Salmon page: [https://salmon.readthedocs.io/en/latest/salmon.html](https://salmon.readthedocs.io/en/latest/salmon.html)
 - MultiQC tutorial video: [https://www.youtube.com/watch?v=qPbIlO_KWN0](https://www.youtube.com/watch?v=qPbIlO_KWN0)
