@@ -14,6 +14,7 @@ Here I provide detailed workthroughs from each workshop day as individual pages.
 4. [Part 2-2: SRA pull seqs and QIIME2 16S seq process](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part2_QIIME2_16S_SeqAnalysis.md)
 5. [Part 2-3: QIIME2 16S seq analysis](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part2-3_QIIME2_16S_Seq_AnalysisPart.md)
 6. [Part 3-1: RNAseq Process and Alignments](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part3-1_RNASeq_Alignments2RIntro.md)
+7. [Part 3-2: Intro to R and RStudio](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part3-2_IntroToRStudio_Present.md)
 
 Tentative Schedule:
 
@@ -26,8 +27,8 @@ Day #  |  Date  | Title  | Topics | VideoLink
 5 | May 26 | Part 2-2 (cont.): 16S seq process with QIIME2 | 16S seq preprocessing, batch job submission, intro to markdown | [Class 5](https://hsc.mediaspace.kaltura.com/media/t/0_thhcdlo9)
 6 | May 28 | Part 2-3: 16S seq analysis with QIIME2 | microbiome data analysis in QIIME2, markdown | [Class 6](https://hsc.mediaspace.kaltura.com/media/t/0_59wi67yc)
 7 | June 2 | Part 3-1: RNAseq process and alignments | sequence QC and alignments | [Class 7](https://hsc.mediaspace.kaltura.com/media/t/0_zqoj4xnh)
-8 | June 4 | Part 4-1: Intro to R and R Studio | basic R, R packages, bioconductor | 
-9 | June 9 | Part 4-2: Intro to R and R Studio. | basic R, R markdown | 
-10 | June 11 | Part 5-1: RNAseq analysis 1: DE analysis | differential expression analysis | 
-11 | June 16 | Part 5-2: RNAseq analysis 2: GSEA and higher-level results interpretation | fgsea, term enrichment, clusterprofiler | 
-12 | June 18 | Part 6-1: Containers with Singularity | containers overview, singularity, humann2 | 
+8 | June 4 | Part 3-2: Intro to R and R Studio | basic R, R packages, bioconductor | 
+9 | June 9 | Part 3-3: Intro to R and R Studio. | basic R, R markdown | 
+10 | June 11 | Part 3-4: RNAseq analysis 1: DE analysis | differential expression analysis | 
+11 | June 16 | Part 3-5: RNAseq analysis 2: GSEA and higher-level results interpretation | fgsea, term enrichment, clusterprofiler | 
+12 | June 18 | Part 4-1: Containers with Singularity | containers overview, singularity, humann2 | 
