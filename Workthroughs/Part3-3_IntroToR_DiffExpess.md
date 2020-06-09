@@ -31,7 +31,7 @@
 **Objectives**:
 1. Finish intro to data frames from previous class
 2. Introduce data wranging with tidyverse functions.
-3. Create metadata tales with full alignment file paths.
+3. Create metadata tables with full alignment file paths.
 4. Introduce R markdown.
 
 ## Requirement:
@@ -49,7 +49,7 @@
 **OR**
 
 **Create a new project** as we did last time:
-- If you just didn't save the Rproject, your directory should already be there as should an R project file. If you missed class, you won't have the directory, so choose to either crate new project in existing directory or new project in new directory as appropriate.
+- If you just didn't save the Rproject, your directory should already be there as should an R project file. If you missed class, you won't have the directory, so choose to either create new project in existing directory or new project in new directory as appropriate.
 - Create a project in a directory called "Part3_RStudioIntro". `File -> New Project..`
 
 ## Read in metadata table as "tibble"
@@ -71,10 +71,10 @@ While reading in, change a few things:
 
 The readr function should look like this (you **don't** need to enter this)(one command over multiple lines shown here):
 ```r
-metadata <- read_delim(
-  "~/BioinfWorkshop2020/Part3_R_RNAseq/metadata/SraRunTable_RNAseq_BiopsyOnly.txt",
-  "\t", escape_double = FALSE, col_types = cols(Age = col_integer()),
-  trim_ws = TRUE)
+> metadata <- read_delim(
+    "~/BioinfWorkshop2020/Part3_R_RNAseq/metadata/SraRunTable_RNAseq_BiopsyOnly.txt",
+    "\t", escape_double = FALSE, col_types = cols(Age = col_integer()),
+    trim_ws = TRUE)
 ```
 
 ## Accessing data frames (quick review)
@@ -158,7 +158,7 @@ Now let's use our list of columns to keep to remove the 4th column.
 >  metadata <- metadata[,c(1,2,3,5,6,7,8,9,10)]
 ```
 - Error here because we now have listed a 10th column that does not exist.
-- However, here's another way to accomplish the same thing (with the other table), using a negative to say NOT this column:
+- However, here's another way to accomplish the same thing, using a negative to say "REMOVE" this column:
 ```r
 > examp.metadata <- metadata[,-3]
 > str(examp.metadata)
@@ -228,7 +228,7 @@ Notice how this function returns true or false values for each position, asking 
 - Can you think of another way to do this with the `!` symbol?
 
 #### `select()`
-Selects works pretty naturally as you might expect, and in the term hints to SQL terminology usage. We could use the same data table accession coordinates we showed earlier, but select has as very common type of syntax derived from SQL that is great for working with tales and is similar to how qiime2 filters out data. As an intial simple example, let's just get rid of the extra column "replicate" which is the same for all samples now. We'll use the `-` in front of the varialbe to remove, which is commonly used in R notation to remove something, but in this case we could have also used the `!`.
+Selects works pretty naturally as you might expect, and in the term hints to SQL terminology usage. We could use the same data table accession coordinates we showed earlier, but select has as very common type of syntax derived from SQL that is great for working with tales and is similar to how qiime2 filters out data. As an intial simple example, let's just get rid of the extra columns "replicate" and "tissue" which are the same for all samples now. We'll use the `-` in front of the varialbe to remove, which is commonly used in R notation to remove something, but in this case we could have also used the `!`.
 
 ```r
 > metadata_repsOnly <- select(metadata_repsOnly, -replicate & -tissue)
@@ -317,7 +317,7 @@ Let's get these installing while we discuss R markdown briefly and we will be re
 ```
 
 ## R Markdown
-Before we go any further, let's introduce R's special type of markdown for documentation. We are going to do some manipulations to our data table that we would like to document.
+Before we go any further, let's introduce R's special type of markdown for documentation. 
 
 R markdown generally uses the same syntax as we saw for standard markdown, but incorporating it into the RStudio environment allows us to interact with the markdown and run our code directly within it.
 
