@@ -223,7 +223,7 @@ $ rm Homo_sapiens.GRCh38.cdna.all.fa.gz
 - Make sure to create a variable to refer to your index if you creted it yourself.
 
 ### Step 3 - test dataset
-Now, let's run the pseudoaligner to get counts of reads by transcript.
+Now, let's run the pseudoaligner to get counts of reads by transcript. Noticet that we added in an option for Gibbs resampling (similar to bootstrapping) and to correct for GC bias.
 
 ```bash
 $ module purge
@@ -231,7 +231,7 @@ $ module load salmon
 $ cd ${SCRATCH}/TestSet
 $ for read1 in *_1_val_1.fq
 $  do
-$  salmon quant -i ${SALMONINDEX} -l A -p 2 -1 ${read1} -2 ${read1%_1_val_1.fq}_2_val_2.fq --validateMappings -o ${read1%_1_val_1.fq}_salm_quant
+$  salmon quant -i ${SALMONINDEX} --numGibbsSamples 20 --gcBias -l A -p 2 -1 ${read1} -2 ${read1%_1_val_1.fq}_2_val_2.fq --validateMappings -o ${read1%_1_val_1.fq}_salm_quant
 $ done
 ```
 
@@ -246,7 +246,7 @@ $ cd ${SCRATCH}/BiopsyOnly
 $ echo "TIME:Start Salmon Biopsy Alignment: `date`"
 $ for read1 in *_1_val_1.fq
 $  do
-$  salmon quant -i ${SALMONINDEX} -l A -p 12 -1 ${read1} -2 ${read1%_1_val_1.fq}_2_val_2.fq --validateMappings -o ${read1%_1_val_1.fq}_salm_quant
+$  salmon quant -i ${SALMONINDEX} --numGibbsSamples 20 --gcBias -l A -p 12 -1 ${read1} -2 ${read1%_1_val_1.fq}_2_val_2.fq --validateMappings -o ${read1%_1_val_1.fq}_salm_quant
 $ done
 $ echo "TIME:End Salmon Biopsy Alignment: `date`"
 ```
