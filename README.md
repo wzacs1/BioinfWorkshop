@@ -29,7 +29,7 @@ Day #  |  Date  | Title  | Topics | VideoLink
 6 | May 28 | Part 2-3: 16S seq analysis with QIIME2 | microbiome data analysis in QIIME2, markdown | [Class 6](https://hsc.mediaspace.kaltura.com/media/t/0_59wi67yc)
 7 | June 2 | Part 3-1: RNAseq process and alignments | sequence QC and alignments | [Class 7](https://hsc.mediaspace.kaltura.com/media/t/0_zqoj4xnh)
 8 | June 4 | Part 3-2: Intro to R and R Studio | basic R, R packages, bioconductor | [Class 8](https://hsc.mediaspace.kaltura.com/media/t/0_lsh6kkl6)
-9 | June 9 | Part 3-3: Intro to R and R Studio. | basic R, R markdown |
+9 | June 9 | Part 3-3: Intro to R and R Studio. | basic R, R markdown | [Class 9](https://hsc.mediaspace.kaltura.com/media/t/0_sahdfzjl)
 10 | June 11 | NO CLASS |
 11 | June 16 | Part 3-4: RNAseq analysis 1: DE analysis | differential expression analysis | 
 12 | June 18 | Part 3-5: RNAseq analysis 2: GSEA and higher-level results interpretation | fgsea, term enrichment, clusterprofiler | 
