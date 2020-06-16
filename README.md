@@ -8,14 +8,15 @@ We use the OnDemand interface at the University of Utah's Center for High-Perfor
 
 Here I provide detailed workthroughs from each workshop day as individual pages. Each served as the basis for the slides from each day, and have more written explanation so that they can hopefully be worked through alone. I will upload them before each class and then, likely, update them at the end of each day according to how far we get.
 
-1. [Part 1-1: Introduction to Linux Command-Line Interface](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part1_IntroToUnixCLI.md)
-2. [Part 1-2: Introduction to Linux Command-Line Interface](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part1_IntroToUnixCLI_2.md)
-3. [Part 1-3, Part 2-1: Intro to Linux CLI and CHPC (cont.), Documentation and QIIME2 with Conda](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part1-2_UnixContinued_CHPCEnvironment_QIIME2Intro.md) 
-4. [Part 2-2: SRA pull seqs and QIIME2 16S seq process](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part2_QIIME2_16S_SeqAnalysis.md)
-5. [Part 2-3: QIIME2 16S seq analysis](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part2-3_QIIME2_16S_Seq_AnalysisPart.md)
-6. [Part 3-1: RNAseq Process and Alignments](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part3-1_RNASeq_Alignments2RIntro.md)
-7. [Part 3-2: Intro to R and RStudio](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part3-2_IntroToRStudio.md)
-8. [Part 3-3: Intro to R and RStudio (cont.)](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part3-3_IntroToR_DiffExpess.md)
+[Part 1-1: Introduction to Linux Command-Line Interface](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part1_IntroToUnixCLI.md)
+[Part 1-2: Introduction to Linux Command-Line Interface](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part1_IntroToUnixCLI_2.md)
+[Part 1-3, Part 2-1: Intro to Linux CLI and CHPC (cont.), Documentation and QIIME2 with Conda](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part1-2_UnixContinued_CHPCEnvironment_QIIME2Intro.md) 
+[Part 2-2: SRA pull seqs and QIIME2 16S seq process](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part2_QIIME2_16S_SeqAnalysis.md)
+[Part 2-3: QIIME2 16S seq analysis](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part2-3_QIIME2_16S_Seq_AnalysisPart.md)
+[Part 3-1: RNAseq Process and Alignments](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part3-1_RNASeq_Alignments2RIntro.md)
+[Part 3-2: Intro to R and RStudio](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part3-2_IntroToRStudio.md)
+[Part 3-3: Intro to R and RStudio (cont.)](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part3-3_IntroToR_DiffExpess.md)
+[Part 3-4: RNAseq analysis in R: Diff Expression analysis](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part3-4_DE_Markdown_w_3-3_Markdown_githubMD.md)
 
 Tentative Schedule:
 
