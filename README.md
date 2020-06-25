@@ -34,4 +34,5 @@ Day #  |  Date  | Title  | Topics | VideoLink
 9 | June 9 | Part 3-3: Intro to R and R Studio. | basic R, R markdown | [Class 9](https://hsc.mediaspace.kaltura.com/media/t/0_sahdfzjl)
 10 | June 11 | NO CLASS |
 11 | June 16 | Part 3-4: RNAseq analysis 1: DE analysis | differential expression analysis | [Class 10](https://hsc.mediaspace.kaltura.com/media/t/0_mn0bh8b4)
-12 | June 18 | Part 3-5: RNAseq analysis 2: Higher-level results interpretation and plotting | gsea/term enrichment, clusterprofiler, volcano plots, ggplots | 
+12 | June 18 | Part 3-5: RNAseq analysis 2: Higher-level results interpretation and plotting | gsea/term enrichment, clusterprofiler, volcano plots, ggplots | [Class 11](https://hsc.mediaspace.kaltura.com/media/t/0_n5o8xg6w)
+
