@@ -14,7 +14,7 @@ Tentative Schedule:
 
 Day #  |  Date  | Title  | Topics | VideoLink
 ------ | ------ | ------ | ----- | -----
-1 | May 12 | Part 1-1: Intro to Linux | Basic commands, moving around CLI |  [Class 1 ]
+1 | May 12 | Part 1-1: Intro to Linux | Basic commands, moving around CLI |  [Class 1 ]( https://www.youtube.com/playlist?list=PL_Pe_9PaIEBN-MDiucIgx4sR1NLbneDDE)
 2 | May 14 | Part 1-2: Intro to Linux | More commands, moving around CLI, file manipulation | [Class 2]
 3 | May 19 | Part 1-3: Linux and CHPC, Part 2-1: Documentation & Intro to QIIME2 |  for loops, grep, CHPC, paths, Atom intro, conda install | [Class 3] 
 4 | May 21 | Part 2-2: 16S seq process with QIIME2 | sra-toolkit, QIIME2 install, 16S seq processing | [Class 4]
