@@ -17,8 +17,8 @@ Tentative Schedule:
 Day #  |  Date  | Title  | Topics | VideoLink
 ------ | ------ | ------ | ----- | -----
 1 | May 12 | Part 1-1: Intro to Linux | Basic commands, moving around CLI |  [Class 1 ]( https://www.youtube.com/playlist?list=PL_Pe_9PaIEBN-MDiucIgx4sR1NLbneDDE)
-2 | May 14 | Part 1-2: Intro to Linux | More commands, moving around CLI, file manipulation | [Class 2]
-3 | May 19 | Part 1-3: Linux, CHPC and Software Install Methods |  CHPC, paths, install methods, QIIME2 conda install, grep | [Class 3]
+2 | May 14 | Part 1-2: Intro to Linux | More commands, moving around CLI, file manipulation | [Class 2](https://www.youtube.com/watch?v=8xwjIng3LrE&list=PL_Pe_9PaIEBN-MDiucIgx4sR1NLbneDDE&index=2)
+3 | May 19 | Part 1-3: Linux, CHPC and Software Install Methods |  CHPC, paths, install methods, QIIME2 conda install, grep | [Class 3](https://www.youtube.com/playlist?list=PL_Pe_9PaIEBN-MDiucIgx4sR1NLbneDDE)
 4 | May 21 | Part 2-2: 16S seq process with QIIME2 | sra-toolkit, QIIME2 install, 16S seq processing | [Class 4]
 5 | May 26 | Part 2-2 (cont.): 16S seq process with QIIME2 | 16S seq preprocessing, batch job submission, intro to markdown | [Class 5]
 6 | May 28 | Part 2-3: 16S seq analysis with QIIME2 | microbiome data analysis in QIIME2, markdown | [Class 6]
