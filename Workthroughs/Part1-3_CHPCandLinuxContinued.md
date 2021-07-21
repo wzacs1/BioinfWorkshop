@@ -12,9 +12,26 @@
 	- [More on CHPC](#more-on-chpc)
 		- [Accounts, allocations and partitions](#accounts-allocations-and-partitions)
 			- [Accounts:](#accounts)
+			- [Allocations:](#allocations)
+			- [Partitions:](#partitions)
+		- [Disk space and scratch directories](#disk-space-and-scratch-directories)
+			- [Softlinks to scratch space.](#softlinks-to-scratch-space)
+		- [Interactive Versus Submitted/Batch Jobs and The Slurm Scheduler](#interactive-versus-submittedbatch-jobs-and-the-slurm-scheduler)
+		- [More training on CHPC](#more-training-on-chpc)
+	- [Software Installation Methods and Virtual Environments](#software-installation-methods-and-virtual-environments)
+		- [Modules and software](#modules-and-software)
+			- [The `$PATH` environmental variable](#the-path-environmental-variable)
+		- [Install a binary file and put it in your path](#install-a-binary-file-and-put-it-in-your-path)
+			- [Adding a location to your path permanently](#adding-a-location-to-your-path-permanently)
+		- [Conda Virtual Environments - QIIME2 install](#conda-virtual-environments---qiime2-install)
+			- [Installing miniconda into your own module on CHPC](#installing-miniconda-into-your-own-module-on-chpc)
+			- [Create a QIIME2 environment and install the software](#create-a-qiime2-environment-and-install-the-software)
+		- [Containers](#containers)
+	- [Introduction to Regular Expressions and `grep`](#introduction-to-regular-expressions-and-grep)
+- [Practice / With Your Own Data](#practice--with-your-own-data)
+- [Links, Cheatsheets and Today's Commands](#links-cheatsheets-and-todays-commands)
 
 <!-- /TOC -->
-
 # Main
 
 ## Obtain interactive shell session on lonepeak cluster
@@ -62,11 +79,11 @@ Each user must have a user account, clearly. These user accounts give you access
 
 - CHPC has a command to show you your account and allocation combinations. Input this command to print your CHPC account-allocation-partition combos:
 
+
 ```bash
 myallocation
 ```
-
-PIs, it is a good idea after this course to ensure your group has an account so that your lab is associated properly with you. Also, and perhaps most importantly, you can get a general computing allocation for your group (more about this in allocation section). You can also assign a delegate to manage your space, purchase extra storage, backup space, or even your own node! I highly recommend this if you are at all serious about bioinformatics. For not much more $$ than a decent Mac desktop you can get a very powerful node always available to your ENTIRE group, so you never have to wait in the queue. CHPC operates in what they call "condominium" style, where an owner node is available to the general CHPC community when you aren't using it, but your group preempts other if you own it.
+PIs, it is a good idea after this course to ensure your group has an account so that your lab is associated properly with you. Also, and perhaps most importantly, you can get a general computing allocation for your group (more about this in allocation section). You can also assign a delegate to manage your space, purchase extra storage, backup space, or even your own node! I highly recommend this if you are at all serious about bioinformatics. For not much more money than a decent Mac desktop you can get a very powerful node always available to your ENTIRE group, so you never have to wait in the queue. CHPC operates in what they call "condominium" style, where an owner node is available to the general CHPC community when you aren't using it, but your group preempts other if you own it.
 
 All others make sure to get associated with your PI after the course if you are not already. Will send email regarding this later.
 
