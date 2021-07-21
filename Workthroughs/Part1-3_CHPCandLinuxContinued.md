@@ -34,7 +34,7 @@
 # Main
 
 ## Obtain interactive shell session on lonepeak cluster
-1. Log in to CHPC via your preferred method (OnDemand, ssh from Terminal, or FastX Web server). Note that it is preferable to NOT use ssh from Terminal for this session, unless you have mounted your CHPC home space or otherwise know how to download files via command line only (Eg. `scp`).
+1. Log in to CHPC via your preferred method (OnDemand, ssh from Terminal, or FastX Web server).
 2. Obtain an interactive session with 2 processors.
 ```bash
  salloc -A notchpeak-shared -p notchpeak-shared -n 2 --time 2:30:00
@@ -163,7 +163,7 @@ You are provided 50GB of home space with your account. This is not very much in 
 File space usage on a high-performance computing cluster is a bit different than you may be used to. You need to have a mentality that it is easier and cheaper to recompute than to store many large files. This explains why you have a fairly small home space. But you will need to temporarily store very large files (usually sequences) in order to work on them and manage intermediary results. Enter "scratch" space. This is a general term not specific to CHPC that you may have encountered before. It is large disk storage space that is intended for temporary files only.
 - Scratch: space for temporary file storage. On CHPC, files on scratch will be removed after 60 days (don't count on it!).
 
-- Think about the CHPC structure and how the different spaces are connected to a compute node to build a distributed computing system. For example, tracing the lines highlighted in cyan in the below image if you are on a notchpeak node:
+- Think about the CHPC structure and how the different spaces are connected to a compute node to build a distributed computing system. For example, tracing the lines highlighted in cyan in the below image if you are on a lonepeak node:
 
 ![CHPC structure conceptualization](https://drive.google.com/uc?export=view&id=1_YkuFcq9mIodtHlm7T9lJ3ZiI_vYOIZx)
 
@@ -372,6 +372,12 @@ less read1.fasta
 ### Conda Virtual Environments - QIIME2 install
 
 Here is another part where we are doing this specifically to address the workshop objectives. Not necessarily because it is the easiest or quickest solution, but there are several advantages as well. QIIME2 already has a CHPC module, but in order to address common ways of installing bioinformatics packages we will work through an install with the most recent version of QIIME2.
+
+- Conda virtual environments basically allow you to create a similar environment on top of your system environment. Thus allowing you to install whatever you want without having root privileges. In the image below we cannot write to system directories (outlined in red) but we can to our home space (green). Notice how the paths exposed (in cyan) now include both system installs and home installation locations within a conda environment:
+
+![Conda Env Conceptualization](https://drive.google.com/uc?export=view&id=1650jCppxPcZSnLbKtqZgry6gcfqGK4m-)
+
+- Also very useful for installing multiple versions of the same program (not uncommon when working with open source software).
 
 QIIME2 is a particularly good example of a software package that can benefit from a managed virtual environment because (at least right now) it is updated or added to frequently (so far, every couple months) and it has many 3rd party plugins which require install privileges. Also, these plugins might interfere with each other, so you may at times need to create different environments for them. Conda is a package manager that sets up a virtual environment within your main environment (CHPC in this case). This allows you to install anything you want inside the virtual environment and keeps it safely isolated from your main environment. This is really cool and empowering! But, it can be a bit confusing at first for sure. Anaconda and Miniconda are the main programs that you'll see to run Conda. We will use miniconda, and follow exactly [the instructions CHPC has provided](https://www.chpc.utah.edu/documentation/software/python-anaconda.php) to first setup a miniconda3 environment into which we will then install QIIME2.
 
