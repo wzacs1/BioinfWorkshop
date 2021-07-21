@@ -548,6 +548,7 @@ This is a pretty simple example to just intro loops early. But, it's good to thi
 - CHPC page on **accounts and partition** options: [https://www.chpc.utah.edu/documentation/guides/index.php#parts](https://www.chpc.utah.edu/documentation/guides/index.php#parts)
 - CHPC page on setting up a conda environment: [https://www.chpc.utah.edu/documentation/software/python-anaconda.php](https://www.chpc.utah.edu/documentation/software/python-anaconda.php)
 - Conda cheatsheet: [https://docs.conda.io/projects/conda/en/latest/_downloads/843d9e0198f2a193a3484886fa28163c/conda-cheatsheet.pdf](https://docs.conda.io/projects/conda/en/latest/_downloads/843d9e0198f2a193a3484886fa28163c/conda-cheatsheet.pdf)
+- One of MANY available **grep** cheatsheets with nice examples: [https://staff.washington.edu/weller/grep.html](https://staff.washington.edu/weller/grep.html)
 - Today's New Commands:
   - `grep`: **g**lobal **r**egular **e**xpression **p** rint. Format: `grep "<REGEX_PATTERN>" <FILE_INPUT>`
   - `wget`: Pull something from the web. Use the `-o` option to provide a different filename when downloading.
