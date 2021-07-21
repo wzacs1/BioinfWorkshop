@@ -3,8 +3,6 @@
 - [Main](#main)
 	- [Obtain interactive shell session on lonepeak cluster](#obtain-interactive-shell-session-on-lonepeak-cluster)
 		- [Today's Objectives:](#todays-objectives)
-			- [I. Understand CHPC structure, software installation and run options.](#i-understand-chpc-structure-software-installation-and-run-options)
-			- [II. Retrieve Sequences from the NCBI Short Read Archive (SRA).](#ii-retrieve-sequences-from-the-ncbi-short-read-archive-sra)
 		- [Requirements and Expected Inputs](#requirements-and-expected-inputs)
 	- [Review](#review)
 		- [Generalized Command Structure](#generalized-command-structure)
@@ -28,6 +26,7 @@
 			- [Create a QIIME2 environment and install the software](#create-a-qiime2-environment-and-install-the-software)
 		- [Containers](#containers)
 	- [Introduction to Regular Expressions and `grep`](#introduction-to-regular-expressions-and-grep)
+	- [Intro to Loops. The `for` loop.](#intro-to-loops--the-for-loop)
 - [Practice / With Your Own Data](#practice--with-your-own-data)
 - [Links, Cheatsheets and Today's Commands](#links-cheatsheets-and-todays-commands)
 
@@ -46,10 +45,10 @@
 ### Today's Objectives:
 #### I. Understand CHPC structure, software installation and run options.
   - Install a binary (`seqkit`) and a python virtual environment (`QIIME2`).
-  - Discuss and use an installed CHPC module (`fasterqdump`).
+  - Discuss and setup an installed CHPC module (`fasterqdump`).
 
-#### II. Retrieve Sequences from the NCBI Short Read Archive (SRA).
-	- Use `fasterqdump` to retrieve sequences.
+#### II. Introduce regular expressions, grep and for loops.
+	- More advanced and useful Linux commands.
 
 ### Requirements and Expected Inputs
 - Internet connection
@@ -59,9 +58,33 @@
 ## Review
 
 ### Generalized Command Structure
+This command structure we have seen is really common. Let's briefly review the structure. It's also worth noting that the order can matter for inputs and outputs sometimes when not specified explicity with options.
 
+```bash
+COMMAND [OPTIONS/PARAMETERS] INPUT OUTPUT
+```
+
+Frequently a command will have other functions associated with it and these usually go right after the main command:
+
+```bash
+COMMAND [OPTIONS/PARAMETERS] FUNCTION [OPTIONS/PARAMETERS] INPUT OUTPUT
+```
+
+It's nice when everything including inputs/outputs must be specified with a flag and *usually* when this is the case the order doesn't matter. Like this, for example:
+
+```bash
+COMMAND [OPTIONS/PARAMETERS] FUNCTION -i INPUT -o OUTPUT -p PARAMETER1 -t PARAMETER2
+```
 
 ### Variables
+- Variables can be anything: strings/texts, numbers, statements
+- In bash, we set variables simply by declaring them and setting them with an equal sign.
+- If spaces are included (as in statements) we must use quotes.
+- When later referring to a variable we use a `$` to indicate it as such.
+```bash
+VARIABLE="VARIABLES can refer to other ${VARIABLES}"
+```
+- We should try to enclose variables in curly brackets when referring to them to avoid unexpected behaviour (and make more use of them later!)
 
 
 ## More on CHPC
@@ -97,7 +120,8 @@ Each group can be allocated a number of compute hours each semester. Allocations
     - Regular allocations (>20,000 hours) requested by somewhat larger application.
 
 - Running jobs without an allocation
-  If your group does not have a general allocation, you can still run jobs on CHPC in *unallocated* OR *pre-emptable* (freecycle) mode. An allocation ensures your jobs will run until finished, while in pre-emptable mode your jobs will run on available owner nodes but will be killed if needed to make resources available for owners. With careful requesting of resources you can actually run pretty effectively with no allocation. However, it's very easy to request a general allocation, CHPC has streamlined the process for small allocations, and the 20,000 hours per semester could be quite sufficient for your needs. Additionally, you can currently run jobs *unallocated* on some nodes, such as lonepeak currently.
+
+If your group does not have a general allocation, you can still run jobs on CHPC in *unallocated* OR *pre-emptable* (freecycle) mode. An allocation ensures your jobs will run until finished, while in pre-emptable mode your jobs will run on available owner nodes but will be killed if needed to make resources available for owners. With careful requesting of resources you can actually run pretty effectively with no allocation. However, it's very easy to request a general allocation, CHPC has streamlined the process for small allocations, and the 20,000 hours per semester could be quite sufficient for your needs. Additionally, you can currently run jobs *unallocated* on some nodes, such as lonepeak currently.
 
 - In summary:
     - Allocated: Not pre-emptable. Your PI (or delegate) completed application and has an allocation each semester. (this workshop also has an allocation for the duration). Notchpeak (only allocated), lonepeak, kingspeak.
@@ -126,18 +150,22 @@ It is easiest, but incorrect, to think of partitions as synonymous with the clus
   - notchpeak-shared [*must specify number of processes*]
   - notchpeak-freecycle [*pre-emptable*]
 
+Notably, there is a separate, "protected" environment and cluster for sensitive data, such as PHI. See CHPC's page on PHI: [https://www.chpc.utah.edu/documentation/pefaq.php](https://www.chpc.utah.edu/documentation/pefaq.php).
 
-- Notably, there is a separate, "protected" environment and cluster for sensitive data, such as PHI. See CHPC's page on PHI: [https://www.chpc.utah.edu/documentation/pefaq.php](https://www.chpc.utah.edu/documentation/pefaq.php).
-- If you own a node, you have your own partition as well. For example my lab group's is `round-np` and we have a `round-np-shared` partition also.
+If you own a node, you have your own partition as well. For example my lab group's is `round-np` and we have a `round-np-shared` partition also.
 
 The distribution of resources and types of partitions is always changing as CHPC manages their system. For example, the "ember" cluster was recently retired and kingspeak became available to run on without an allocation, as notchpeak grows with the newer hardware.
 
 ### Disk space and scratch directories
 
-You are provided 50Gb of home space with your account. This is not very much in the world of high-throughput sequencing. Note PIs can buy fairly cheap additional space, but I'd argue it's generally not a good idea to consider CHPC somewhere for any type of long-term storage. Most of you will have an IT department (Path-IT) that is better suited for storing and managing backups and/or syncing of your data. You should use them for data management. It is definitely possible to backup or sync your CHPC space, but the emphasis is more on facilitating computing.
+You are provided 50GB of home space with your account. This is not very much in the world of high-throughput sequencing. Note PIs can buy fairly cheap additional space, but I'd argue it's generally not a good idea to consider CHPC somewhere for any type of long-term storage. Most of you will have an IT department (Path-IT) that is better suited for storing and managing backups and/or syncing of your data. You should use them for data management. It is definitely possible to backup or sync your CHPC space, but the emphasis is more on facilitating computing.
 
-File space usage on a high-performance computing cluster is a bit different than you may be used to. You need to have a mentality that it is easier and cheaper to recompute than to store many large files. This explains why you have a fairly small home space. But you do need to temporarily store very large files (usually sequences) in order to work on them and manage intermediary results. Enter "scratch" space. This is a general term not specific to CHPC that you may have encountered before. It is large disk storage space that is intended for temporary files only.
+File space usage on a high-performance computing cluster is a bit different than you may be used to. You need to have a mentality that it is easier and cheaper to recompute than to store many large files. This explains why you have a fairly small home space. But you will need to temporarily store very large files (usually sequences) in order to work on them and manage intermediary results. Enter "scratch" space. This is a general term not specific to CHPC that you may have encountered before. It is large disk storage space that is intended for temporary files only.
 - Scratch: space for temporary file storage. On CHPC, files on scratch will be removed after 60 days (don't count on it!).
+
+- Think about the CHPC structure and how the different spaces are connected to a compute node to build a distributed computing system. For example, tracing the lines highlighted in cyan in the below image if you are on a notchpeak node:
+
+![CHPC structure conceptualization](https://drive.google.com/uc?export=view&id=1_YkuFcq9mIodtHlm7T9lJ3ZiI_vYOIZx)
 
 - CHPC page on storage systems, including scratch: [https://www.chpc.utah.edu/resources/storage_services.php](https://www.chpc.utah.edu/resources/storage_services.php)
 
@@ -160,11 +188,11 @@ ln -s /scratch/general/lustre/<YOUR_UNID>/ scratch_lustre
 ls -l ~/
 ```
 
-It's notable to mention that making a bunch of softlinks around your data is not a good habit. It's often tempting for beginners especially, but the problem is that these links are relative filepaths and we want to generally use absolute paths for better documentation, and especially as a beginner it is good to understand the structure of your environment and not rely on links that give appearances of being elsewhere too much. I'm comfortable doing this for scratch space because it is, by definition, temporary file space so any references to it will not last anyways.
+Making a bunch of softlinks around your data is generally not a good habit. It's often tempting for beginners especially, but the problem is that these links are relative filepaths and we want to generally use absolute paths for better documentation, and especially as a beginner it is good to understand the structure of your environment and not rely on links that give appearances of being elsewhere too much. I'm comfortable doing this for scratch space because it is, by definition, temporary file space so any references to it will not last anyways.
 
 ### Interactive Versus Submitted/Batch Jobs and The Slurm Scheduler
 
-Currently, we are running an interactive session on a compute node (if you use `srun` command). This is actually a managed job itself that provisioned resources, but gives you a shell to interactively type command and view the output. Notice how we add `/bin/bash` to specify the bash shell. Interactive sessions are very helpful of course, particularly for development purposes. However, I think it's fair to say this is not really the intended method of interacting with a HPC cluster like CHPC. Generally, if you can do it in an interactive session, you can likely accomplish the computing needed on your desktop or laptop. Most computing that actually requires HPC resources is going to take awhile or just generally won't be amenable to interactive sessions. There are a number of situations where you really just need one big computer for a bit and interactive sessions might be a good fit. Somewhat surprising, anecdotally, it seems methods for interactive sessions are actually increasing, but still mostly we should have the mentality to do our computing with submitted jobs, aka ""**batch**" jobs, when possible.
+Currently, we are running an interactive session on a compute node (if you used `salloc` command). This is actually a managed job itself that provisioned resources, but gives you a shell to interactively type command and view the output. Interactive sessions are very helpful of course, particularly for development purposes. However, I think it's fair to say this is not really the intended method of interacting with a HPC cluster like CHPC. Generally, if you can do it in an interactive session, you can likely accomplish the computing needed on your desktop or laptop. Most computing that actually requires HPC resources is going to take awhile or just generally won't be amenable to interactive sessions. There are a number of situations where you really just need one big computer for a bit and interactive sessions might be a good fit. Somewhat surprising, anecdotally, it seems methods for interactive sessions are actually increasing, but still mostly we should have the mentality to do our computing with submitted jobs, aka "**batch**" jobs, when possible.
 - Batch scripts: Submitted, or non-interactive job scripts.
 
 There's also a big advantage to batch scripts over interactive. The job script itself serves as your documentation, whereas with interactive sessions you'll either need some kind of notebook, or copy-paste to your markdown (jupyter notebooks or markdown in atom for our class).
@@ -210,15 +238,15 @@ $ module avail
 
 Let's load the SRA toolkit that facilitates the pulling of sequences from NCBI's sequence read archives. Notice you can use tab autocomplete here, and this can be helpful to see which versions are available.
 ```bash
-$ module load sra-toolkit
+module load sra-toolkit
 ```
 Note that you can also use an alias already provided to you, `ml`, for module loading. Now, ensure it was loaded properly and check the version:
 ```bash
-$ module list
+module list
 ```
 For now, unload sra-toolkit (we'll come back to it):
 ```bash
-$ module unload sra-toolkit
+module unload sra-toolkit
 ```
 You can also use `module purge` to unload all your modules at once, except those that are "sticky" such as CHPC's module.
 
@@ -226,7 +254,7 @@ You can also use `module purge` to unload all your modules at once, except those
 
 One of the main things that happened when you loaded the modules is that the path to the executables was put into your environmental variable called `$PATH`. By doing this you can run a program by just typing it's name instead of the full path to it. The `$PATH` locations are also searched in when you do tab-autocomplete (if setup; it should be for you on CHPC). You can add to your own path and often when following some install instructions you will hear the phrase "make sure SOME_PROGRAM is in your path", so you should be aware of how to do this. This is one of those things that is so basic to coders/computer scientists it often goes completely unexplained and is unnecessarily mysterious to those coming from outside the field. First, let's see what your path currently looks like (this is one of those environmental variables):
 ```bash
-$ echo $PATH
+echo $PATH
 ```
 
 The `$PATH` variable holds a list of variables (in this case text strings that are directory locations), separated by colons. You have several paths listed there. Now see how module loading adds to your path. Repeat the loading of SRA toolkit, but this time let's also specify the newer (non-default) version:
@@ -251,9 +279,9 @@ which fasterqdump
 vdb-config --interactive
 ```
 - This should bring up a blue screen with "SRA configuration" at the top and some tabs that can be accessed with the highlighted letter. We don't need to do much:
-1. Make sure there is an [X] next to Enable Remote access. Press `E` to check/uncheck the box.
-2. Go to the Cache page by pressing `C`. If not present already, add your scratch space `/scratch/general/lustre/<YOUR_uNID>` to the field for "location of user-repository" and make sure "enable local file-caching" is checked. This is where files will be initially downloaded so you want to make sure it's not in your home space that could get filled too quickly.
-3. Press `s` to save and then exit.
+  1. Make sure there is an [X] next to Enable Remote access. Press `E` to check/uncheck the box.
+  2. Go to the Cache page by pressing `C`. If not present already, add your scratch space `/scratch/general/lustre/<YOUR_uNID>` to the field for "location of user-repository" and make sure "enable local file-caching" is checked. This is where files will be initially downloaded so you want to make sure it's not in your home space that could get filled too quickly.
+  3. Press `s` to save and then exit.
 
 - This is a handy setup tool that this new version of SRA toolkit has included, but don't generally expect something like this from modules already installed.
 
@@ -276,7 +304,7 @@ wget https://github.com/shenwei356/seqkit/releases/download/v0.16.1/seqkit_linux
 - `wget`: Pull something from the web. Use the `-o` option to provide a different filename when downloading. By default uses the same filename.
 3. Unpack/decompress with tar and gzip
 ```bash
- tar -zxvf seqkit_linux_amd64.tar.gz
+tar -zxvf seqkit_linux_amd64.tar.gz
 ```
 - `tar`: Archives many files together in a single file. Use `-z` to pass through `gzip` as well.
 - `gzip`: Compression/Decompression utility. Frequently used on an archive from `tar` for effective compression.
@@ -375,7 +403,7 @@ Now, we've just installed a module of our own called miniconda3/latest. minicond
 #### Create a QIIME2 environment and install the software
 
 - See QIIME2's page for further install details including the below command. From our starting point, just make sure you have loaded your miniconda3 module.
-- We will create an environment called qiime2-2021.4, but note that we could call this environment whatever we want to.
+- We will create an environment called qiime2-2021.4 (with the `-n` option in the command below), but note that we could call this environment whatever we want to.
   - It can be beneficial to create multiple, minimal virtual environments specific for a program instead of a few big environments. Useful for documentation and reproducibility purposes.
 
 ```bash
@@ -387,6 +415,12 @@ conda env create -n qiime2-2021.4 --file qiime2-2021.4-py38-linux-conda.yml
 -  Virtual environments also avoid needing root privileges.
 
 While we wait we will discuss containers briefly and very useful `grep` and regular expressions.
+
+- After this is done installing, list your conda environments, then activate it for your first time:
+```bash
+conda env list
+conda activate qiime2-2021.4
+```
 
 ### Containers
 
@@ -448,10 +482,59 @@ Work up the command line by line to get the sequence ID and sequence of each seq
 - Hopefully, this demonstrates both some basic pattern matching, and you can see how you don't necessarily need to have a program installed to do some really simple sequence searching and retrieval very quickly on millions of reads.
 - There are a ton of tools out there now to do this kind of sequence searching, including some we installed above. They also use pattern matching though. There is still tremendous utility in using grep and pattern matching in and outside of sequence searching.
 
+## Intro to Loops. The `for` loop.
+Loops are a family of statements that iterate through items in different manners. This is where we really start to do some programming and see the power of the command line or scripting. Loops are nearly always at the core of coding, and I am introducing them early because they are so helpful to understand. But, this is pretty early for a nascent bioinformatician so don't worry too much if you are struggling with this section. I'm trying to get you some exposure to a lot of different commands and syntax structure.
+- We will use just one simple examples here and then frequently expand on them as we move forward. Their syntax varies a bit from language to language, but the basic structure is the same: A condition and something to do for that condition. The main loops you will likely use in bash are:
+
+- `for` loop: Takes in a number of values and does something **for** each one.
+- `while` loop: **while** the condition is true do the function.
+
+These loops will be written over mulitple lines. They aren't just a long single entry separated by a `\` like we've seen before, but multiple command-line entries. When entering a `for` loop bash knows to expect more input for the command after you type the for statement, so does not return anything and provides the `>` prompt for more entry. To tell bash you're done with the loop you enter the (you guessed it!) `done` statement.  The basic structure of a for loop is like this (don't enter this):
+
+```bash
+for VARIABLE_NAME in LIST
+	do
+	SOME_COMMANDS
+done
+```
+
+A list of variables is simply provided with spaces in between them. Let's just make a list of column numbers in our `table.txt` as variables. As bash iterates through the list it assigns it to a new varialble. Thus, the VARIABLE_NAME part is not defined to start with and so doesn't take a `$` for its initial call, but will require it for the subsequent command. In order to print the names of the first 3 columns in our table let's to do a simple for loop with 2 command we learned earlier.
+First make sure you are in the correct directory where these files should be:
+```bash
+cd ~/BioinfWorkshop2021/Part1_Linux/
+```
+```bash
+for Column in 1 2 3
+	do
+	cut -f ${Column} table.txt | head -n 1
+done
+```
+
+If you got stuck or misentered something and bash is still giving you the `>` prompt, you can get out of it with `Ctrl + c`. This is called a signal interrupt and is the best way to kill a command or incorrect entry that has you stuck and needing to get back your command prompt.
+
+Now, let's do something more useful and add in another command we previously learned. Building up functions like this is a good method to make more complicated functions. Let's count unique entries in each column:
+
+```bash
+for Column in 1 2 3
+	do
+	cut -f ${Column} table.txt | head -n 1
+	cut -f ${Column} table.txt | sort | uniq -c
+done
+```
+
+Note here that mulitple command line entries can be entered at once if separated by a semi-colon `;`. I do this frequently, but it is much harder to read. For example this is the exact same for loop as above:
+
+```bash
+ for Column in 1 2 3; do; cut -f ${Column} table.txt | head -n 1; cut -f ${Column} table.txt | sort | uniq -c; done
+```
+
+This is a pretty simple example to just intro loops early. But, it's good to think about already how loops can be useful. Generally, we will use them to loop over many files and perform the same function. Or, you could imagine looping through individual sequence entries in a single file. Both of these are behaviours you've already seen in commands like `ls` (listing each file in a directory) or `grep` (searching line by line). Hopefully you can imagine that loops are at the heart of most useful commands.
+
+
 # Practice / With Your Own Data
 - `grep` can take a file with a list of patterns to search for as well, using the `-f` option. Can you modify the final grep command in the grep section to just get the sequence identifiers in a new file, then use this file to extract the 4 lines for each sequence from the original read 1 file?
 - If you have 16S seqs of your own you'd like to analyze, follow along, starting with setting up a project directory like we've done today in your own Projects folder.
-- Find a cool project on SRA with 16S sequences, or find the accessions numbers from a paper with a dataset of interest. Get the accessions numbers from a couple samples to test out with at first. Follow along in the following days as well.
+- Find a cool project on SRA with 16S sequences or bulk RNAseq, or find the accessions numbers from a paper with a dataset of interest. Get the accessions numbers from a couple samples to test out with at first. Follow along in the following days as well.
 
 # Links, Cheatsheets and Today's Commands
 - Intro to CHPC lecture by CHPC: [https://www.chpc.utah.edu/presentations/Overview.php](https://www.chpc.utah.edu/presentations/Overview.php)
