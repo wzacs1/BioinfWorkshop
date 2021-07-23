@@ -19,13 +19,12 @@ Day #  |  Date  | Title  | Topics | VideoLink
 1 | July 14 | Part 1-1: Intro to Linux | Basic commands, moving around CLI |  [Class 1 ]( https://www.youtube.com/playlist?list=PL_Pe_9PaIEBN-MDiucIgx4sR1NLbneDDE)
 2 | July 17 | Part 1-2: Intro to Linux | More commands, moving around CLI, file manipulation | [Class 2](https://www.youtube.com/watch?v=8xwjIng3LrE&list=PL_Pe_9PaIEBN-MDiucIgx4sR1NLbneDDE&index=2)
 3 | July 21 | Part 1-3: Linux, CHPC and Software Install Methods |  CHPC, paths, install methods, QIIME2 conda install, grep | [Class 3](https://www.youtube.com/playlist?list=PL_Pe_9PaIEBN-MDiucIgx4sR1NLbneDDE)
-4 | July 23 | NO CLASSS | 
-5 | July 28 | Part 2-2: 16S seq process with QIIME2 | sra-toolkit, QIIME2 install, 16S seq processing | [Class 4]
-6 | July 30 | Part 2-2 (cont.): 16S seq process with QIIME2 | 16S seq preprocessing, batch job submission, intro to markdown | [Class 5]
-7 | Aug 4 | Part 2-3: 16S seq analysis with QIIME2 | microbiome data analysis in QIIME2, markdown | [Class 6]
+4 | July 23 | NO CLASSS |
+5 | July 28 | Part 2-1: 16S seq process with QIIME2 | sra-toolkit, QIIME2 install, 16S seq processing | [Class 4]
+6 | July 30 | Part 2-2: 16S seq process with QIIME2 | 16S seq preprocessing, batch job submission | [Class 5]
+7 | Aug 4 | Part 2-3: 16S seq analysis with QIIME2 | microbiome data analysis in QIIME2, intro to markdown | [Class 6]
 8 | Aug 6 | Part 3-1: RNAseq process and alignments | sequence QC and alignments | [Class 7]
 9 | Aug 11 | Part 3-2: Intro to R and R Studio | basic R, R packages, bioconductor | [Class 8]
 10 | Aug 13 | Part 3-3: Intro to R and R Studio. | basic R, R markdown | [Class 9]
 11 | Aug 18 | Part 3-4: RNAseq analysis 1: DE analysis | differential expression analysis | [Class 10]
 12 | Aug 20 | Part 3-5: RNAseq analysis 2: Higher-level results interpretation and plotting | gsea/term enrichment, clusterprofiler, volcano plots, ggplots | [Class 11]
-

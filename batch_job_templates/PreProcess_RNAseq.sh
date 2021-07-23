@@ -5,18 +5,18 @@
 #SBATCH -n 12
 #SBATCH -J PreProcessRNAseq
 #SBATCH --time=12:00:00
-#SBATCH -o <YOUR_ABSOLUTE_PATH_TO_HOME>/BioinfWorkshop2020/Part2_Qiime_16S/jobs/PreProcess_16S_QIIME2019_2020Classifier.outerror
+#SBATCH -o <YOUR_ABSOLUTE_PATH_TO_HOME>/BioinfWorkshop2021/Part2_Qiime_16S/jobs/PreProcess_16S_QIIME2019_2020Classifier.outerror
 
-WRKDIR=~/BioinfWorkshop2020/Part3_R_RNAseq/
+WRKDIR=~/BioinfWorkshop2021/Part3_R_RNAseq/
 SCRATCH=/scratch/general/lustre/u0210816/Part3_R_RNAseq/
 mkdir -p $SCRATCH
 
 cd $SCRATCH
 mkdir -p TestSet
 cd TestSet
-cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part3_R_RNAseq/TestSet/*.fastq ./
+cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part3_R_RNAseq/TestSet/*.fastq ./
 
-# the path to full BiopsyOnly dataset is here: /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part3_R_RNAseq/BiopsyOnly/
+# the path to full BiopsyOnly dataset is here: /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part3_R_RNAseq/BiopsyOnly/
 
 module purge
 module load cutadapt/1.14
@@ -29,7 +29,7 @@ for read1 in *_1.fastq
   trim_galore --paired --fastqc --length 20 -q 20 -o ./ ${read1} ${read1%_1.fastq}_2.fastq
 done
 
-SALMONINDEX=/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part3_R_RNAseq/Hs.GRCh38.cdna.all_salmon_0.11
+SALMONINDEX=/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part3_R_RNAseq/Hs.GRCh38.cdna.all_salmon_0.11
 
 module purge
 module load salmon

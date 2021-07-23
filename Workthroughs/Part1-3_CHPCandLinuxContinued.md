@@ -47,7 +47,7 @@
   - Install a binary (`seqkit`) and a python virtual environment (`QIIME2`).
   - Discuss and setup an installed CHPC module (`fasterqdump`).
 
-#### II. Introduce regular expressions, grep and for loops.
+#### II. Introduce regular expressions, grep and for loops. (if time)
 	- More advanced and useful Linux commands.
 
 ### Requirements and Expected Inputs
@@ -430,117 +430,15 @@ conda activate qiime2-2021.4
 
 ### Containers
 
-- Containers are a newer solution, similar in principle and practice to Conda Virtual Environments, but have some advantages in how they access resources, as well as how they are defined which makes for the best reproducibility of scripts.
-- We will possibly return to them after our R session, dependent on time.
-- There is also a CHPC presentation specifically on them each semester.
-
-## Introduction to Regular Expressions and `grep`
-
-"Regular expressions" (AKA "regex") are sequences of characters usually used for searching text strings. They are extremely powerful and we could probably spend a full session or two on them but will keep it very simple instead, in line with the objectives of this workshop. I strongly encourage more reading on them outside of class time as you can really make those annoying formatting tasks simple, fast and more consistent. "Cheatsheets" are really helpful. This used to be indispensable knowledge, and I used to use regular expresssions a lot more to deal with various odd sequence filtering and reformatting tasks, but with the proliferation of bioinformatics tools specifically designed for this, I tend to use them less and less. A few patterns are still really helpful to know of.
-
-One regular expression pattern many may have encountered already is the commonly used `*` wildcard, which matches anything. This is very frequently used to lists subsets of files with common extensions. Let's use it to list all the .fastq sequence files here, then the different table files we may have created:
-```bash
-cd ~/BioinfWorkshop2021/Part1_Linux
-ls *fastq
-ls table*
-```
-So, what happened here? This wildcard matched *zero or more* of anything (except linebreaks usually). It's sort of the biggest catch-all wildcard; it will match alphanumeric characters or spaces or symbols. Commands in linux (such as ls) are a bit limited in what they can interpret easily like this because a lot of the special characters in pattern matching are already in use. For example the `.` in regex will normally matches *exactly one* of anything, but used naturally is all over in filename. So, we'll actually use the grep command to illustrate further regex, but first let's see how you can also use ranges to get filenames:
-
-```bash
-ls read[1-2].fastq
-```
-Much like we saw in the cut command for specifying fields, you can use ranges (`-`) or a list of characters to match patterns. As it only matches a single character you don't need to separate them by commas (in other words you could also type `ls read[12].fastq` above).
-
-Regular expressions have a lot of commonalities in their intrepretation from one program to the next, but a few differences do exist. `grep` is a function used all over the place, including Unix/Linux and R, and stands for global regular expression print. There are a few different flavors of it, but again we will keep it to basics that are usually common among them. If you encounter unexpected behavior with grep you probably mean to use on of the others, such as `fgrep` or `egrep` (the extended grep will actually behave best usually). To first show how grep in Linux normally works, look at the sequence identifiers in the read1.fastq file using `head`. You can see they share a lot of the same information which identifies the machine, run, etc for which all sequences in a given run will have the same information. Let's pull all the sequence identifiers just using this common information. To avoid priting all 4k lines we'll pipe the output to `head`.
-- `grep`: **g**lobal **r**gular **e**xpression **p** rint. Format: `grep "<REGEX_PATTERN>" <FILE_INPUT>`
-
-```bash
- grep "M00736:301" read1.fastq | head
-```
-We actually didn't use any special characters in our pattern, but this is still pattern matching. Now let's look at one way of using special characters to indicate position of matches. The `^` specifys that the following patter should be at the beginning of a line. It's frequently useful. In this case, these seqeunces are from amplicons, so they should have primer sequences at the beginning of them. The primers are also degenerate, so in some places could have multiple different bases. First, use the primers with degenerate base notation and search for them at the beginning of the sequences:
-```bash
- grep "^TGCCTACGGGNBGCASC" read1.fastq
-```
-Nothing there, which is good, but Illumina does report "N"s in sequences. Now, use multiple nucleotide characters to search for those primers, replacing the degenerate bases with their possibilities at that position. Add the `--color` option to highlight the matches. Grep returns the lines that match as with most utilities in Linux:
-```bash
- grep --color "^TGCCTACGGG[AGCT][CGT]GCA[GC]C" read1.fastq
-```
-There's 1,000 sequences in that file. How many have the appropriate primer at their start? Pipe the output to `wc -l` to find out. Then, remove the `^` to see if some of these sequences don't have the primer at the start
-```bash
- grep --color "^TGCCTACGGG[AGCT][CGT]GCA[GC]C" read1.fastq | wc -l
- grep --color "TGCCTACGGG[AGCT][CGT]GCA[GC]C" read1.fastq | wc -l
-```
-So, there's a few in there that don't have the primer at the beginning. Let's just isolate the sequences with the primer the beginning. But, we would probably want to maintain the sequence format with the identifier on the line before. Grep has options to retrieve lines before (`-B`) and after (`-A`) the match. Add those to our command with the `^` to grab all the sequences with primers at the front as expected and their identifiers.
-
-One minor annoyance is that grep outputs this `--` in between groups of matches, which we don't want. But it's a good opportunity to illustrate the inverse match and the character escape. Here the `-v` option inverts and takes the non-matching lines, so we can use it to remove those `--`.
-
-- The backslash `\` is used to escape special characters and allow them to be read as is. This is common behaviour for this key.
-
-Work up the command line by line to get the sequence ID and sequence of each sequence with primer at the front and print it to a new file. For a simple check of behavior continue to pipe the output to `wc -l` to see if the output is as expected based on the known 931 sequence matches we determined above.
-
-
-```bash
- grep -B 1 -A 2 "^TGCCTACGGG[AGCT][CGT]GCA[GC]C" read1.fastq | wc -l
- grep -B 1 -A 2 "^TGCCTACGGG[AGCT][CGT]GCA[GC]C" read1.fastq | grep -v "\-\-" | wc -l
- grep -B 1 -A 2 "^TGCCTACGGG[AGCT][CGT]GCA[GC]C" read1.fastq | grep -v "^\-\-" | wc -l
- grep -B 1 -A 2 "^TGCCTACGGG[AGCT][CGT]GCA[GC]C" read1.fastq | grep -v "^\-\-" > read1_SeqsWithPrimer.fastq
-```
-- Hopefully, this demonstrates both some basic pattern matching, and you can see how you don't necessarily need to have a program installed to do some really simple sequence searching and retrieval very quickly on millions of reads.
-- There are a ton of tools out there now to do this kind of sequence searching, including some we installed above. They also use pattern matching though. There is still tremendous utility in using grep and pattern matching in and outside of sequence searching.
-
-## Intro to Loops. The `for` loop.
-Loops are a family of statements that iterate through items in different manners. This is where we really start to do some programming and see the power of the command line or scripting. Loops are nearly always at the core of coding, and I am introducing them early because they are so helpful to understand. But, this is pretty early for a nascent bioinformatician so don't worry too much if you are struggling with this section. I'm trying to get you some exposure to a lot of different commands and syntax structure.
-- We will use just one simple examples here and then frequently expand on them as we move forward. Their syntax varies a bit from language to language, but the basic structure is the same: A condition and something to do for that condition. The main loops you will likely use in bash are:
-
-- `for` loop: Takes in a number of values and does something **for** each one.
-- `while` loop: **while** the condition is true do the function.
-
-These loops will be written over mulitple lines. They aren't just a long single entry separated by a `\` like we've seen before, but multiple command-line entries. When entering a `for` loop bash knows to expect more input for the command after you type the for statement, so does not return anything and provides the `>` prompt for more entry. To tell bash you're done with the loop you enter the (you guessed it!) `done` statement.  The basic structure of a for loop is like this (don't enter this):
-
-```bash
-for VARIABLE_NAME in LIST
-	do
-	SOME_COMMANDS
-done
-```
-
-A list of variables is simply provided with spaces in between them. Let's just make a list of column numbers in our `table.txt` as variables. As bash iterates through the list it assigns it to a new varialble. Thus, the VARIABLE_NAME part is not defined to start with and so doesn't take a `$` for its initial call, but will require it for the subsequent command. In order to print the names of the first 3 columns in our table let's to do a simple for loop with 2 command we learned earlier.
-First make sure you are in the correct directory where these files should be:
-```bash
-cd ~/BioinfWorkshop2021/Part1_Linux/
-```
-```bash
-for Column in 1 2 3
-	do
-	cut -f ${Column} table.txt | head -n 1
-done
-```
-
-If you got stuck or misentered something and bash is still giving you the `>` prompt, you can get out of it with `Ctrl + c`. This is called a signal interrupt and is the best way to kill a command or incorrect entry that has you stuck and needing to get back your command prompt.
-
-Now, let's do something more useful and add in another command we previously learned. Building up functions like this is a good method to make more complicated functions. Let's count unique entries in each column:
-
-```bash
-for Column in 1 2 3
-	do
-	cut -f ${Column} table.txt | head -n 1
-	cut -f ${Column} table.txt | sort | uniq -c
-done
-```
-
-Note here that mulitple command line entries can be entered at once if separated by a semi-colon `;`. I do this frequently, but it is much harder to read. For example this is the exact same for loop as above:
-
-```bash
- for Column in 1 2 3; do; cut -f ${Column} table.txt | head -n 1; cut -f ${Column} table.txt | sort | uniq -c; done
-```
-
-This is a pretty simple example to just intro loops early. But, it's good to think about already how loops can be useful. Generally, we will use them to loop over many files and perform the same function. Or, you could imagine looping through individual sequence entries in a single file. Both of these are behaviours you've already seen in commands like `ls` (listing each file in a directory) or `grep` (searching line by line). Hopefully you can imagine that loops are at the heart of most useful commands.
-
+- Containers are a newer solution also available to use on CHPC to deploy different software packages. They are similar in principle and use to Conda Virtual Environments, but actually very different and have some advantages in how they access resources, as well as how they are defined which makes for the best reproducibility. Using virtualization containers one can fairly easily define and share your computing environment, ensuring the code you run is executed with the same software versions, libraries and environment.
+- We will hopefully return to them after our R session, dependent on time. Since it's another virtual environment method I keep it optional for this workshop at this stage.
+- There is also a CHPC presentation specifically on them each semester.[https://chpc.utah.edu/presentations/Containers.php](https://chpc.utah.edu/presentations/Containers.php)
 
 # Practice / With Your Own Data
-- `grep` can take a file with a list of patterns to search for as well, using the `-f` option. Can you modify the final grep command in the grep section to just get the sequence identifiers in a new file, then use this file to extract the 4 lines for each sequence from the original read 1 file?
+
+- First, if you didn't finish in class, make sure you get the QIIME2 conda virtual env installed.
 - If you have 16S seqs of your own you'd like to analyze, follow along, starting with setting up a project directory like we've done today in your own Projects folder.
-- Find a cool project on SRA with 16S sequences or bulk RNAseq, or find the accessions numbers from a paper with a dataset of interest. Get the accessions numbers from a couple samples to test out with at first. Follow along in the following days as well.
+- Find a cool project on SRA with 16S sequences or bulk RNAseq (both ideally), or find the accessions numbers from a paper with a dataset of interest. Get the accessions numbers from a couple samples to test out with at first. Follow along in the following days as well.
 
 # Links, Cheatsheets and Today's Commands
 - Intro to CHPC lecture by CHPC: [https://www.chpc.utah.edu/presentations/Overview.php](https://www.chpc.utah.edu/presentations/Overview.php)
@@ -548,9 +446,7 @@ This is a pretty simple example to just intro loops early. But, it's good to thi
 - CHPC page on **accounts and partition** options: [https://www.chpc.utah.edu/documentation/guides/index.php#parts](https://www.chpc.utah.edu/documentation/guides/index.php#parts)
 - CHPC page on setting up a conda environment: [https://www.chpc.utah.edu/documentation/software/python-anaconda.php](https://www.chpc.utah.edu/documentation/software/python-anaconda.php)
 - Conda cheatsheet: [https://docs.conda.io/projects/conda/en/latest/_downloads/843d9e0198f2a193a3484886fa28163c/conda-cheatsheet.pdf](https://docs.conda.io/projects/conda/en/latest/_downloads/843d9e0198f2a193a3484886fa28163c/conda-cheatsheet.pdf)
-- One of MANY available **grep** cheatsheets with nice examples: [https://staff.washington.edu/weller/grep.html](https://staff.washington.edu/weller/grep.html)
 - Today's New Commands:
-  - `grep`: **g**lobal **r**egular **e**xpression **p** rint. Format: `grep "<REGEX_PATTERN>" <FILE_INPUT>`
   - `wget`: Pull something from the web. Use the `-o` option to provide a different filename when downloading.
   - `module`: Use with `load`, `unload`, `purge`, `list` and `spider` to manage loaded software.
   - `which`: Show the path of a command/installled program.
