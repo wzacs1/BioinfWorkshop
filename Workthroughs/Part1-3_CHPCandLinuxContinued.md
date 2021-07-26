@@ -25,8 +25,6 @@
 			- [Installing miniconda into your own module on CHPC](#installing-miniconda-into-your-own-module-on-chpc)
 			- [Create a QIIME2 environment and install the software](#create-a-qiime2-environment-and-install-the-software)
 		- [Containers](#containers)
-	- [Introduction to Regular Expressions and `grep`](#introduction-to-regular-expressions-and-grep)
-	- [Intro to Loops. The `for` loop.](#intro-to-loops--the-for-loop)
 - [Practice / With Your Own Data](#practice--with-your-own-data)
 - [Links, Cheatsheets and Today's Commands](#links-cheatsheets-and-todays-commands)
 
@@ -175,7 +173,7 @@ There are 2 main scratch files systems I will mention. These are always changing
 
 There are differences among these that do matter for speed, but we won't get into it. You're unlikely to care much about the read/write access speed differences for quite awhile in your bioinformatics. For now, setup a directory for yourself on lustre. Remember, when I show <VALUE>, this indicates you should enter your own value and NOT the `<` and `>`.
 ```bash
-$ mkdir -p /scratch/general/lustre/<YOUR_UNID>/
+mkdir -p /scratch/general/lustre/<YOUR_UNID>/
 ```
 
 #### Softlinks to scratch space.
@@ -231,7 +229,7 @@ module list
 ```
 You'll at least see the "CHPC" module listed that helps setup your environment. There are many programs already installed including many of the bioinformatics packages you may need. List what is available (scroll with spacebar as you did for `less`):
 ```bash
-$ module avail
+module avail
 ```
 - (D) denotes default versions
 - Use `module spider <QUERY>` to search available modules
@@ -259,8 +257,8 @@ echo $PATH
 
 The `$PATH` variable holds a list of variables (in this case text strings that are directory locations), separated by colons. You have several paths listed there. Now see how module loading adds to your path. Repeat the loading of SRA toolkit, but this time let's also specify the newer (non-default) version:
 ```bash
-$ module load sra-toolkit/2.10.9
-$ echo $PATH
+module load sra-toolkit/2.10.9
+echo $PATH
 ```
 - You should see the path where sra-toolkit resides now at the beginning of your path (/uufs/chpc.utah.edu/sys/installdir/sra-toolkit/2.10.9/bin). This tells your shell to search that directory for executable files, making them available to run.
 - You can see the different exectubable files if you list that directory that has now been loaded into your path:
@@ -355,8 +353,8 @@ export PATH=$PATH:<PASTE_PATH_HERE>
 Save and exit nano with `Ctrl + X` as we did before when adding aliases. This file works similarly and is sourced on initialization of a bash shell.
 Now, to complete it and see if it worked, source the `.bash_profile` file, and use the `which` command to see if your session is aware of the installed program now. It should return the path to it.
 ```bash
-$ source ~/.bash_profile
-$ which seqkit
+source ~/.bash_profile
+which seqkit
 ```
 
 - You should see that seqkit location path in your software directory, which is now in your path. You can leave it here or move seqkit to a `bin` (would need to be created) directory in your home space if you already had `$HOME/bin` in your .bash_profile file. Having this value in that file by default is a new thing that actually broke my initial example because it was already there (it's a very common place to put binaries) so I made a software directory for it instead. We will actually use this directory later so it's fine to keep it.

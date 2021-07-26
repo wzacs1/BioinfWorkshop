@@ -11,27 +11,38 @@
 ```
 
 ### Today's Objectives:
-#### I. Understand CHPC structure, software installation and run options.
-  - Install a binary (`seqkit`) and a python virtual environment (`QIIME2`).
-  - Discuss and setup an installed CHPC module (`fasterqdump`).
 
-#### II. Introduce regular expressions, grep and for loops.
-	- More advanced and useful Linux commands.
+#### I. Introduce regular expressions, grep and for loops.
+- Gaining more command line practice.
+
+#### II. Begin First Bioinformatics Project
+##### A. Build Job Script
+##### B. Pull sequences from the SRA
 
 ### Requirements and Expected Inputs
 
 - CHPC interactive bash shell session.
-- `table.txt` and `read1.fastq` in Directory `~/BioinfWorkshop2021/Part1_Linux`
+- `table.txt` and `read1.fastq` and `read2.fastq` in Directory `~/BioinfWorkshop2021/Part1_Linux`
+  - If needed (you don't have them), `cd` into your `Part1_Linux` directory and copy them from my directory.
+  ```bash
+  cd ~/BioinfWorkshop2021/Part1_Linux/
+  cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part1_Linux/table.txt ./
+  cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part1_Linux/read1.fastq ./
+  cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part1_Linux/read2.fastq ./
+  ```
+
 - QIIME2 installed in conda environment.
   - Begin install now if not: [https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part1-3_CHPCandLinuxContinued.md#conda-virtual-environments---qiime2-install](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part1-3_CHPCandLinuxContinued.md#conda-virtual-environments---qiime2-install)
   	- Obtain second interactive shell session to continue while that installs.
 
 ## Review
 #####
+1. Batch vs. interactive, 2.
 
 ## Introduction to Regular Expressions and `grep`
 
-"Regular expressions" (AKA "regex") are sequences of characters usually used for searching text strings (for example, nucleic acid and amino acid sequences). They are extremely powerful and we could probably spend a full session or two on them but will keep it very simple instead, in line with the objectives of this workshop. I strongly encourage more reading on them outside of class time as you can really make those annoying formatting tasks simple, fast and more consistent. "Cheatsheets" are really helpful. A few patterns are particularly common and helpful to know of.
+"Regular expressions" (AKA "regex") are sequences of characters usually used for searching text strings (for example, nucleic acid and amino acid sequences). They are extremely powerful and we could easily spend a full session or two on them but will keep it very simple instead, in line with the objectives of this workshop.
+  - I strongly encourage more reading on them outside of class time as you can really make those annoying formatting tasks simple, fast and more consistent. "Cheatsheets" are really helpful. A few patterns are particularly common and helpful to know of.
 
 One regular expression pattern many may have encountered already is the commonly used `*` wildcard, which matches anything. This is very frequently used to lists subsets of files with common extensions. Let's use it to list all the .fastq sequence files here, then the different table files we may have created:
 
@@ -41,7 +52,7 @@ ls *fastq
 ls table*
 ```
 
-So, what happened here? This wildcard matched *zero or more* of anything (except linebreaks usually). It's sort of the biggest catch-all wildcard; it will match alphanumeric characters or spaces or symbols. Commands in linux (such as ls) are a bit limited in what they can interpret easily like this because a lot of the special characters in pattern matching are already in use. For example the `.` in regex will normally matches *exactly one* of anything, but used naturally is all over in filename. So, we'll actually use the grep command to illustrate further regex, but first let's see how you can also use ranges to get filenames:
+So, what happened here? This wildcard matched *zero or more* of anything (except line breaks usually). It's sort of the biggest catch-all wildcard; it will match alphanumeric characters or spaces or symbols. Commands in linux (such as `ls`) are a bit limited in what they can interpret easily like this because a lot of the special characters in pattern matching are already in use. For example the `.` in regex will normally matches *exactly one* of anything, but used naturally is all over in filenames. So, we'll actually use the `grep` command to illustrate further regex, but first let's see how you can also use ranges to get filenames:
 
 ```bash
 ls read[1-2].fastq
@@ -49,24 +60,38 @@ ls read[1-2].fastq
 
 Much like we saw in the cut command for specifying fields, you can use ranges (`-`) or a list of characters to match patterns. As it only matches a single character you don't need to separate them by commas (in other words you could also type `ls read[12].fastq` above).
 
-Regular expressions have a lot of commonalities in their intrepretation from one program to the next, but a few differences do exist. `grep` is a function used all over the place, including Unix/Linux and R, and stands for global regular expression print. There are a few different flavors of it, but again we will keep it to basics that are usually common among them. If you encounter unexpected behavior with grep you probably mean to use on of the others, such as `fgrep` or `egrep`. To first show how grep in Linux normally works, look at the sequence identifiers in the read1.fastq file using `head`. You can see they share a lot of the same information which identifies the machine, run, etc for which all sequences in a given run will have the same information. Let's pull all the sequence identifiers just using this common information. To avoid priting all 4k lines we'll pipe the output to `head`.
+- Regular expressions have a lot of commonalities in their interpretation from one program to the next, but a few differences do exist. `grep` is a function used all over the place, including Unix/Linux and R, and stands for global regular expression print.
+  - There are a few different flavors of it, but again we will keep it to basics that are usually common among them. If you encounter unexpected behavior with grep you probably mean to use on of the others, such as `fgrep` or `egrep` (these can alos be accessed with options to the standard `grep`).
+  - The `man` page for grep contains an impressively concise section on regular expressions as well.
 - `grep`: **g**lobal **r**gular **e**xpression **p** rint. Format: `grep "<REGEX_PATTERN>" <FILE_INPUT>`
+
+To first show how grep in Linux normally works, look at the sequence identifiers in the read1.fastq file using `head`. You can see they share a lot of the same information which identifies the machine, run, etc for which all sequences in a given run will have the same information. Let's pull all the sequence identifiers just using this common information. To avoid printing all 4k lines we'll pipe the output to `head`.
+
 
 ```bash
 grep "M00736:301" read1.fastq | head
 ```
 
-We actually didn't use any special characters in our pattern, but this is still pattern matching. Now let's look at one way of using special characters to indicate position of matches. The `^` specifys that the following patter should be at the beginning of a line. It's frequently useful. In this case, these seqeunces are from amplicons, so they should have primer sequences at the beginning of them. The primers are also degenerate, so in some places could have multiple different bases. First, use the primers with degenerate base notation and search for them at the beginning of the sequences:
+We actually didn't use any special characters in our pattern, but this is still pattern matching. Now let's look at one way of using special characters to indicate position of matches. The `^` specifies that the following patter should be at the beginning of a line. It's frequently useful. In this case, these sequences are from amplicons, so they should have primer sequences at the beginning of them.
+- The primers are also degenerate, so in some places could have multiple different bases. First, use the primers with degenerate base notation and search for them at the beginning of the sequences, where they **should** be:
 
 ```bash
 grep "^TGCCTACGGGNBGCASC" read1.fastq
 ```
 
-Nothing there, which is good, but Illumina does report "N"s in sequences. Now, use multiple nucleotide characters to search for those primers, replacing the degenerate bases with their possibilities at that position. Add the `--color` option to highlight the matches. Grep returns the lines that match as with most utilities in Linux:
+Nothing there, which is good, but Illumina does report "N"s in sequences. Now, use multiple nucleotide characters to search for those primers, replacing the degenerate bases with their possibilities at that position.
+- Add the `--color` option to highlight the matches. This **may** not work due to special escape characters used for coloring output on the command line. It's a safety measure. If so, use the `--colors=always` option instead.
 
 ```bash
 grep --color "^TGCCTACGGG[AGCT][CGT]GCA[GC]C" read1.fastq
 ```
+
+Notice that grep **returns the entire lines** that match as with most utilities in Linux. If we want only the matching pattern, use the `-o` option:
+
+```bash
+grep --color -o "^TGCCTACGGG[AGCT][CGT]GCA[GC]C" read1.fastq
+```
+
 
 There's 1,000 sequences in that file. How many have the appropriate primer at their start? Pipe the output to `wc -l` to find out. Then, remove the `^` to see if some of these sequences don't have the primer at the start
 
@@ -74,78 +99,158 @@ There's 1,000 sequences in that file. How many have the appropriate primer at th
 grep --color "^TGCCTACGGG[AGCT][CGT]GCA[GC]C" read1.fastq | wc -l
 grep --color "TGCCTACGGG[AGCT][CGT]GCA[GC]C" read1.fastq | wc -l
 ```
+So, there's a few in there that don't have the primer at the beginning. We don't want these.
 
-So, there's a few in there that don't have the primer at the beginning. Let's just isolate the sequences with the primer at the beginning. But, we would probably want to maintain the sequence format with the identifier on the line before. Grep has options to retrieve lines before (`-B`) and after (`-A`) the match. Add those to our command with the `^` to grab all the sequences with primers at the front as expected and their identifiers.
+### Build a complex grep command
+- Now, let's work up a command line-by-line to get the sequence ID, sequence and quality scores of each sequence with primer at the front and print it to a new file.
 
-One minor annoyance is that grep outputs this `--` in between groups of matches, which we don't want. But it's a good opportunity to illustrate the inverse match and the character escape. Here the `-v` option inverts and takes the non-matching lines, so we can use it to remove those `--`.
+##### **A.** Maintain the fastq sequence format with IDs and quality scores.
 
-- The backslash `\` is used to escape special characters and allow them to be read exactly as that character instead of their special meaning. This is common behaviour for this key.
-
-Work up the command line by line to get the sequence ID and sequence of each sequence with primer at the front and print it to a new file. For a simple check of behavior continue to pipe the output to `wc -l` to see if the output is as expected based on the known 931 sequence matches we determined above.
-
+Grep has options to retrieve lines before (`-B`) and after (`-A`) the match. Add those to our command with the `^` to grab all the sequences with primers at the front as expected and their identifiers.
 
 ```bash
- grep -B 1 -A 2 "^TGCCTACGGG[AGCT][CGT]GCA[GC]C" read1.fastq | wc -l
- grep -B 1 -A 2 "^TGCCTACGGG[AGCT][CGT]GCA[GC]C" read1.fastq | grep -v "\-\-" | wc -l
- grep -B 1 -A 2 "^TGCCTACGGG[AGCT][CGT]GCA[GC]C" read1.fastq | grep -v "^\-\-" | wc -l
- grep -B 1 -A 2 "^TGCCTACGGG[AGCT][CGT]GCA[GC]C" read1.fastq | grep -v "^\-\-" > read1_SeqsWithPrimer.fastq
+grep -B 1 -A 2 "^TGCCTACGGG[AGCT][CGT]GCA[GC]C" read1.fastq
+```
+- Let's check the command is working as expected as we build it up. For a simple check of expected behavior continue to pipe the output to `wc -l` to see if the output is as expected based on the known 931 sequence matches we determined above (931 * 4 entries per line = 3724).
+
+```bash
+grep -B 1 -A 2 "^TGCCTACGGG[AGCT][CGT]GCA[GC]C" read1.fastq | wc -l
+```
+
+That isn't the correct number. There seems to be one less line than we should have. Why? Just run the command without the wc -l and scroll through to see if you can catch the problem. It may be hard to see at first (keep the color option on to highlight).
+
+```bash
+grep -B 1 -A 2 --color=always "^TGCCTACGGG[AGCT][CGT]GCA[GC]C" read1.fastq
+```
+- One minor annoyance is that grep outputs this `--` in between groups of matches, which we don't want. But it's a good opportunity to illustrate the inverse match and the character escape.
+
+##### **B.** Use Inverse matches and escape characters to remove `--`.
+
+- The `-v` option inverts and takes the non-matching lines, so we can use it to remove those `--`.
+  - However, we already learned that the dash `-` is a special character used to denote a range. We need to indicate that we want it to be read exactly as that character instead.
+- The backslash `\` is used to escape special characters and allow them to be read exactly as that character instead of their special meaning. This is common behaviour for this key across languages (though in Windows it is the directory delimiter).
+
+```bash
+grep -B 1 -A 2 "^TGCCTACGGG[AGCT][CGT]GCA[GC]C" read1.fastq | grep -v "\-\-" | wc -l
+```
+Still off by 1. `-` dashes can be in the quality scores, so we should ensure the dashes are at the beginning of the lines as output by grep.
+
+##### **C.** Use anchoring characters `^` and `$` to ensure correct match
+  - The `^` (carrot) is an "anchoring" character. It says only match the following character at the **beginning** of the line only.
+
+```bash
+grep -B 1 -A 2 "^TGCCTACGGG[AGCT][CGT]GCA[GC]C" read1.fastq | grep -v "^\-\-" | wc -l
+```
+This returns the correct number! Nice, but it's not great code because what would happen if we had a quality score line that begins with these two dashes? Let's introduce two more qualifier to your grep command toolkit. We can use the other anchoring character to ensure that there is nothing else between the `--` and the end of the line. Since the quality score is much longer than 2 characters, if we surround the `--` with these 2 anchors only those can be matched.
+  - The `$` only matches the proceeding character at the end of the line.
+
+```bash
+grep -B 1 -A 2 "^TGCCTACGGG[AGCT][CGT]GCA[GC]C" read1.fastq | grep -v "^\-\-$" | wc -l
+```
+We already had the correct number of matches without the `$`. This is just to intro this character and to make better, more reliable code.
+
+##### **D.** (alternative) Use number in curly braces to indicate the exact number of matches. Extended grep.
+As an alternative to the 2 dashes escaped, we could just explicitly say how many matches we want to have of the dashes.
+  - Curly braces `{}` with a number in them specify the exact number of matches of the preceding character.
+  - How to indicate them, changes from basic or extended grep.
+
+- This code **should** then be the same as the last code we input:
+```bash
+grep -B 1 -A 2 "^TGCCTACGGG[AGCT][CGT]GCA[GC]C" read1.fastq | grep -v "^\-{2}$" | wc -l
+```
+Totally wrong number though now. It's not behaving as expected. This is an example where the curly braces (though they have the same intent across flavors of grep) have to be referred differently in basic grep versus extened grep `egrep`. We can actually escape them to give them their special meaning in basic grep, OR we can just use extended grep. All of these are the same (the last 2 calling extended grep command):
+
+```bash
+grep -B 1 -A 2 "^TGCCTACGGG[AGCT][CGT]GCA[GC]C" read1.fastq | grep -v "^\-\{2\}$" | wc -l
+grep -B 1 -A 2 "^TGCCTACGGG[AGCT][CGT]GCA[GC]C" read1.fastq | grep -E -v "^\-{2}$" | wc -l
+grep -B 1 -A 2 "^TGCCTACGGG[AGCT][CGT]GCA[GC]C" read1.fastq | egrep -v "^\-{2}$" | wc -l
+```
+- The first one is kind of hard to read. Also, I wanted to show that adding the slash can sometime make the character special instead of escaping it. There are many of these, which we won't cover but be aware this behaviour exists as well. For example, `\d` can refer to any digit, or `\s` can refer to any whitespace. Regex are very powerful but numerous differences exist in their implementation by different programs.
+
+##### **E.** Finally, pipe the output to a new file.
+We will use the original regular grep command to get remove the `--` and then also remove the `wc -l` which was just included to check the expected output, and then redirect the output to a new file.
+
+```bash
+grep -B 1 -A 2 "^TGCCTACGGG[AGCT][CGT]GCA[GC]C" read1.fastq | grep -v "^\-\-$" > read1_SeqsWithPrimer.fastq
 ```
 
 - Hopefully, this demonstrates both some basic pattern matching, and you can see how you don't necessarily need to have a program installed to do some really simple sequence searching and retrieval very quickly on millions of reads.
--
+
 - There are a ton of tools out there now to do this kind of sequence searching, including some we installed above. They also use pattern matching though. There is still tremendous utility in using grep and pattern matching in, and outside of, sequence searching problems, in particular for searching or executing commands over multiple file names with similar naming structure.
 
 ## Intro to Loops. The `for` loop.
 
 Loops are a family of statements that iterate through items in different manners. This is where we really start to do some programming and see the power of the command line or scripting. Loops are nearly always at the core of coding, and I am introducing them early because they are so helpful to understand. But, this is pretty early for a nascent bioinformatician so don't worry too much if you are struggling with this section. I'm trying to get you some exposure to a lot of different commands and syntax structure.
+
 - We will use just one simple examples here and then frequently expand on them as we move forward. Their syntax varies a bit from language to language, but the basic structure is the same: A condition and something to do for that condition. The main loops you will likely use in bash are:
 
 - `for` loop: Takes in a number of values and do some function **for** each one.
 - `while` loop: **while** the condition is true, do the function.
 
-These loops will be written over mulitple lines. They aren't just a long single entry separated by a `\` like we've seen before, but multiple command-line entries. When entering a `for` loop bash knows to expect more input for the command after you type the for statement, so does not return anything and provides the `>` prompt for more entry. To tell bash you're done with the loop you enter the (you guessed it!) `done` statement.  The basic structure of a for loop is like this (don't enter this):
+These loops will be written over multiple lines. They aren't just a long single entry separated by a `\` like we've seen before, but multiple command-line entries. When entering a `for` loop bash knows to expect more input for the command after you type the for statement, so does not return anything and provides the `>` prompt for more entry. To tell bash you're done with the loop you enter the (you guessed it!) `done` statement.  The basic structure of a for loop is like this (don't enter this):
 
 ```bash
 for VARIABLE_NAME in LIST
-	do
+do
 	SOME_COMMANDS
 done
 ```
 
 A list of variables is simply provided with spaces in between them. Let's just make a list of column numbers in our `table.txt` as variables. As bash iterates through the list it assigns it to a new varialble. Thus, the VARIABLE_NAME part is not defined to start with and so doesn't take a `$` for its initial call, but will require it for the subsequent command. In order to print the names of the first 3 columns in our table let's to do a simple for loop with 2 command we learned earlier.
+
 First make sure you are in the correct directory where these files should be:
 ```bash
 cd ~/BioinfWorkshop2021/Part1_Linux/
 ```
+
+- Let's get the column header for each of the first 3 columns in our table using the cut command to get each column and the head command to only show the first line (the header).
+
+First, open the table with `more` to remind what it looks like and leave it printed to your terminal:
+```bash
+more table.txt
+```
+
+Now the `for` loop. Your terminal will print a `>` after you hit enter after the first line, but I have to leave these out here so that the command can be copied (if needed, try to type it).
 ```bash
 for Column in 1 2 3
-	do
+do
 	cut -f ${Column} table.txt | head -n 1
 done
 ```
 
-If you got stuck or misentered something and bash is still giving you the `>` prompt, you can get out of it with `Ctrl + c`. This is called a signal interrupt and is the best way to kill a command or incorrect entry that has you stuck and needing to get back your command prompt.
+If you got stuck or mistyped something and bash is still giving you the `>` prompt, you can get out of it with `Ctrl + c`. This is called a signal interrupt and is the best way to kill a command or incorrect entry that has you stuck and needing to get back your command prompt (class 1).
 
 Now, let's do something more useful and add in another command we previously learned. Building up functions like this is a good method to make more complicated functions. Let's count unique entries in each column:
 
 ```bash
 for Column in 1 2 3
-	do
+do
 	cut -f ${Column} table.txt | head -n 1
 	cut -f ${Column} table.txt | sort | uniq -c
 done
 ```
 
-Note here that mulitple command line entries can be entered at once if separated by a semi-colon `;`. I do this frequently, but it is much harder to read. For example this is the exact same for loop as above:
+Pretty cool and exemplifies some utility in for loops. One potential problem though is that the header is reprinted and counted in the second command, so it's not just giving the number of each entry in the column as we would probably prefer. I left this as an excercise in previous class to figure out how to remove it. I'll give the answer here. By adding `-n +k` (where k is an integer) to the tail command we can output the end of something starting with the N line.
+
+Note here that multiple command line entries can be entered at once if separated by a semi-colon `;`. I do this frequently, but it is much harder to read. For example use your arrow key to get back to your last for loop command and you will see your history displays it as such:
 
 ```bash
 for Column in 1 2 3; do; cut -f ${Column} table.txt | head -n 1; cut -f ${Column} table.txt | sort | uniq -c; done
 ```
 
-This is a pretty simple example to just intro loops early. But, it's good to think about already how loops can be useful. Generally, we will use them to loop over many files and perform the same function. Or, you could imagine looping through individual sequence entries in a single file. Both of these are behaviours you've already seen in commands like `ls` (listing each file in a directory) or `grep` (searching line by line). Hopefully you can imagine that loops are at the heart of most useful commands.
+Now, we will add the `tail -n +2` to remove those column headers in the second command:
+```bash
+for Column in 1 2 3
+do
+	cut -f ${Column} table.txt | head -n 1
+	cut -f ${Column} table.txt | tail -n +2 | sort | uniq -c
+done
+```
+
+This is a pretty simple example to just intro loops early. But, it's good to think about already how loops can be useful. Generally, we will use them to loop over many files and perform the same function. Or, you could imagine looping through individual sequence entries in a single file. Both of these are behaviors you've already seen in commands like `ls` (listing each file in a directory) or `grep` (searching line by line). Hopefully you can imagine that loops are at the heart of most useful commands.
 
 ## Using Atom Or Other Plain Text Editor to Create a Script
-Really any plain text editor (not a word processor like Word) can be used to facilitate your documentation. I have recently come to like Atom for it's easy add-in/package manager and pleasing format. I really just want make sure we are all using the same editor for simplicity though and Atom is cross-platform. Frankly, I actually prefer BBEdit, but it's only available on Mac currently. Atom has many possible add-in/extension/packages provided by the community which makes it super useful. We'll add a couple packages shortly.
+Really any plain text editor (not a word processor like Word) can be used to facilitate your documentation. I have recently come to like Atom for it's easy add-in/package manager and pleasing format. I really just want make sure we are all using the same editor for simplicity though, and Atom is cross-platform. Frankly, I actually prefer BBEdit, but it's only available on Mac currently. Atom has many possible add-in/extension/packages provided by the community which makes it super useful. We'll add a couple packages shortly.
 - Open Atom and open a folder on your computer (`File -> Open Folder...`). Let's say just your Documents folder at first. This shows again the Project directory centric mentality as the sidebar lists all the files in this folder, and even labels this sidebar "Project"! You can easily open other files in your project directory with a click. They should open in new tabs in Atom by default. Nice, but this is just to illustrate Atom's behavior.
 
 We will return to atom frequently, and use it to build our scripts and to document our code. Keep it open.
@@ -158,7 +263,15 @@ Now that we understand differences between interactive and batch/non-interactive
 
 Let's follow this process, and start with a file to copy the commands to.
 
-### A batch script (using bash) for 16S seq processing
+### Start a batch script (using bash) for 16S seq processing on CHPC
+
+#### Workflow overview for High-Performance Compute Clusters
+- As previously discussed, we don't have a lot of storage space and indeed want to use HPC type clusters more for the 'computing' than storage.
+- Commands in batch scripts on CHPC therefore tend to start with copying large input files to scratch space, and then end with copying smaller results files to save. The computing can just be redone if needed, don't save a bunch of intermediates.
+
+![General Batch Script Process](https://drive.google.com/uc?export=view&id=1OmDxGQeS2wpe6I6B6Dtoin0xxqCvBqGw)
+
+#### Create and Initial Setup of Your Batch Script.
 Remember, "bash" is the shell we are using. So, in order to have these commands interpreted when submitted as we are doing interactively, we need to specify in our script we want "bash" to do the interpreting. This is accomplished in the first line of our batch script.
 1. Open a new file in Atom and save it with the .sh extension to a project folder on your local computer. The .sh extension will let atom know it is a shell script, letting Atom highlight syntax in a relevant manner.
    - Let's call it "PreProcess_16S.sh"
@@ -166,14 +279,14 @@ Remember, "bash" is the shell we are using. So, in order to have these commands 
 ```bash
 #!/bin/bash
 ```
-Notice how this is the same as we use in the `srun` command, but it has the 2 characters `#!`. This is called a **shebang** and directs what program should interpret it. If this was a python script, for example, you would add the path to python after the `#!` for example. We are working in bash for this course.
+Notice the 2 characters `#!`. This is called a **shebang** and directs what program should interpret it. It is NOT required (but without it you would need to specify the program to interpret your script) and only looked for in the very first line of a file. If this was a python script, for example, you would add the path to python after the `#!` for example. We are working in bash for this course.
 
 3. As we build up commands in succession in the following interactive session, copy your commands to this file. This will then serve as your template for your batch job submission. As it's really a bash script, it could be run on any computer with the required programs. We just add SBATCH specific options (aka "directives") to it later to make it work on CHPC with the slurm scheduler.
 4. As you add commands, add comments about what the commands do, expected inputs or anything else you like. To do this, just preface the comment with a `#`. These lines won't be interpreted by the program. Every language has such a comment character. Thankfully, for both bash and R it is the `#`.
 
-Now, for submitted bash scripts you have documentation and the script in the same place. Make useful comments for good documentation! For interactive work (no submitted script) we'll use another method to document what we are doing.
+Now, for submitted bash scripts you have documentation and the script in the same place. Make useful comments for good documentation! For interactive work (no submitted script; often in RStudio for us) we'll use another method to document what we are doing.
 
-You may ask why we use Atom locally and not the built-in text editor Nano. Well, this is actually a good idea. I'm just having you use Atom because it's easier to keep a different window open in another program and may be an easier setup to document while working on command line too.
+You may ask why we use Atom locally and not the built-in text editor Nano. Well, this is actually a fine idea. However, we use Atom because it's easier to keep a different window open in another program and may be an easier setup to document while working on command line too. What you are then doing is beginning to create an "integrated development environment", or an IDE for bash scripting. It's not exactly (an IDE is usually a single piece of software), but you can hopefully start to see what this funny term is because it is exactly what RStudio is to R.
 
 ## Our First Bioinformatics Project
 Now that we've finally learned a whole bunch of Linux commands and created a nice bash shell environment, we will work through a dataset to get practice and reinforce some of these commands, as well as learn a really useful software package for microbiologists (and others really). We will work for the rest of this part on a 16S sequence dataset within QIIME2.
@@ -184,31 +297,29 @@ Of course, this step is technically optional, but it is always a good idea to en
 
 ### Step 1: Setup a Project Directory
 
+Before we begin, we will need a directory to eventually store the job script. Also, I would like to separate this part of the class from the first part.
+- Make a new directory on CHPC for `Part2_Qiime_16S` within your `BioinfWorkshop2021` directory, and place a `code` directory in it (remember the `-p` option will make the full directory tree you specify):
+```bash
+mkdir -p ~/BioinfWorkshop2021/Part2_Qiime_16S/code/
+```
+
 **IMPORTANT: From here until we move to interactive analysis (except where noted), copy all working commands to your "PreProcess_16S.sh" script**. This will help you build a submittable batch job script.
 
-Besides just being a good idea to set out your method, your outline can help you make a good directory structure upfront. It is helpful to avoid moving directories and results around in a project because if you do, you're job scripts or markdowns will no longer work or refer to the proper files. So, starting out with a good directory tree is helpful to keep any directory from beginning too unwieldy and tempting you to move things around.
+Besides just being a good idea to plan out your method, your outline can also help you make a good directory structure upfront. It is helpful to avoid moving directories and results around in a project because if you do, you're job scripts may no longer work or refer to the proper files. So, starting out with a good directory tree is helpful to keep any directory from beginning too unwieldy and tempting you to move things around.
 
-- Create your project directory
-```bash
-$ mkdir -p ~/BioinfWorkshop2020/Part2_Qiime_16S
-```
-- Make a `jobs` directory within that where we will eventually put our job submission script. I like having this separate because I'll save the outputs there as well, which can sometimes build up if a lot of troubleshooting is required.
-```bash
-$ mkdir -p ~/BioinfWorkshop2020/Part2_Qiime_16S/jobs
-```
 - Make a `metadata` directory as well to hold metadata and lists.
 ```bash
-$ mkdir -p ~/BioinfWorkshop2020/Part2_Qiime_16S/metadata
+mkdir -p ~/BioinfWorkshop2021/Part2_Qiime_16S/metadata
 ```
 
 - Make a scratch space and set variables for your scratch and working directory.
 
 It's easy enough to refer to these directories all the time when working interactively, but setting them as variables will make your script a little more readable and easier to use later as templates if you wish. Also, good variable practice and makes it easier for me to refer to them across the class which may have them in different locations. Make sure to add your uNID (or other name) for your scratch directory.
 ```bash
-$ SCRATCH=/scratch/general/lustre/<YOUR_UNID>/Part2_Qiime_16S
-$ mkdir -p ${SCRATCH}
-$ WRKDIR=~/BioinfWorkshop2020/Part2_Qiime_16S
-$ ls ${WRKDIR}
+SCRATCH=/scratch/general/lustre/<YOUR_UNID>/Part2_Qiime_16S
+mkdir -p ${SCRATCH}
+WRKDIR=~/BioinfWorkshop2021/Part2_Qiime_16S
+ls ${WRKDIR}
 ```
 It's worth noting that it is generally safer to instead use absolute paths when setting directories and file names as variables. The `~` in this case should work, but as you start passing these to different environments (virtual env) it may lead to unexpected behavior. Similarly if relative to your current directory, the variable won't behave as expected as you move around. Also, we built this up interactively so made the directories first. This will work so long as we are exact in our typing, but if you flip it around and instead define the directory as a variable first, then `mkdir` it, this will ensure that directory exists and commands that need it will run, even if you mistyped.
 
@@ -229,10 +340,10 @@ First, let's find a SRA deposited dataset of interest. The SRA has a neat new in
 2. Click the switch above the selected entries that says "Selected". The links under download are updated in the "Selected" row to only download data for those 2 entries.
 3. Click on the "Metadata" button under "Downloads" on the "Selected" row. This downloads the metadata locally. Save the file as it's named, but add `_test` to give the filename `SraRunTable_test.txt`.
 4. Do the same for "Accessions List", to give the filename `SRR_Acc_List_test.txt`.
-5. Upload both these files from your local computer to the metadata directory we created (`~/BioinfWorkshop2020/Part2_Qiime_16S/metadata/`). Use OnDemand's file explorer (you can just drag them into that folder) if possible.
+5. Upload both these files from your local computer to the metadata directory we created (`~/BioinfWorkshop2021/Part2_Qiime_16S/metadata/`). Use OnDemand's file explorer (you can just drag them into that folder) if possible.
    -  If you are having trouble uploading them you can just copy them from my workshop space on CHPC:
    ```bash
-   $ cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part2_Qiime_16S/metadata/*_test.txt ~/BioinfWorkshop2020/Part2_Qiime_16S/metadata/
+   $ cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/metadata/*_test.txt ~/BioinfWorkshop2021/Part2_Qiime_16S/metadata/
    ```
 
 Now we can use these with SRA toolkit and qiime to pull the sequences from the SRA and analyze them in qiime with the associated metadata.
@@ -241,15 +352,15 @@ Now we can use these with SRA toolkit and qiime to pull the sequences from the S
 Now, we are ready to pull our sequences. We will use the newer command from SRA-toolkit called `fasterq-dump`, which really simplifies the whole process. I encourage you to look at the help file for it to examine these options. We are setting the output and temporary locations to $SCRATCH because they can be big files. Here, it's only 2 smaller ones, but we are trying to build up a submittable script with bigger and more files. Here, you could just enter the command twice for each accession number we pulled, but let's use it as an opportunity to practice the for loops. Note, this is actually better suited for a while loop to read form the file, but currently I leave that for an exercise to understand while loops. Move to SCRATCH first since the files pulled can be large.
 
 ```bash
-$ module load sra-toolkit
-$ cd ${SCRATCH}
+module load sra-toolkit
+cd ${SCRATCH}
 ```
 
 ```bash
-$ for accession in SRR10501757 SRR10501758
-$ do
-$ fasterq-dump ${accession} -e 2 -t ${SCRATCH} -O ${SCRATCH} -p
-$ done
+for accession in SRR10501757 SRR10501758
+do
+  fasterq-dump ${accession} -e 2 -t ${SCRATCH} -O ${SCRATCH} -p
+done
 ```
 
 ### Step 3: Import sequences into a QIIME2 artifact
@@ -257,9 +368,9 @@ $ done
 First, we will need to load our modules on CHPC and load QIIME2. This is repeated here from above just so that you make sure to work it into your bash script "PreProcess_16S.sh". You should have deactivated your QIIME2 envrironment after the install. If not, it may interfere with the fasterq-dump command. Reactivate the environment and make sure to add the commands to your bash script.
 
 ```bash
-$ module use ~/MyModules
-$ module load miniconda3/latest
-$ source activate qiime2-2020.2
+module use ~/MyModules
+module load miniconda3/latest
+source activate qiime2-2020.2
 ```
 
 #### (optional) Loading the CHPC Qiime2 module
@@ -278,7 +389,7 @@ Qiime2 has a few different ways to import files and I'll leave it up to you to l
 - First, create the header line for the file. It is a comma-separated value file. Save the output to metadata folder where manifest file should probably reside
 
 ```bash
-$ echo "sample-id,absolute-filepath,direction" > ${WRKDIR}/metadata/manifest.txt
+echo "sample-id,absolute-filepath,direction" > ${WRKDIR}/metadata/manifest.txt
 ```
 
 Now that you see the columns expected, let's create an entry for each file using a for loop. It's a good idea to use `echo` command without directing the output to your file at fist, in order to check the output is as expected first. In class we will build this up piece-by-piece.
@@ -286,17 +397,17 @@ Now that you see the columns expected, let's create an entry for each file using
 The `%` after a variable name, when inside `{}`, says to strip the characters after the `%` from the variable. Theirs a bunch of really useful little tricks  like this for string variables in Unix. Here's a great page explaining a few simple ones with sequence file usage examples: [http://www.metagenomics.wiki/tools/ubuntu-linux/shell-loop/string-split](http://www.metagenomics.wiki/tools/ubuntu-linux/shell-loop/string-split).
 
 ```bash
-$ for read1 in *_1.fastq
-$ do echo "${read1%_1.fastq},${SCRATCH}/${read1},forward" >> ${WRKDIR}/metadata/manifest.txt
-$ done
+for read1 in *_1.fastq
+  do echo "${read1%_1.fastq},${SCRATCH}/${read1},forward" >> ${WRKDIR}/metadata/manifest.txt
+done
 ```
 
 Now, do the same for read2:
 
 ```bash
-$ for read2 in *_2.fastq
-$ do echo "${read2%_2.fastq},${SCRATCH}/${read2},reverse" >> ${WRKDIR}/metadata/manifest.txt
-$ done
+for read2 in *_2.fastq
+  do echo "${read2%_2.fastq},${SCRATCH}/${read2},reverse" >> ${WRKDIR}/metadata/manifest.txt
+done
 ```
 
 We'll save it for an exercise to figure out how you could do this all in one loop instead of 2.
@@ -308,24 +419,24 @@ Now, use the qiime command to import these sequences. This first import tends to
 - First, bring up the qiime help file (don't put this in your bash script): `qiime tools import --help`. Also, note your autocomplete should work with qiime options, but only if they are all entered on the same line. This is very handy, but know that it is a feature qiime2 devs added in, so don't expect it for other software necessarily.
 
 ```bash
-$ cd ${SCRATCH}
+cd ${SCRATCH}
 ```
 ```bash
-$ qiime tools import \
+qiime tools import \
  --type 'SampleData[PairedEndSequencesWithQuality]' \
- --input-path ~/BioinfWorkshop2020/Part2_Qiime_16S/metadata/manifest.txt \
+ --input-path ~/BioinfWorkshop2021/Part2_Qiime_16S/metadata/manifest.txt \
  --output-path seqs_import.qza \
  --input-format PairedEndFastqManifestPhred33
 ```
 
 After that is done, you now have a QIIME2 artifact file that contains your sequences. We'll keep your sequences for now, but don't forget to clean up if needed later.
 
-If you couldn't get the manifest file going (or just don't want to wait for import to finish), copy this output from my group directory to your scratch space so we can move forward (**Don't put this in your bash script**): `cp  /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part2_Qiime_16S/seqs_import.qza ${SCRATCH}`
+If you couldn't get the manifest file going (or just don't want to wait for import to finish), copy this output from my group directory to your scratch space so we can move forward (**Don't put this in your bash script**): `cp  /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/seqs_import.qza ${SCRATCH}`
 
 Let's create our first visualizer in QIIME2. We will use the `demux` plugin for this:
 
 ```bash
-$ qiime demux summarize \
+qiime demux summarize \
   --i-data seqs_import.qza \
   --o-visualization seqs_import.qzv
 ```
@@ -333,7 +444,7 @@ $ qiime demux summarize \
 Copy it back to your working directory. These visualizers are generally pretty small and create a graph of various outputs, so are worth keeping anyways, but also you probably don't have scratchspace through OnDemand file explorer or mounted.
 
 ```bash
-$ cp seqs_import.qzv ${WRKDIR}/seqs_import.qzv
+cp seqs_import.qzv ${WRKDIR}/seqs_import.qzv
 ```
 
 Now, download that file from CHPC to your local computer, then drag and drop it to qiime's visualziation page: [https://view.qiime2.org/](https://view.qiime2.org/). Click on the tab for "Interactive Quality Plot" near the top left of page. You can see these are paired-end 150 nucleotide sequences. The quality is quite nice for 16S sequences. You always see a pretty good drop in quality near ends, especially of read 2. Let's do some trimming.
@@ -346,7 +457,7 @@ Because these are amplicon sequences they have primers at the front. As these we
 I've provided the primer sequences in the command here, but notice that these are part of the metadata that we downloaded from the SRA. Note the `-p-cores` option sets the number of processes to start. We only have 2, but on a full job submission on a single node you can run many more and go much faster. It's a good idea to put a variable for this for each script so you don't need to change it for each command.
 
 ```bash
-$ qiime cutadapt trim-paired \
+qiime cutadapt trim-paired \
   --i-demultiplexed-sequences seqs_import.qza \
   --o-trimmed-sequences seqs_trim.qza \
   --p-front-f GTGCCAGCMGCCGCGGTAA \
@@ -357,7 +468,7 @@ $ qiime cutadapt trim-paired \
 Now, we will join the paired end sequences with vsearch. Note, If using DADA2 you wouldn't join the sequences first. `vsearch` again, is a separate program that QIIME2 is wrapping. I like to keep the verbose option here because it prints useful data to screen that is helpful for troubleshooting and explains why my reads may or may not be merging. I tend to take a somewhat permissive approach at this stage with the options and let the deblur denoising do the main "denoising"/filtering. Most options from this section are specific to your sequencing strategy and sequencing run quality.
 
 ```bash
-$ qiime vsearch join-pairs \
+qiime vsearch join-pairs \
   --i-demultiplexed-seqs seqs_trim.qza \
   --o-joined-sequences seqs_trim_join.qza \
   --p-minmergelen 150 \
@@ -369,12 +480,12 @@ $ qiime vsearch join-pairs \
 
 Let's again also get a visualizer and summarize the output:
 ```bash
-$ qiime demux summarize \
+qiime demux summarize \
   --i-data seqs_trim_join.qza \
   --o-visualization seqs_trim_join.qzv
 ```
 ```bash
-$ cp seqs_trim_join.qzv ${WRKDIR}/
+cp seqs_trim_join.qzv ${WRKDIR}/
 ```
 
 Notice in the visualizer how some of the sequences drop out after 214 (mouse over the graph). So, of the 10k seqs randomly subsampled for this graph, some are not that long. This is usually the safest place to trim your sequences in the next section, but partly just represents real variation which you may not want to remove. We actually only loose 2 sequences out to 250, so trimming that full 36 bases would be a waste of a lot of sequence info. However, also note that at the very end there are only 1 or 2 seqs that are longer. This part always requires inspection for your sequencing project to determine the appropriate trim length to pass to denoising algorithm. With DADA2 the process is a bit different, but still requires inspection of sequence quality plots at one point, so generally 16S seq preprocessing should not be fully automated.
@@ -386,7 +497,7 @@ After inspecting the sequence plot, let's move forward with denoising in Deblur.
 This is the core of what I call the "sequence preprocessing" part, and it can take quite a bit of time, so let's get it going while we talk about it. You really just need to pass the `p-trim-length` option you determined from inspecting the joined sequence quality plots.
 
 ```bash
-$ qiime deblur denoise-16S \
+qiime deblur denoise-16S \
   --i-demultiplexed-seqs seqs_trim_join.qza \
   --p-trim-length 250 \
   --p-jobs-to-start 2 \
@@ -406,7 +517,7 @@ You may have heard the term OTU before for microbiota work. Until recently we wo
 To boil this change down simply, OTUs lost a lot of information because they are clustered at some % similarity (usually 97%) and a representative sequence is then chosen. There are a number of different ways to create clusters though, and then a number of different ways to choose the representative (most abundant? best quality? most representative?). None of the methods is "perfect" in representing the underlying species. By their very nature clusters are an approximation. However, the justification for a long time was (at least) 2-fold. First, 97% similarity of 16S was sort of agreed on as a decent approximation of species across the bacterial phylogeny; 99% as strains 93-ish% as genus and so on with increasingly worse approximations. Remember **phylogeny IS NOT EQUAL TO taxonomy**. Unfortunately, it's closer to reality in some places of the phylogeny and much worse in others, and this varies depending on the 16S region you are looking at. Second, the justification was that these sequences were necessarily very noisy, so clustering them could get rid of some of this, preventing a single nucleotide difference from being a different species, and at the same time reducing size of the table and compute time. Eventually people started arguing that we could get strain-level resolution if we clustered at 99% instead. This is just "kicking the can down the road" because it still ignores the real biology of life and the fact that the difference between a species or strains (or any other taxa difference really) are artificial constructs anyways. But, it does beg the question, why throw away potentially discriminating information? And that's exactly why ASVs have become the general method of choice now. We acknowledge deficiencies in taxonomic definitions and retain as much information as possible, while still employing sequence-level denoising. This is all still a bit of an oversimplification, again due to the nature of this as a workshop not a course, but it's worth noting and thinking about because it is critical that you understand that **the features in this table DO NOT REPRESENT SPECIES**. They never did with OTUs either, but now we just call these "feature tables" instead of OTU tables to further solidify and also because they could hold any type of "feature". Many microbial ecologists especially had thought about this for a long time before this, but here's a nice paper discussing the change if you are interested in further reading: [ESVs should replace OTUs](https://www.nature.com/articles/ismej2017119)
 
 ```bash
-$ qiime feature-table summarize \
+qiime feature-table summarize \
  --i-table table.qza \
  --o-visualization table.qzv
 ```
@@ -414,7 +525,7 @@ $ qiime feature-table summarize \
 And make handy representative sequence file that will send each sequence into BLAST as well. This is simple but I think pretty neat and could be VERY useful for other projects outside of 16S. :
 
 ```bash
-$ qiime feature-table tabulate-seqs \
+qiime feature-table tabulate-seqs \
 --i-data repseq.qza \
 --o-visualization repseq.qzv
 ```
@@ -422,8 +533,8 @@ $ qiime feature-table tabulate-seqs \
 Make sure to copy the table and representative sequences to your working directory when done. These are key outputs:
 
 ```bash
-$ cp table.qz[av] ${WRKDIR}
-$ cp repseq.qz[av] ${WRKDIR}
+cp table.qz[av] ${WRKDIR}
+cp repseq.qz[av] ${WRKDIR}
 ```
 Did you see what I did with the table files there? Remember regex?
 
@@ -433,7 +544,7 @@ Again, QIIME2 is not the actual code building the phylogeny here. It is, instead
 We build phylogenies in 16S seq analysis because they allow a unique type of measure of diversity between communities ("beta diversity"). The measure that has really taken over is called UniFrac, and measures the unique fraction of phylogeny between communities. So, instead of each species (ASV really) contributing equally to a measure of difference between samples, different species found in different samples that are more distantly related will contribute more. A sort of weighting by relatedness. It's a cool concept that stems from the notion that things more closely related are more likely to share similar functions. As a pretty extreme example, consider *E. coli* and *Salmonella enterica*. Sure, they are fairly different functionally in the world of immunology and pathology, but not nearly as differnt as are *E. coli* and the Archaeal species *Methanobrevibacter smithii*. So, the contribution to the differences between 2 communities (beta-diversity) should probably be greater in the case where one community has *M. smithii* and one does not, than when one community has *S. enterica* and one does not. Since we need to know these relationships we need to calculate a phylogenetic tree. At least currently, this is still usually done *de novo* each time.
 
 ```bash
-$ qiime phylogeny align-to-tree-mafft-fasttree \
+qiime phylogeny align-to-tree-mafft-fasttree \
 --i-sequences repseq.qza \
 --o-alignment aligned_repseq.qza \
 --o-masked-alignment masked_aligned_repseq.qza \
@@ -444,7 +555,7 @@ $ qiime phylogeny align-to-tree-mafft-fasttree \
 I just create a rooted and unrooted tree upfront because some functions require a rooted tree, but really we don't have a known outgroup in our phylogeny so the rooted trees have an arbitrary root.
 
 ```bash
-$ cp tree*.qza ${WRKDIR}
+cp tree*.qza ${WRKDIR}
 ```
 
 ### Step 7: Call Taxonomies
@@ -453,12 +564,12 @@ The last step before we start to use more community-level analytical tools to ex
 For taxonomic calls in QIIME2 we need a trained classifier. This can be done in just a couple steps, but can take awhile and only needs be done once. It's also been shown classifiers work better if the input is trimmed to the region of the query (what you amplified). I've already done this for you and provide the classsifier. Just make a variable reference to it for simplicity. This one is trained on the Greengenes taxonomy and reference set.
 
 ```bash
-$ CLASSIFIER=/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part2_Qiime_16S/gg_13_8_515F806R_classifier_sk0.22.1.qza
+CLASSIFIER=/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/gg_13_8_515F806R_classifier_sk0.22.1.qza
 ```
 Now, run the classifier. Here we will use sci kit learn. Interestingly, because machine learning is so concerned with the problem of classification, classifiers are getting better and better and really this doesn't matter much that these are biological sequences. Computer scientists have been working hard on classifiers for quite awhile now and continue to do so. Biologists are benefiting in many ways including improved taxonomic classification of sequences.
 
 ```bash
-$ qiime feature-classifier classify-sklearn \
+qiime feature-classifier classify-sklearn \
 --i-classifier ${CLASSIFIER} \
 --i-reads repseq.qza \
 --o-classification taxonomy.qza \
@@ -473,8 +584,8 @@ cp taxonomy.qza ${SCRATCH}
 While scratch space is cleaned regular, it's still not limitless and the entire campus+ is using it with massive datasets. Make sure you clean it when you are done. I'd also note, usually it makes more sense to actually copy all your files you want to return at this step. I only did it after each step because I don't know how fare we will get in class.
 
 ```bash
-$ rm *.fastq
-$ rm *.qz[av]
+rm *.fastq
+rm *.qz[av]
 ```
 
 **IMPORTANT: Stop copying commands to your bash script, unless noted**
@@ -486,15 +597,16 @@ At this stage, you should have a full pipeline that takes input seqs and outputs
 I'm going to provide you with a `while` loop for this and leave it to as an exercise to understand it further. Normally, you are going to have your own sequences in a single directory already. You'll also need the full accessions number list so copy this over and place in your metadata folder:
 
 ```bash
-$ cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part2_Qiime_16S/metadata/SRR_Acc_List_full.txt ~/BioinfWorkshop2020/Part2_Qiime_16S/metadata/
+cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/metadata/SRR_Acc_List_full.txt ~/BioinfWorkshop2021/Part2_Qiime_16S/metadata/
 ```
 
 Replace the for loop with this while loop. I leave it for exercise to look up and understand while loops, but they are similar to for loops. Instead of giving a discrete list, `while` operates while a condition is true. This condition could just be the presence of items in a list, as here.
 
 ```bash
 while read line
-do fasterq-dump ${line} -e 2 -t ${SCRATCH}
-done < ~/BioinfWorkshop2020/Part2_Qiime_16S/metadata/SRR_Acc_List_full.txt
+do
+  fasterq-dump ${line} -e 2 -t ${SCRATCH}
+done < ~/BioinfWorkshop2021/Part2_Qiime_16S/metadata/SRR_Acc_List_full.txt
 ```
 
 #### Add sbatch/slurm directives
@@ -508,7 +620,7 @@ Normally, any line that starts with a # in a bash script would be a comment, but
 #SBATCH -n 2
 #SBATCH -J Q2_PreProcess16S
 #SBATCH --time=10:00:00
-#SBATCH -o <YOUR_ABSOLUTE_PATH_TO_HOME_HERE>/BioinfWorkshop2020/Part2_Qiime_16S/jobs/PreProcess_16S.outerror
+#SBATCH -o <YOUR_ABSOLUTE_PATH_TO_HOME_HERE>/BioinfWorkshop2021/Part2_Qiime_16S/jobs/PreProcess_16S.outerror
 
 # your commands begin here..
 ```
@@ -523,16 +635,16 @@ Unless you go back and change everytime you referred to number of processes (or 
 **Note to Windows Users**: If you used a text editor in Windows to make your sbatch script, you probably have Windows line endings and need to make sure you have Unix line endings before submitting to slurm scheduler. In Atom, at the bottom-right there is a "CRLF". If you click this you can then choose to change to "LF" then save the file and it wil have Unix line-endings. In BBEdit, there is a similar functionality in one of the small arrow dropdowns along the top or bottom (though I forget exactly where it is).
 
 ```bash
-$ sbatch ~/BioinfWorkshop2020/Part2_Qiime_16S/jobs/PreProcess_16S.sh
+sbatch ~/BioinfWorkshop2021/Part2_Qiime_16S/jobs/PreProcess_16S.sh
 ```
 
 If that submits properly (your sbatch directives are correct) you will receive a number telling you your job number. Use the `squeue` command to see the status.
 
 ```bash
-$ squeue -u <YOUR_uNID>
+squeue -u <YOUR_uNID>
 ```
 
-- If your job fails, open the `~/BioinfWorkshop2020/Part2_Qiime_16S/jobs/PreProcess_16S.outerror` to figure out why, fix issue and repeat.
+- If your job fails, open the `~/BioinfWorkshop2021/Part2_Qiime_16S/jobs/PreProcess_16S.outerror` to figure out why, fix issue and repeat.
   - **DEBUGGING**: Start with first error!!
 
 
@@ -553,3 +665,4 @@ $ squeue -u <YOUR_uNID>
 		(optional) <MORE_COMMANDS>
 	done
 	```
+  - The backslash `\` is used to "escape" special characters and read them as-is.
