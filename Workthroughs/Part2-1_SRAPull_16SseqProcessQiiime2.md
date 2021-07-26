@@ -1,7 +1,53 @@
+<!-- TOC -->
+
+- [Main](#main)
+  - [Setup and Background](#setup-and-background)
+    - [Today's Objectives:](#todays-objectives)
+    - [Requirements and Expected Inputs](#requirements-and-expected-inputs)
+  - [Review](#review)
+  - [Introduction to Regular Expressions and `grep`](#introduction-to-regular-expressions-and-grep)
+    - [Build a complex grep command](#build-a-complex-grep-command)
+      - [**A.** Maintain the fastq sequence format with IDs and quality scores.](#a-maintain-the-fastq-sequence-format-with-ids-and-quality-scores)
+      - [**B.** Use Inverse matches and escape characters to remove `--`.](#b-use-inverse-matches-and-escape-characters-to-remove---)
+      - [**C.** Use anchoring characters `^` and `$` to ensure correct match](#c-use-anchoring-characters-^-and--to-ensure-correct-match)
+      - [**D.** (alternative) Use number in curly braces to indicate the exact number of matches. Extended grep.](#d-alternative-use-number-in-curly-braces-to-indicate-the-exact-number-of-matches-extended-grep)
+      - [**E.** Finally, pipe the output to a new file.](#e-finally-pipe-the-output-to-a-new-file)
+  - [Intro to Loops. The `for` loop.](#intro-to-loops-the-for-loop)
+  - [Putting it all together. How to build a processing pipeline in a batch script.](#putting-it-all-together-how-to-build-a-processing-pipeline-in-a-batch-script)
+    - [Intro to Using Atom (Or Other Plain Text Editor)](#intro-to-using-atom-or-other-plain-text-editor)
+    - [Workflow overview for High-Performance Compute Clusters](#workflow-overview-for-high-performance-compute-clusters)
+    - [Create and Initial Setup of Your Batch Script.](#create-and-initial-setup-of-your-batch-script)
+  - [Our First Bioinformatics Project](#our-first-bioinformatics-project)
+    - [Step 0: Draw out your methods and project goals](#step-0-draw-out-your-methods-and-project-goals)
+    - [Step 1: Setup a Project Directory and Variables Required.](#step-1-setup-a-project-directory-and-variables-required)
+      - [(aside) Find / show project on SRA](#aside-find--show-project-on-sra)
+    - [Step 2: Pull sequences with SRA](#step-2-pull-sequences-with-sra)
+    - [Step 3: Import sequences into a QIIME2 artifact](#step-3-import-sequences-into-a-qiime2-artifact)
+      - [(optional) Loading the CHPC QIIME2 module](#optional-loading-the-chpc-qiime2-module)
+    - [Step 3: Import sequences into a QIIME2 artifact (continued)](#step-3-import-sequences-into-a-qiime2-artifact-continued)
+      - [Manifest File Option 1: Make it on the fly with Linux commands](#manifest-file-option-1-make-it-on-the-fly-with-linux-commands)
+      - [Manifest File Option 2: Copy and change to your scratch filespace](#manifest-file-option-2-copy-and-change-to-your-scratch-filespace)
+    - [Step 3: Import sequences into a QIIME2 artifact (continued 2)](#step-3-import-sequences-into-a-qiime2-artifact-continued-2)
+    - [Step 4: Trim primers and join sequences](#step-4-trim-primers-and-join-sequences)
+    - [Step 5: Denoise with Deblur and create a table](#step-5-denoise-with-deblur-and-create-a-table)
+      - [OTUs versus ASVs/ESVs](#otus-versus-asvsesvs)
+    - [Step 6: Build phylogeny](#step-6-build-phylogeny)
+    - [Step 7: Call Taxonomies](#step-7-call-taxonomies)
+    - [Step 8: Cleanup!](#step-8-cleanup)
+    - [Final Step: Finish the batch script and submit.](#final-step-finish-the-batch-script-and-submit)
+      - [Change the sra-toolkit command to pull all the 16S sequences.](#change-the-sra-toolkit-command-to-pull-all-the-16s-sequences)
+      - [Add SBATCH/Slurm directives](#add-sbatchslurm-directives)
+        - [Note on partition, processes and time](#note-on-partition-processes-and-time)
+  - [Submit Your Batch Script on CHPC](#submit-your-batch-script-on-chpc)
+- [Practice / With Your Own Data](#practice--with-your-own-data)
+- [Links, Cheatsheets and Today's Commands](#links-cheatsheets-and-todays-commands)
+
+<!-- /TOC -->
+
 # Main
 
 ## Setup and Background
-- Obtain an interactive shell session on
+- Obtain an interactive shell session:
 1. Log in to CHPC via your preferred method (OnDemand, ssh from Terminal, or FastX Web server).
 2. Obtain an interactive session with 2 processors.
 ```bash
@@ -37,7 +83,6 @@
 
 ## Review
 #####
-1. Batch vs. interactive, 2.
 
 ## Introduction to Regular Expressions and `grep`
 
@@ -249,44 +294,55 @@ done
 
 This is a pretty simple example to just intro loops early. But, it's good to think about already how loops can be useful. Generally, we will use them to loop over many files and perform the same function. Or, you could imagine looping through individual sequence entries in a single file. Both of these are behaviors you've already seen in commands like `ls` (listing each file in a directory) or `grep` (searching line by line). Hopefully you can imagine that loops are at the heart of most useful commands.
 
-## Using Atom Or Other Plain Text Editor to Create a Script
-Really any plain text editor (not a word processor like Word) can be used to facilitate your documentation. I have recently come to like Atom for it's easy add-in/package manager and pleasing format. I really just want make sure we are all using the same editor for simplicity though, and Atom is cross-platform. Frankly, I actually prefer BBEdit, but it's only available on Mac currently. Atom has many possible add-in/extension/packages provided by the community which makes it super useful. We'll add a couple packages shortly.
-- Open Atom and open a folder on your computer (`File -> Open Folder...`). Let's say just your Documents folder at first. This shows again the Project directory centric mentality as the sidebar lists all the files in this folder, and even labels this sidebar "Project"! You can easily open other files in your project directory with a click. They should open in new tabs in Atom by default. Nice, but this is just to illustrate Atom's behavior.
-
-We will return to atom frequently, and use it to build our scripts and to document our code. Keep it open.
-
-### Putting it all together. How to build a simple pipeline
+## Putting it all together. How to build a processing pipeline in a batch script.
 Now that we understand differences between interactive and batch/non-interactive jobs and have learned more about CHPC, you may start to see how you might put together a pipeline that could be run through batch submission. A common process goes like this:
 1. Work with a small subset of data in an interactive session to test out commands.
 2. As you get each command working, copy the working commands to a new file in the order they will run. This will be your batch script.
-3. Add the required SBATCH directives and submit the job to the slurm scheduler on CHPC.
+3. Add the required SBATCH directives and submit the job to the Slurm scheduler on CHPC.
 
 Let's follow this process, and start with a file to copy the commands to.
 
-### Start a batch script (using bash) for 16S seq processing on CHPC
+### Intro to Using Atom (Or Other Plain Text Editor)
 
-#### Workflow overview for High-Performance Compute Clusters
+- Really, any plain text editor (not a word processor, like Microsoft Word) can be used to facilitate your documentation. I have recently come to like Atom for it's easy add-in/package manager and pleasing format. I really just want make sure we are all using the same editor for simplicity though, and Atom is cross-platform. Frankly, I actually prefer BBEdit, but it's only available on Mac currently. Atom has many possible add-in/extension/packages provided by the community which makes it super useful, and plays really well with GitHub.
+
+- Open Atom and open a folder on your computer (`File -> Open Folder...`). Let's say just your Documents folder at first (any folder with files will do). This shows again the Project directory centric mentality as the sidebar lists all the files in this folder, and even labels this sidebar "Project"! You can easily open other files in your project directory with a click. They should open in new tabs in Atom by default. Nice, but this is just to illustrate Atom's behavior which is a little different than you are probably used to with word processors.
+
+- Open a new file in Atom.
+  1. **"File -> New File"**.
+  2. Create a local directory/folder wherever you like on your computer. I'll call mine "BioinfWorkshop" but it's not critical at this point, you just need to be able to find it later.
+  2. Save your newly created file to this new directory location with the name: **PreProcess_16S.sh**. (**File -> Save As...**). The extension (`.sh`) is important here.
+
+- I'll just intro a couple features or idiosyncrasies of Atom. Overall, I mainly leave it to you to familiarize yourself with software like this.
+  1. Notice in the bottom right hand corner of Atom when you have your "PreProcess_16S.sh" file open, there is a text box that says "Shell Script". You can click on it and it will bring up a window to change the type of script Atom thinks this is. You don't need to change it, it is indeed a shell script (with bash as our shell). Auto-detect is the default behaviour and it detected it based on the file extension we gave the file (`.sh`).
+     - This does nothing to the script. It just helps Atom highlight words based on what they might be (commands, strings, variables) and really, really makes it easier to see and write your scripts.
+  2. Also in bottom right hand corner there is some text, either "**LF**" or "**CRLF**". These are line-endings. If you are on a Mac it will likely already say "LF", if on a Windows then "CRLF". You can just click to change between them. Linux uses "LF" line endings so we want everything to be "LF".
+     - Side note, on CHPC there is a command `dos2unix` which can be used to convert a Windows created file to Unix line endings quickly.
+  3. Settings. This is fairly unique and odd in Atom. I just want to point out where it is and won't get into why. Go to "**Packages -> Settings View -> Open**".
+  4. Packages. Packages are add-ons that actually make Atom (or other lightweight editors) useful. Within the Settings View page you can see the tab on the left to "Install" packages. You can search there and also see and change those already installed on the "Packages" tab there. This may require admin privileges.
+
+### Workflow overview for High-Performance Compute Clusters
 - As previously discussed, we don't have a lot of storage space and indeed want to use HPC type clusters more for the 'computing' than storage.
 - Commands in batch scripts on CHPC therefore tend to start with copying large input files to scratch space, and then end with copying smaller results files to save. The computing can just be redone if needed, don't save a bunch of intermediates.
 
 ![General Batch Script Process](https://drive.google.com/uc?export=view&id=1OmDxGQeS2wpe6I6B6Dtoin0xxqCvBqGw)
 
-#### Create and Initial Setup of Your Batch Script.
+### Create and Initial Setup of Your Batch Script.
 Remember, "bash" is the shell we are using. So, in order to have these commands interpreted when submitted as we are doing interactively, we need to specify in our script we want "bash" to do the interpreting. This is accomplished in the first line of our batch script.
-1. Open a new file in Atom and save it with the .sh extension to a project folder on your local computer. The .sh extension will let atom know it is a shell script, letting Atom highlight syntax in a relevant manner.
-   - Let's call it "PreProcess_16S.sh"
+1. Open (if not already) your file "PreProcess_16S.sh" in Atom.
 2. Add this text to the very first line to indicate it should be read by bash
 ```bash
 #!/bin/bash
 ```
 Notice the 2 characters `#!`. This is called a **shebang** and directs what program should interpret it. It is NOT required (but without it you would need to specify the program to interpret your script) and only looked for in the very first line of a file. If this was a python script, for example, you would add the path to python after the `#!` for example. We are working in bash for this course.
 
-3. As we build up commands in succession in the following interactive session, copy your commands to this file. This will then serve as your template for your batch job submission. As it's really a bash script, it could be run on any computer with the required programs. We just add SBATCH specific options (aka "directives") to it later to make it work on CHPC with the slurm scheduler.
+3. As we build up commands in succession in the following interactive sessions, copy your commands to this file. This will then serve as your template for your batch job submission. As it's really a bash script, it could be run on any computer with the required programs. We just add SBATCH specific options (aka "directives") to it later to make it work on CHPC with the slurm scheduler.
+
 4. As you add commands, add comments about what the commands do, expected inputs or anything else you like. To do this, just preface the comment with a `#`. These lines won't be interpreted by the program. Every language has such a comment character. Thankfully, for both bash and R it is the `#`.
 
 Now, for submitted bash scripts you have documentation and the script in the same place. Make useful comments for good documentation! For interactive work (no submitted script; often in RStudio for us) we'll use another method to document what we are doing.
 
-You may ask why we use Atom locally and not the built-in text editor Nano. Well, this is actually a fine idea. However, we use Atom because it's easier to keep a different window open in another program and may be an easier setup to document while working on command line too. What you are then doing is beginning to create an "integrated development environment", or an IDE for bash scripting. It's not exactly (an IDE is usually a single piece of software), but you can hopefully start to see what this funny term is because it is exactly what RStudio is to R.
+You may ask why we use Atom locally and not the built-in text editor Nano. Well, this is actually a fine idea. However, we use Atom because it's easier to keep a different window open in another program and may be an easier setup to document while working on command line too. What you are then doing is beginning to create an "integrated development environment", or an **IDE** for bash scripting. It's not exactly (an IDE is usually a single piece of software), but you can hopefully start to see what this funny term is because it is exactly what RStudio is to R.
 
 ## Our First Bioinformatics Project
 Now that we've finally learned a whole bunch of Linux commands and created a nice bash shell environment, we will work through a dataset to get practice and reinforce some of these commands, as well as learn a really useful software package for microbiologists (and others really). We will work for the rest of this part on a 16S sequence dataset within QIIME2.
@@ -295,38 +351,44 @@ Now that we've finally learned a whole bunch of Linux commands and created a nic
 Of course, this step is technically optional, but it is always a good idea to ensure you know where you are heading, what tools you are using and are focusing your analysis. There's so many bioinformatics tools and methods to analyze sequences that you can really just find yourself floundering around creating potentially neat outputs that just aren't moving towards your project goal. Since this may be your first 16S microbial community analysis it is also helpful for me to show what we are trying to accomplish:
 ![Sequence_Preprocess_Overview](https://drive.google.com/uc?export=view&id=1S5wm0LPxPYwbLyuDWnoBktmA6fSH0e9e)
 
-### Step 1: Setup a Project Directory
+### Step 1: Setup a Project Directory and Variables Required.
+
+Besides just being a good idea to plan out your method, your outline can also help you make a good directory structure upfront. It is important to avoid moving directories around in a project because, if you do, you're job scripts may no longer work or refer to the proper files. So, starting out with a good directory tree is helpful to keep any directory from beginning too unwieldy and tempting you to move things around.
 
 Before we begin, we will need a directory to eventually store the job script. Also, I would like to separate this part of the class from the first part.
 - Make a new directory on CHPC for `Part2_Qiime_16S` within your `BioinfWorkshop2021` directory, and place a `code` directory in it (remember the `-p` option will make the full directory tree you specify):
 ```bash
 mkdir -p ~/BioinfWorkshop2021/Part2_Qiime_16S/code/
 ```
-
-**IMPORTANT: From here until we move to interactive analysis (except where noted), copy all working commands to your "PreProcess_16S.sh" script**. This will help you build a submittable batch job script.
-
-Besides just being a good idea to plan out your method, your outline can also help you make a good directory structure upfront. It is helpful to avoid moving directories and results around in a project because if you do, you're job scripts may no longer work or refer to the proper files. So, starting out with a good directory tree is helpful to keep any directory from beginning too unwieldy and tempting you to move things around.
-
 - Make a `metadata` directory as well to hold metadata and lists.
 ```bash
 mkdir -p ~/BioinfWorkshop2021/Part2_Qiime_16S/metadata
 ```
 
+**IMPORTANT: From here until we move to interactive analysis (except where noted), copy all working commands to your "PreProcess_16S.sh" script**. This will help you build a submittable batch job script.
+
 - Make a scratch space and set variables for your scratch and working directory.
 
-It's easy enough to refer to these directories all the time when working interactively, but setting them as variables will make your script a little more readable and easier to use later as templates if you wish. Also, good variable practice and makes it easier for me to refer to them across the class which may have them in different locations. Make sure to add your uNID (or other name) for your scratch directory.
+It's easy enough to refer to these directories all the time when working interactively, but setting them as variables will make your script a little more readable and easier to re-use later as templates if you wish. Also, good variable practice and makes it easier for me to refer to them across the class which may have them in different locations. Make sure to add your uNID (or other name) for your scratch directory. (remember lines starting with `#` are a comment):
+
 ```bash
+# Set the scratch directory
 SCRATCH=/scratch/general/lustre/<YOUR_UNID>/Part2_Qiime_16S
 mkdir -p ${SCRATCH}
-WRKDIR=~/BioinfWorkshop2021/Part2_Qiime_16S
+# Set the working directory variable and create a subdirectory to store your results in:
+WRKDIR=~/BioinfWorkshop2021/Part2_Qiime_16S/results
+mkdir -p ${WRKDIR}/results
+# Listing the contents is not required, but helps show what is already there in the output if, for example, we need to rerun.
 ls ${WRKDIR}
 ```
-It's worth noting that it is generally safer to instead use absolute paths when setting directories and file names as variables. The `~` in this case should work, but as you start passing these to different environments (virtual env) it may lead to unexpected behavior. Similarly if relative to your current directory, the variable won't behave as expected as you move around. Also, we built this up interactively so made the directories first. This will work so long as we are exact in our typing, but if you flip it around and instead define the directory as a variable first, then `mkdir` it, this will ensure that directory exists and commands that need it will run, even if you mistyped.
+It's worth noting that it is generally safer to instead use absolute paths when setting directories and file names as variables. The `~` in this case should work, but as you start passing these to different environments (virtual env) it may lead to unexpected behavior. Similarly if relative to your current directory, the variable won't behave as expected as you move around. I use it here because your path will be slightly different, but I encourage you to use absolute paths in your SBATCH directives.
+
+- Also, we built this up interactively so made the directories first. This will work so long as we are exact in our typing, but if you flip it around and instead define the directory as a variable first, then `mkdir` it, this will ensure that directory exists and commands that need it will run, even if you mistyped. Thus, you will see I usually couple any directory as a variable with a command to make that directory as well. `mkdir` doesn't overwrite the directory if it's already there.
 
 #### (aside) Find / show project on SRA
-I'll go through this because I'm often asked how to pull SRA datasets. It's incredibly easy now, but the sra-toolkit has some historical terminology that makes it seem more confusing than it is. I'm not trying to spend time showing you how to browse some website's interface, as this type of thing is always changing, but still will walk through this to show *one way* of pulling an SRA-hosted dataset and make sure we are all on the same page.
+I'll go through this quick because I'm often asked how to pull SRA datasets. It's incredibly easy now, but the sra-toolkit has some historical terminology that makes it seem more confusing than it is. I'm not trying to spend time showing you how to browse some website's interface, as this type of thing is always changing, but still will walk through this to show *one way* of pulling an SRA-hosted dataset and make sure we are all on the same page. **(NOTE: I probably will skip this part in class in the interest of time)**
 
-NCBI, The National Center for Biotechnology Information, includes everything from PubMed to chemical and sequence repositories. Many of you have probably already published a paper in which the authors were required to deposit sequences at the NCBI or some other public repository. This was likely also accomplished with the SRA-toolkit, though you still may never need to do it yourself. It used to be a bit of catch-all for raw sequecnes, and was more difficult to make use of anything there becasue of a frequent lack of associated metadata. Now, sequences are required to be associated with BioSamples and BioProjects, making them much more easy to both search and tie metadata to in common formats across NCBI. The structure looks something like this:
+NCBI, The National Center for Biotechnology Information, includes everything from PubMed to chemical and sequence repositories. Many of you have probably already published a paper in which the authors were required to deposit sequences at the NCBI or some other public repository. This was likely also accomplished with the SRA-toolkit, though you still may never need to do it yourself. It used to be a bit of catch-all for raw sequecnes, and was more difficult to make use of anything there because of a frequent lack of associated metadata. Now, sequences are required to be associated with BioSamples and BioProjects, making them much more easy to both search and tie metadata to in common formats across NCBI. The structure looks something like this:
 
 - **BioProject** (sometimes an "umbrella" BioProject can encopass >1 BioProjects):
   - *BioSample 1* [with sample metatdata]
@@ -335,24 +397,26 @@ NCBI, The National Center for Biotechnology Information, includes everything fro
     - SRA deposited Illumina NovaSeq RNAseq reads (for example)
     - SRA deposited Illumina MiSeq 16S reads (for example)
 
-First, let's find a SRA deposited dataset of interest. The SRA has a neat new interface that makes this much easier, called run selector. I've already found one that is a neat example for this class because it has paired 16S and RNAseq. It is BioProject [PRJNA434133](https://www.ncbi.nlm.nih.gov//bioproject/PRJNA434133). If you follow this link and click on the number next to "SRA experiments" it takes you to the list of all SRA entries for the project. Click on the link at the top that says "Send results to Run selector". You can see this is a more useful interface allowing clearer filter of samples. For now we just want to get a couple of this project's 16S sequence files to develop our pipeline. You can explore the website to understand it's use better, but since this isn't the point of this course I'll leave this up to you and just provide the accessions list for you later when we get to the whole dataset. To show the example though follow this procedure to get the accessions and their associated data.
+First, let's find a SRA deposited dataset of interest. The SRA has a neat new interface that makes this much easier, called run selector. I've already found one that is a neat example for this class because it has paired 16S and RNAseq. It is BioProject [PRJNA434133](https://www.ncbi.nlm.nih.gov//bioproject/PRJNA434133). If you follow this link and click on the number next to "SRA experiments" it takes you to the list of all SRA entries for the project. Click on the link at the top that says "Send results to Run selector". You can see this is a more useful interface allowing clearer filter of samples. For now we just want to get a couple of this project's 16S sequence files to develop our pipeline. You can explore the website to understand it's use better, but since this isn't the point of this course I'll leave this up to you and just provide the accessions list for you later when we get to the whole dataset. To show the example though, follow this procedure to get the accessions and their associated data.
 1. Click the checkbox next to 2 entries with the assay type "AMPLICON". These are 16S amplicons for this project. Doesn't matter which 2 as these are tests, but number 2 and 3 are a bit smaller than the first so I grabbed those.
 2. Click the switch above the selected entries that says "Selected". The links under download are updated in the "Selected" row to only download data for those 2 entries.
 3. Click on the "Metadata" button under "Downloads" on the "Selected" row. This downloads the metadata locally. Save the file as it's named, but add `_test` to give the filename `SraRunTable_test.txt`.
 4. Do the same for "Accessions List", to give the filename `SRR_Acc_List_test.txt`.
 5. Upload both these files from your local computer to the metadata directory we created (`~/BioinfWorkshop2021/Part2_Qiime_16S/metadata/`). Use OnDemand's file explorer (you can just drag them into that folder) if possible.
-   -  If you are having trouble uploading them you can just copy them from my workshop space on CHPC:
+   -  If you are having trouble uploading them you can just copy them from my workshop space on CHPC (do not include these tester files copy in your batch script):
    ```bash
-   $ cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/metadata/*_test.txt ~/BioinfWorkshop2021/Part2_Qiime_16S/metadata/
+   cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/metadata/*_test.txt ~/BioinfWorkshop2021/Part2_Qiime_16S/metadata/
    ```
 
-Now we can use these with SRA toolkit and qiime to pull the sequences from the SRA and analyze them in qiime with the associated metadata.
+Now we can use these with SRA toolkit to pull the sequences from the SRA and analyze them in QIIME2 with the associated metadata.
 
 ### Step 2: Pull sequences with SRA
-Now, we are ready to pull our sequences. We will use the newer command from SRA-toolkit called `fasterq-dump`, which really simplifies the whole process. I encourage you to look at the help file for it to examine these options. We are setting the output and temporary locations to $SCRATCH because they can be big files. Here, it's only 2 smaller ones, but we are trying to build up a submittable script with bigger and more files. Here, you could just enter the command twice for each accession number we pulled, but let's use it as an opportunity to practice the for loops. Note, this is actually better suited for a while loop to read form the file, but currently I leave that for an exercise to understand while loops. Move to SCRATCH first since the files pulled can be large.
+- Now, we are ready to pull our sequences. We will use the newer command from SRA-toolkit called `fasterq-dump`, which really simplifies the whole process. I encourage you to look at the help file for it to examine these options.
+
+- We are setting the output and temporary locations to $SCRATCH because they can be big files. Here, it's only 2 smaller ones, but we are trying to build up a submittable script with bigger and more files. Here, you could just enter the command twice for each accession number we pulled, but let's use it as an opportunity to practice the for loops. Note, this is actually better suited for a while loop to read form the file, but currently I leave that for an exercise to understand while loops. Move to SCRATCH first as well.
 
 ```bash
-module load sra-toolkit
+module load sra-toolkit/2.10.9
 cd ${SCRATCH}
 ```
 
@@ -363,18 +427,27 @@ do
 done
 ```
 
+- This command (above) is the same as just typing the same command twice with the accessions. **Don't add this to your batch script** (though it actually can't hurt, it will just overwrite them and pull them again:
+  ```bash
+  fasterq-dump SRR10501757 -e 2 -t ${SCRATCH} -O ${SCRATCH} -p
+  fasterq-dump SRR10501758 -e 2 -t ${SCRATCH} -O ${SCRATCH} -p
+  ```
+  - There's really nothing wrong with this and if you feel more comfortable at this stage listing each as a separate command, go ahead and do so. It just makes for longer more difficult to read code, and also makes it less reusable, but it does have the advantage of listing all the accessions in the same file as the command.
+
+- This test dataset is used to build our pipeline and check our commands before submitting the "full" dataset which has many more accessions. We will read these from a file and I'll give you the command with a `while` loop to do so. I'd love to cover while loops, but not enough time in class so I've left it for an exercise for you outside of class.
+
 ### Step 3: Import sequences into a QIIME2 artifact
 
-First, we will need to load our modules on CHPC and load QIIME2. This is repeated here from above just so that you make sure to work it into your bash script "PreProcess_16S.sh". You should have deactivated your QIIME2 envrironment after the install. If not, it may interfere with the fasterq-dump command. Reactivate the environment and make sure to add the commands to your bash script.
+First, we will need to load our modules on CHPC and load QIIME2. You should have deactivated (`conda deactivate`) your QIIME2 environment after the install. If not, it may interfere with the fasterq-dump command. Reactivate the environment and make sure to add the commands to your bash script.
 
 ```bash
 module use ~/MyModules
 module load miniconda3/latest
-source activate qiime2-2020.2
+source activate qiime2-2021.4
 ```
 
-#### (optional) Loading the CHPC Qiime2 module
-**! If you could not install your miniconda virtual environment and/or qiime2-2020.2 you can follow along with the older module installed on CHPC. It's a little odd right now b/c the message is misleading when tryig to load it (I've contacted CHPC), but it should load properly like this. Only use the following command if you are using this older module!**
+#### (optional) Loading the CHPC QIIME2 module
+**! If you could not install your miniconda virtual environment and/or qiime2-2020.2 you can follow along with the older module installed on CHPC. It's a little odd right now b/c the message is misleading when trying to load it (I've contacted CHPC), but it should load properly like this. Only use the following command if you are using this older module!**
 ```bash
 module load anaconda3/2019.03
 source activate qiime2-2019.4
@@ -382,23 +455,27 @@ source activate qiime2-2019.4
 
 ### Step 3: Import sequences into a QIIME2 artifact (continued)
 
-Qiime2 uses it's own unique format of files, which they call **artifacts**. They are a pain to just view files because they are binaries, but they are really a neat solution to the build up and difficulty of file tracking. They allow so-called "provenance" tracking, or tracking the origin and functions performed on each file. This is really great for documentation, and really pushed me to loving QIIME. They even provide a reference for the functions you used! Cool. We'll look at this later but, for now, just know you can't operate directly on raw fastq files in QIIME and instead need to import them as QIIME2 artifact files. Make sure your QIIME2 environment loaded. If not, or you had unresolvable problem with the install, use CHPC's module instead (`module load qiime2/2019.1`).
+Qiime2 uses it's own unique format of files, which they call **artifacts**. They are a pain to just view files because they are binaries, but they are really a neat solution to the build up and difficulty of file tracking. They allow so-called "provenance" tracking, or tracking the origin and functions performed on each file. This is really great for documentation, and really pushed me to loving QIIME. They even provide a reference for the functions you used! Cool. We'll look at this later but, for now, just know you can't operate directly on raw fastq files in QIIME and instead need to import them as QIIME2 artifact files. Make sure your QIIME2 environment loaded. If not, or you had unresolvable problem with the install, use CHPC's module instead (above).
 
-Qiime2 has a few different ways to import files and I'll leave it up to you to look at their documentation. We will use the "**manifest**" file format, which takes an input manifest file that lists the location and orientation of the input fastq files. It's pretty easy to create in a spreadsheet program, along with commands you have learned like `pwd` to get file paths. Let's practice some of our newfound linux skills to make this table "on the fly".
+- Qiime2 has a few different ways to import files and I'll leave it up to you to look at their documentation. We will use the "**manifest**" file format, which takes an input manifest file that lists the location and orientation of the input fastq files. It's pretty easy to create in a spreadsheet program, along with commands you have learned like `pwd` to get file paths.
 
-- First, create the header line for the file. It is a comma-separated value file. Save the output to metadata folder where manifest file should probably reside
+- I'll show a method to make this "on the fly" in order to practice our Linux skilla dn introduce a new way to use variables. Many find this too much too soon, so feel free to just use the second option below if you'd like to just copy the manifest file I already made.
+
+#### Manifest File Option 1: Make it on the fly with Linux commands
+- First, create the header line for the file. It is a comma-separated value file. Save the output to metadata folder where manifest file should probably reside.
 
 ```bash
-echo "sample-id,absolute-filepath,direction" > ${WRKDIR}/metadata/manifest.txt
+echo "sample-id,absolute-filepath,direction" > ${WRKDIR}/metadata/manifest_test.txt
 ```
 
-Now that you see the columns expected, let's create an entry for each file using a for loop. It's a good idea to use `echo` command without directing the output to your file at fist, in order to check the output is as expected first. In class we will build this up piece-by-piece.
+- Now that you see the columns expected, let's create an entry for each file using a for loop. It's a good idea to use `echo` command without directing the output to your file at first, in order to check the output is as expected first. In class we will build this up piece-by-piece.
 
-The `%` after a variable name, when inside `{}`, says to strip the characters after the `%` from the variable. Theirs a bunch of really useful little tricks  like this for string variables in Unix. Here's a great page explaining a few simple ones with sequence file usage examples: [http://www.metagenomics.wiki/tools/ubuntu-linux/shell-loop/string-split](http://www.metagenomics.wiki/tools/ubuntu-linux/shell-loop/string-split).
+- The `%` after a variable name, when inside `{}`, says to strip the characters after the `%` from the variable. There's a bunch of really useful little tricks like this for string variables in Unix. Here's a great page explaining a few simple ones with sequence file usage examples: [http://www.metagenomics.wiki/tools/ubuntu-linux/shell-loop/string-split](http://www.metagenomics.wiki/tools/ubuntu-linux/shell-loop/string-split).
 
 ```bash
 for read1 in *_1.fastq
-  do echo "${read1%_1.fastq},${SCRATCH}/${read1},forward" >> ${WRKDIR}/metadata/manifest.txt
+do
+  echo "${read1%_1.fastq},${SCRATCH}/${read1},forward" >> ${WRKDIR}/metadata/manifest_test.txt
 done
 ```
 
@@ -406,17 +483,43 @@ Now, do the same for read2:
 
 ```bash
 for read2 in *_2.fastq
-  do echo "${read2%_2.fastq},${SCRATCH}/${read2},reverse" >> ${WRKDIR}/metadata/manifest.txt
+do
+  echo "${read2%_2.fastq},${SCRATCH}/${read2},reverse" >> ${WRKDIR}/metadata/manifest_test.txt
 done
 ```
 
-We'll save it for an exercise to figure out how you could do this all in one loop instead of 2.
+- We'll save it for an exercise to figure out how you could do this all in one loop instead of 2.
 
-Checkout the manifest file format with head, or import it into excel to see how you just made a nice table. If you couldn't get this working, it's okay, you can copy the output of this section from me later so that you can move forward with the rest of the course. I can't give you a manifest file though because the filepaths refer to your specific filespace.
+- Let's set this manifest file as a variable now as well. This isn't critical, but if you had made the manifest file before the script it would be a good idea. Mostly, it just makes it easier here for me when people have used option 1 or 2. Notice you could use $WRKDIR or the full path to WRKDIR because we placed this command after WRKDIR was set.
 
-Now, use the qiime command to import these sequences. This first import tends to go pretty slowly unfortunately. Also, remember I'm going to use the backslash `\` when writing long commands so they can be shown over multiple lines, but the last line won't have it so that the final `enter` finalizes the command. First move to your SCRATCH space just to make the file listing shorter for me.
+```bash
+MANIFEST=${WRKDIR}/metadata/manifest_test.txt
+```
 
-- First, bring up the qiime help file (don't put this in your bash script): `qiime tools import --help`. Also, note your autocomplete should work with qiime options, but only if they are all entered on the same line. This is very handy, but know that it is a feature qiime2 devs added in, so don't expect it for other software necessarily.
+- Checkout the manifest file format with `head` or `less`, or import it into excel to see how you just made a nice table. If you couldn't get this working, it's okay, you can copy the output of this section from me later so that you can move forward with the rest of the course, or use option 2 below. I can't give you a manifest file though because the filepaths refer to your specific filespace in scratch.
+
+#### Manifest File Option 2: Copy and change to your scratch filespace
+
+- You could easily just make this in excel or google sheets in practice as well, but if you couldn't make the above manifest file with my for loop commands just copy mine from shared space, then change your replace with your uNID to refer to your scratch space where the SRA downloaded files are.
+
+1. Copy the template:
+**Don't add this to your batch script**
+```bash
+cp /uufs/chpc.utah.edu/common/home/u0210816/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/metadata/manifest_test.txt ~/BioinfWorkshop2021/Part2_Qiime_16S/metadata/manifest_test.txt
+```
+
+2. Download the file using the OnDemand file explorer, or if you mounted CHPC, just find it in Finder.
+3. Using a *plain text editor*, such as Atom, open the file and use find and replace (Command + F in Atom) to find and replace "uNID" with your uNID. Assuming you have your scratch space on `/scratch/general/lustre` already, we are just referring to your scratch space.
+4. Save the file and reupload it to your `~/BioinfWorkshop2021/Part2_Qiime_16S/metadata/` directory with the same name.
+5. Set the MANIFEST varialbe to refer to this file (do add this to your batch script):
+```bash
+MANIFEST=${WRKDIR}/metadata/manifest_test.txt
+```
+
+### Step 3: Import sequences into a QIIME2 artifact (continued 2)
+Now, use the `qiime` and `import` commands to import these sequences. This first import tends to go pretty slowly unfortunately. Also, remember I'm going to use the backslash `\` when writing long commands so they can be shown over multiple lines, but the last line won't have it so that the final `enter` finalizes the command. First move to your SCRATCH space just to make the file listing shorter for me.
+
+- First, bring up the qiime help file (**don't put this in your batch script**): `qiime tools import --help`. Also, note your autocomplete should work with qiime options, but only if they are all entered on the same line. This is very handy, but know that it is a feature qiime2 devs added in, so don't expect it for other software necessarily.
 
 ```bash
 cd ${SCRATCH}
@@ -424,7 +527,7 @@ cd ${SCRATCH}
 ```bash
 qiime tools import \
  --type 'SampleData[PairedEndSequencesWithQuality]' \
- --input-path ~/BioinfWorkshop2021/Part2_Qiime_16S/metadata/manifest.txt \
+ --input-path ${MANIFEST} \
  --output-path seqs_import.qza \
  --input-format PairedEndFastqManifestPhred33
 ```
@@ -441,10 +544,10 @@ qiime demux summarize \
   --o-visualization seqs_import.qzv
 ```
 
-Copy it back to your working directory. These visualizers are generally pretty small and create a graph of various outputs, so are worth keeping anyways, but also you probably don't have scratchspace through OnDemand file explorer or mounted.
+- Copy it back to your working directory. These visualizers are generally pretty small and create a graph of various outputs, so are worth keeping anyways, but also you probably don't have scratch space through OnDemand file explorer or mounted.
 
 ```bash
-cp seqs_import.qzv ${WRKDIR}/seqs_import.qzv
+cp seqs_import.qzv ${WRKDIR}/results/seqs_import.qzv
 ```
 
 Now, download that file from CHPC to your local computer, then drag and drop it to qiime's visualziation page: [https://view.qiime2.org/](https://view.qiime2.org/). Click on the tab for "Interactive Quality Plot" near the top left of page. You can see these are paired-end 150 nucleotide sequences. The quality is quite nice for 16S sequences. You always see a pretty good drop in quality near ends, especially of read 2. Let's do some trimming.
@@ -485,7 +588,7 @@ qiime demux summarize \
   --o-visualization seqs_trim_join.qzv
 ```
 ```bash
-cp seqs_trim_join.qzv ${WRKDIR}/
+cp seqs_trim_join.qzv ${WRKDIR}/results/
 ```
 
 Notice in the visualizer how some of the sequences drop out after 214 (mouse over the graph). So, of the 10k seqs randomly subsampled for this graph, some are not that long. This is usually the safest place to trim your sequences in the next section, but partly just represents real variation which you may not want to remove. We actually only loose 2 sequences out to 250, so trimming that full 36 bases would be a waste of a lot of sequence info. However, also note that at the very end there are only 1 or 2 seqs that are longer. This part always requires inspection for your sequencing project to determine the appropriate trim length to pass to denoising algorithm. With DADA2 the process is a bit different, but still requires inspection of sequence quality plots at one point, so generally 16S seq preprocessing should not be fully automated.
@@ -533,8 +636,8 @@ qiime feature-table tabulate-seqs \
 Make sure to copy the table and representative sequences to your working directory when done. These are key outputs:
 
 ```bash
-cp table.qz[av] ${WRKDIR}
-cp repseq.qz[av] ${WRKDIR}
+cp table.qz[av] ${WRKDIR}/results/
+cp repseq.qz[av] ${WRKDIR}/results/
 ```
 Did you see what I did with the table files there? Remember regex?
 
@@ -555,7 +658,7 @@ qiime phylogeny align-to-tree-mafft-fasttree \
 I just create a rooted and unrooted tree upfront because some functions require a rooted tree, but really we don't have a known outgroup in our phylogeny so the rooted trees have an arbitrary root.
 
 ```bash
-cp tree*.qza ${WRKDIR}
+cp tree*.qza ${WRKDIR}/results/
 ```
 
 ### Step 7: Call Taxonomies
@@ -577,7 +680,7 @@ qiime feature-classifier classify-sklearn \
 ```
 
 ```bash
-cp taxonomy.qza ${SCRATCH}
+cp taxonomy.qza ${WRKDIR}/results/
 ```
 
 ### Step 8: Cleanup!
@@ -600,27 +703,32 @@ I'm going to provide you with a `while` loop for this and leave it to as an exer
 cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/metadata/SRR_Acc_List_full.txt ~/BioinfWorkshop2021/Part2_Qiime_16S/metadata/
 ```
 
+Make sure to change the value of the $ACCESSIONS variable to refer to this "full" accessions list instead of the "test" list of 2 that we used while testing our commands.
+```bash
+ACCESSIONS=~/BioinfWorkshop2021/Part2_Qiime_16S/metadata/SRR_Acc_List_full.txt
+```
+
 Replace the for loop with this while loop. I leave it for exercise to look up and understand while loops, but they are similar to for loops. Instead of giving a discrete list, `while` operates while a condition is true. This condition could just be the presence of items in a list, as here.
 
 ```bash
 while read line
 do
   fasterq-dump ${line} -e 2 -t ${SCRATCH}
-done < ~/BioinfWorkshop2021/Part2_Qiime_16S/metadata/SRR_Acc_List_full.txt
+done < ${ACCESSIONS}
 ```
 
-#### Add sbatch/slurm directives
+#### Add SBATCH/Slurm directives
 Normally, any line that starts with a # in a bash script would be a comment, but for slurm processed bash scripts if the lines at the beginning start with a `#SBATCH` (sbatch directives) they will be interpreted by slurm to provide the options required to schedule your job. These are the same options (plus some) that you used for `srun`! One of the other cool bits about OnDemand is that they have some of these templates for you already and you should check them out. For this first sbatch submission, I'll just provide those you should add and tell you about them. Add the following lines at the beginning of your script, after the first line containing the shebang (shown for clarity, don't enter it twice)().
 
 ```bash
 #!/bin/bash
 
-#SBATCH --account=MIB2020
+#SBATCH --account=mib2020
 #SBATCH --partition=lonepeak-shared
 #SBATCH -n 2
 #SBATCH -J Q2_PreProcess16S
 #SBATCH --time=10:00:00
-#SBATCH -o <YOUR_ABSOLUTE_PATH_TO_HOME_HERE>/BioinfWorkshop2021/Part2_Qiime_16S/jobs/PreProcess_16S.outerror
+#SBATCH -o <YOUR_ABSOLUTE_PATH_TO_HOME_HERE>/BioinfWorkshop2021/Part2_Qiime_16S/code/PreProcess_16S.outerror
 
 # your commands begin here..
 ```
@@ -628,14 +736,14 @@ Normally, any line that starts with a # in a bash script would be a comment, but
 - `-J` is the jobname that it will be under when you view the queue.
 
 ##### Note on partition, processes and time
-Unless you go back and change everytime you referred to number of processes (or better yet use a variable for it), there's no sense in taking more than 2 processes. Be nice! Your job will take awhile with only 2 processes, but will finish. Feel free to change this though if you like. Notice we did not include the `--reservation` option this time. Our reservation is only Tues-Thurs. In regards to time, standard limit on CHPC is 72 hours, but there are ways to run longer. If you request really long you may wait longer in queue though. CHPC has a formula that determines your job priority. Generally, the less resources/time you request the sooner you will run.
+Unless you go back and change everytime you referred to number of processes (or better yet use a variable for it), there's no sense in taking more than 2 processes. Be nice! Your job will take awhile with only 2 processes, but will finish. Feel free to change this though if you like. In regards to time, standard limit on CHPC is 72 hours, but there are ways to run longer. If you request really long you may wait longer in queue though. CHPC has a formula that determines your job priority. Generally, the less resources/time you request the sooner you will run.
 
 ## Submit Your Batch Script on CHPC
 
-**Note to Windows Users**: If you used a text editor in Windows to make your sbatch script, you probably have Windows line endings and need to make sure you have Unix line endings before submitting to slurm scheduler. In Atom, at the bottom-right there is a "CRLF". If you click this you can then choose to change to "LF" then save the file and it wil have Unix line-endings. In BBEdit, there is a similar functionality in one of the small arrow dropdowns along the top or bottom (though I forget exactly where it is).
+**Note to Windows Users**: If you used a text editor in Windows to make your sbatch script, you probably have Windows line endings and need to make sure you have Unix line endings before submitting to slurm scheduler. In Atom, at the bottom-right there is a "CRLF". If you click this you can then choose to change to "LF" then save the file and it will have Unix line-endings. In BBEdit, there is a similar functionality in one of the small arrow dropdowns along the top or bottom (though I forget exactly where it is).
 
 ```bash
-sbatch ~/BioinfWorkshop2021/Part2_Qiime_16S/jobs/PreProcess_16S.sh
+sbatch ~/BioinfWorkshop2021/Part2_Qiime_16S/code/PreProcess_16S.sh
 ```
 
 If that submits properly (your sbatch directives are correct) you will receive a number telling you your job number. Use the `squeue` command to see the status.
@@ -644,7 +752,7 @@ If that submits properly (your sbatch directives are correct) you will receive a
 squeue -u <YOUR_uNID>
 ```
 
-- If your job fails, open the `~/BioinfWorkshop2021/Part2_Qiime_16S/jobs/PreProcess_16S.outerror` to figure out why, fix issue and repeat.
+- If your job fails, open the `~/BioinfWorkshop2021/Part2_Qiime_16S/code/PreProcess_16S.outerror` to figure out why, fix issue and repeat.
   - **DEBUGGING**: Start with first error!!
 
 

@@ -11,6 +11,7 @@ Here I provide detailed workthroughs from each workshop day as individual pages.
 - [Part 1-1: Introduction to Linux Command-Line Interface](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part1-1_IntroToLinuxCLI.md)
 - [Part 1-2: Introduction to Linux Command-Line and Common Commands](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part1-2_IntroToLinux.md)
 - [Part 1-3: Linux, CHPC and Software Install Methods](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part1-3_CHPCandLinuxContinued.md)
+- [Part 2-1: Regex and For Loops, Begin 16S Seq Pull and Processing](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part2-1_SRAPull_16SseqProcessQiime2.md)
 
 Tentative Schedule:
 
@@ -18,9 +19,9 @@ Day #  |  Date  | Title  | Topics | VideoLink
 ------ | ------ | ------ | ----- | -----
 1 | July 14 | Part 1-1: Intro to Linux | Basic commands, moving around CLI |  [Class 1 ]( https://www.youtube.com/playlist?list=PL_Pe_9PaIEBN-MDiucIgx4sR1NLbneDDE)
 2 | July 17 | Part 1-2: Intro to Linux | More commands, moving around CLI, file manipulation | [Class 2](https://www.youtube.com/watch?v=8xwjIng3LrE&list=PL_Pe_9PaIEBN-MDiucIgx4sR1NLbneDDE&index=2)
-3 | July 21 | Part 1-3: Linux, CHPC and Software Install Methods |  CHPC, paths, install methods, QIIME2 conda install, grep | [Class 3](https://www.youtube.com/playlist?list=PL_Pe_9PaIEBN-MDiucIgx4sR1NLbneDDE)
+3 | July 21 | Part 1-3: Linux, CHPC and Software Install Methods |  CHPC, paths, install methods, QIIME2 conda install | [Class 3](https://www.youtube.com/playlist?list=PL_Pe_9PaIEBN-MDiucIgx4sR1NLbneDDE)
 4 | July 23 | NO CLASSS |
-5 | July 28 | Part 2-1: 16S seq process with QIIME2 | sra-toolkit, QIIME2 install, 16S seq processing | [Class 4]
+5 | July 28 | Part 2-1: regex and for loop in Linux, Begin 16S seq process with QIIME2,  | sra-toolkit, grep, for loops, QIIME2 16S seq processing | [Class 4]
 6 | July 30 | Part 2-2: 16S seq process with QIIME2 | 16S seq preprocessing, batch job submission | [Class 5]
 7 | Aug 4 | Part 2-3: 16S seq analysis with QIIME2 | microbiome data analysis in QIIME2, intro to markdown | [Class 6]
 8 | Aug 6 | Part 3-1: RNAseq process and alignments | sequence QC and alignments | [Class 7]
