@@ -28,17 +28,6 @@
       - [Manifest File Option 1: Make it on the fly with Linux commands](#manifest-file-option-1-make-it-on-the-fly-with-linux-commands)
       - [Manifest File Option 2: Copy and change to your scratch filespace](#manifest-file-option-2-copy-and-change-to-your-scratch-filespace)
     - [Step 3: Import sequences into a QIIME2 artifact (continued 2)](#step-3-import-sequences-into-a-qiime2-artifact-continued-2)
-    - [Step 4: Trim primers and join sequences](#step-4-trim-primers-and-join-sequences)
-    - [Step 5: Denoise with Deblur and create a table](#step-5-denoise-with-deblur-and-create-a-table)
-      - [OTUs versus ASVs/ESVs](#otus-versus-asvsesvs)
-    - [Step 6: Build phylogeny](#step-6-build-phylogeny)
-    - [Step 7: Call Taxonomies](#step-7-call-taxonomies)
-    - [Step 8: Cleanup!](#step-8-cleanup)
-    - [Final Step: Finish the batch script and submit.](#final-step-finish-the-batch-script-and-submit)
-      - [Change the sra-toolkit command to pull all the 16S sequences.](#change-the-sra-toolkit-command-to-pull-all-the-16s-sequences)
-      - [Add SBATCH/Slurm directives](#add-sbatchslurm-directives)
-        - [Note on partition, processes and time](#note-on-partition-processes-and-time)
-  - [Submit Your Batch Script on CHPC](#submit-your-batch-script-on-chpc)
 - [Practice / With Your Own Data](#practice--with-your-own-data)
 - [Links, Cheatsheets and Today's Commands](#links-cheatsheets-and-todays-commands)
 
@@ -49,6 +38,7 @@
 ## Setup and Background
 - Obtain an interactive shell session:
 1. Log in to CHPC via your preferred method (OnDemand, ssh from Terminal, or FastX Web server).
+- https://ondemand-class.chpc.utah.edu
 2. Obtain an interactive session with 2 processors.
 ```bash
  salloc -A mib2020 -p lonepeak-shared -n 2 --time 2:30:00
