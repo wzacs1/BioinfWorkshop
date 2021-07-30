@@ -1,3 +1,33 @@
+<!-- TOC -->
+
+- [Main](#main)
+	- [Setup and Background](#setup-and-background)
+		- [Today's Objectives:](#todays-objectives)
+		- [Requirements and Expected Inputs](#requirements-and-expected-inputs)
+	- [Review](#review)
+	- [16S rRNA Gene Amplicon Sequencing Background](#16s-rrna-gene-amplicon-sequencing-background)
+		- [Sequencing Strategy](#sequencing-strategy)
+		- [16S sequence process workflow](#16s-sequence-process-workflow)
+	- [Setup our Previous Environment](#setup-our-previous-environment)
+	- [Continue our First Bioinformatics Project](#continue-our-first-bioinformatics-project)
+		- [Step 4: Trim primers and join sequences](#step-4-trim-primers-and-join-sequences)
+		- [Step 5: Denoise with Deblur and create a table](#step-5-denoise-with-deblur-and-create-a-table)
+			- [OTUs versus ASVs/ESVs](#otus-versus-asvsesvs)
+		- [Step 6: Build phylogeny](#step-6-build-phylogeny)
+		- [Step 7: Call Taxonomies](#step-7-call-taxonomies)
+		- [Step 8: Cleanup!](#step-8-cleanup)
+		- [Final Step: Finish the batch script and submit.](#final-step-finish-the-batch-script-and-submit)
+			- [Change the sra-toolkit command to pull all the 16S sequences.](#change-the-sra-toolkit-command-to-pull-all-the-16s-sequences)
+			- [Change any refernces to the test manifest file to refer to the full manifest file](#change-any-refernces-to-the-test-manifest-file-to-refer-to-the-full-manifest-file)
+			- [Add SBATCH/Slurm directives](#add-sbatchslurm-directives)
+				- [Note on partition, processes and time](#note-on-partition-processes-and-time)
+	- [Submit Your Batch Script on CHPC](#submit-your-batch-script-on-chpc)
+		- [My batch job script created during class.](#my-batch-job-script-created-during-class)
+- [Practice / With Your Own Data](#practice--with-your-own-data)
+- [Links, Cheatsheets and Today's Commands](#links-cheatsheets-and-todays-commands)
+
+<!-- /TOC -->
+
 # Main
 
 ## Setup and Background
@@ -85,7 +115,7 @@ module load miniconda3/latest
 source activate qiime2-2021.4
 ```
 We also ended up in our scratch directory space, so we need to make sure to change directories to that location or many of our file references would be off.
-```bash 
+```bash
 cd ${SCRATCH}
 ```
 
@@ -333,10 +363,10 @@ done < ${ACCESSIONS}
 
 #### Change any refernces to the test manifest file to refer to the full manifest file
 
-I actually wouldn't normally name things with "_test" and "_full" endings because you have to remember to change references like this. But, for class/illustrative purposes I kept them different. Therefore, you need to ensure you change any references to the "manifest_test.txt" to the "manifest_full.txt". 
+I actually wouldn't normally name things with "_test" and "_full" endings because you have to remember to change references like this. But, for class/illustrative purposes I kept them different. Therefore, you need to ensure you change any references to the "manifest_test.txt" to the "manifest_full.txt".
 
 **Option 1**: If you used the for loops I provided for you, you just need to change the write location of each loop, the first echo command and the $MANIFEST variable declaration. Here I just show the whole thing again. Replace the corresponding commands in your batch script with this:
-```bash 
+```bash
 echo "sample-id,absolute-filepath,direction" > ${WRKDIR}/metadata/manifest_full.txt
 
 for read1 in *_1.fastq
@@ -363,8 +393,8 @@ MANIFEST=${WRKDIR}/metadata/manifest_full.txt
 	```bash
 	MANIFEST=${WRKDIR}/metadata/manifest_full.txt
 	```
-	
-	
+
+
 #### Add SBATCH/Slurm directives
 Normally, any line that starts with a # in a bash script would be a comment, but for slurm processed bash scripts if the lines at the beginning start with a `#SBATCH` (sbatch directives) they will be interpreted by slurm to provide the options required to schedule your job. These are the same options (plus some) that you used for `salloc`! One of the other cool bits about OnDemand is that they have some of these templates for you already and you should check them out. For this first sbatch submission, I'll just provide those directives you should add and tell you about them. Add the following lines at the beginning of your script, after the first line containing the shebang (shown for clarity, don't enter it twice)().
 
@@ -403,17 +433,17 @@ squeue -u <YOUR_uNID>
 
 - If your job fails, open the `~/BioinfWorkshop2021/Part2_Qiime_16S/code/PreProcess_16S.outerror` to figure out why, fix issue and repeat.
   - **DEBUGGING**: Start with first error!!
-  - Because we had some "verbose" options this file will have a lot of extra stuff that is not errors just output that would normally go to terminal output. You can see why having no output is usually the default option for commands. It is a good idea to turn off the progress of downlaoding with sra-toolkit (remove the `-p` option) and possibly the `--verbose` option on read joining command. 
+  - Because we had some "verbose" options this file will have a lot of extra stuff that is not errors just output that would normally go to terminal output. You can see why having no output is usually the default option for commands. It is a good idea to turn off the progress of downlaoding with sra-toolkit (remove the `-p` option) and possibly the `--verbose` option on read joining command.
   - You can scroll through with `less` again and use `\` to search while in less, or use your grep skills to search for "error" or "Error". You could also use tail to check the last output.
   - In the end, you should really check your output files to see they are as expected. Sometimes things don't error, per se, but we may still not get what we expected because we typed a wrong, but acceptable command.
 
 ##### My batch job script created during class.
-If you want to check what a working job script should look like (based off how we created it in class), mine is hosted [here on GitHub](https://github.com/wzacs1/BioinfWorkshop/blob/master/batch_job_templates/PreProcess_16S.sh), or you are welcome to copy it from the shared directory. Just remember, to replace the value in the `SBATCH -o` option with your directory path (use `echo $HOME` to get it).
-	
+If you want to check what a working job script should look like (based off how we created it in class), mine can be copied from the shared directory. Just remember, to replace the value in the `SBATCH -o` option with your home directory path (use `echo $HOME` to get it).
+
 ```bash
 cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/code/PreProcess_16S.sh ~/BioinfWorkshop2021/Part2_Qiime_16S/code/PreProcess_16S.sh
 ```
-	
+
 # Practice / With Your Own Data
 - Most importantly, try submitting your job script with full seqeunces input and working through any errors that occur.
 - Use your for loops knowledge and variable expansion knowledge to loop over a seqeucne process command (such as `qiime vsearch join-pairs`) and see the effect on the outputs of using differnet parameters.
