@@ -34,7 +34,7 @@
 		cp \
 		/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/test_set/seqs_import.qz[av] \
 		/scratch/general/lustre/<YOUR_uNID>/Part2_Qiime_16S/
-		```
+	```
 
 ## Review
 
@@ -82,8 +82,13 @@ Remember that we installed a separate miniconda3 module so we must load this fir
 ```bash
 module use ~/MyModules
 module load miniconda3/latest
-source activate qiime2-2020.2
+source activate qiime2-2021.4
 ```
+We also ended up in our scratch directory space, so we need to make sure to change directories to that location or many of our file references would be off.
+```bash 
+cd ${SCRATCH}
+```
+
 **ONLY IF you didn't get the conda environment setup previously, use the CHPC installed module** (only use the above command OR the below command)
 ```bash
 module load anaconda3/2019.03
@@ -312,9 +317,9 @@ I'm going to provide you with a `while` loop for this and leave it to as an exer
 cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/metadata/SRR_Acc_List_full.txt ~/BioinfWorkshop2021/Part2_Qiime_16S/metadata/
 ```
 
-Make sure to change the value of the $ACCESSIONS variable to refer to this "full" accessions list instead of the "test" list of 2 that we used while testing our commands.
+Make sure to change the value of the $ACCESSIONS variable to refer to this "full" accessions list instead of the "test" list of 2 that we used while testing our commands. Note, in class I had a reference to a location in my home directory, which should have been pointing to the shared class directory. This command below is correct now.
 ```bash
-ACCESSIONS=~/BioinfWorkshop2021/Part2_Qiime_16S/metadata/SRR_Acc_List_full.txt
+ACCESSIONS=/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/metadata/SRR_Acc_List_full.txt
 ```
 
 Replace the for loop with this while loop. I leave it for exercise to look up and understand while loops, but they are similar to for loops. Instead of giving a discrete list, `while` operates while a condition is true. This condition could just be the presence of items in a list, as here.
@@ -322,10 +327,44 @@ Replace the for loop with this while loop. I leave it for exercise to look up an
 ```bash
 while read line
 do
-  fasterq-dump ${line} -e 2 -t ${SCRATCH}
+  fasterq-dump ${line} -e 2 -t ${SCRATCH} -O ${SCRATCH}
 done < ${ACCESSIONS}
 ```
 
+#### Change any refernces to the test manifest file to refer to the full manifest file
+
+I actually wouldn't normally name things with "_test" and "_full" endings because you have to remember to change references like this. But, for class/illustrative purposes I kept them different. Therefore, you need to ensure you change any references to the "manifest_test.txt" to the "manifest_full.txt". 
+
+**Option 1**: If you used the for loops I provided for you, you just need to change the write location of each loop, the first echo command and the $MANIFEST variable declaration. Here I just show the whole thing again. Replace the corresponding commands in your batch script with this:
+```bash 
+echo "sample-id,absolute-filepath,direction" > ${WRKDIR}/metadata/manifest_full.txt
+
+for read1 in *_1.fastq
+do
+  echo "${read1%_1.fastq},${SCRATCH}/${read1},forward" >> ${WRKDIR}/metadata/manifest_full.txt
+done
+
+for read2 in *_2.fastq
+do
+  echo "${read2%_2.fastq},${SCRATCH}/${read2},reverse" >> ${WRKDIR}/metadata/manifest_full.txt
+done
+
+MANIFEST=${WRKDIR}/metadata/manifest_full.txt
+```
+
+**Option 2**: As before, if the for loops are confusing and you just want to get the manifest file and see it, you can copy it from me. BUT, you will need to replace your <uNID> with your uNID so it refers to your scratch location correctly. We haven't taught you how to do this non-interactively, so you would have to change this manually, upload it and then run the job script. Do this only if you don't do option 1.
+	1. Copy my manifest file to your work dir in an interactive session:
+	```bash
+	cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/metadata/manifest_full.txt ~/BioinfWorkshop2021/Part2_Qiime_16S/metadata/
+	```
+	2. Download that manifest_full.txt file (in your ~/BioinfWorkshop2021/Part2_Qiime_16S/metadata directory), open it with Atom or other plain text editor. CMD + F brings up find and replace window. Replace "<uNID>" with your uNID.
+	3. Save and upload that back to the same directory.
+	4. Remove the 2 for loops (or comment them out if you prefer), and make sure the $MANIFEST variable refers to the correct file:
+	```bash
+	MANIFEST=${WRKDIR}/metadata/manifest_full.txt
+	```
+	
+	
 #### Add SBATCH/Slurm directives
 Normally, any line that starts with a # in a bash script would be a comment, but for slurm processed bash scripts if the lines at the beginning start with a `#SBATCH` (sbatch directives) they will be interpreted by slurm to provide the options required to schedule your job. These are the same options (plus some) that you used for `salloc`! One of the other cool bits about OnDemand is that they have some of these templates for you already and you should check them out. For this first sbatch submission, I'll just provide those directives you should add and tell you about them. Add the following lines at the beginning of your script, after the first line containing the shebang (shown for clarity, don't enter it twice)().
 
@@ -364,7 +403,16 @@ squeue -u <YOUR_uNID>
 
 - If your job fails, open the `~/BioinfWorkshop2021/Part2_Qiime_16S/code/PreProcess_16S.outerror` to figure out why, fix issue and repeat.
   - **DEBUGGING**: Start with first error!!
+  - Because we had some "verbose" options this file will have a lot of extra stuff that is not errors just output that would normally go to terminal output. You can see why having no output is usually the default option for commands. It is a good idea to turn off the progress of downlaoding with sra-toolkit (remove the `-p` option) and possibly the `--verbose` option on read joining command. 
+  - You can scroll through with `less` again and use `\` to search while in less, or use your grep skills to search for "error" or "Error". You could also use tail to check the last output.
+  - In the end, you should really check your output files to see they are as expected. Sometimes things don't error, per se, but we may still not get what we expected because we typed a wrong, but acceptable command.
 
+##### My batch job script created during class.
+If you want to check what a working job script should look like (based off how we created it in class), mine is hosted [here on GitHub](https://github.com/wzacs1/BioinfWorkshop/blob/master/batch_job_templates/PreProcess_16S.sh), or you are welcome to copy it from the shared directory. Just remember, to replace the value in the `SBATCH -o` option with your directory path (use `echo $HOME` to get it).
+	```bash
+	cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/code/PreProcess_16S.sh ~/BioinfWorkshop2021/Part2_Qiime_16S/code/PreProcess_16S.sh
+	```
+	
 # Practice / With Your Own Data
 - Most importantly, try submitting your job script with full seqeunces input and working through any errors that occur.
 - Use your for loops knowledge and variable expansion knowledge to loop over a seqeucne process command (such as `qiime vsearch join-pairs`) and see the effect on the outputs of using differnet parameters.
