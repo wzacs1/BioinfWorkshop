@@ -409,9 +409,10 @@ squeue -u <YOUR_uNID>
 
 ##### My batch job script created during class.
 If you want to check what a working job script should look like (based off how we created it in class), mine is hosted [here on GitHub](https://github.com/wzacs1/BioinfWorkshop/blob/master/batch_job_templates/PreProcess_16S.sh), or you are welcome to copy it from the shared directory. Just remember, to replace the value in the `SBATCH -o` option with your directory path (use `echo $HOME` to get it).
-	```bash
-	cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/code/PreProcess_16S.sh ~/BioinfWorkshop2021/Part2_Qiime_16S/code/PreProcess_16S.sh
-	```
+	
+```bash
+cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/code/PreProcess_16S.sh ~/BioinfWorkshop2021/Part2_Qiime_16S/code/PreProcess_16S.sh
+```
 	
 # Practice / With Your Own Data
 - Most importantly, try submitting your job script with full seqeunces input and working through any errors that occur.
