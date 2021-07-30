@@ -10,6 +10,7 @@
  # OR
  salloc -A notchpeak-shared-short -p notchpeak-shared-short -n 2 --time 3:00:00
 ```
+3. (optional)(for next week): Sign up for a GitHub account: [https://github.com](https://github.com)
 
 ### Today's Objectives:
 
@@ -39,6 +40,8 @@
 
 - When a command doesn't work for you, please give the error or output received. It's hard to troubleshoot "it didn't work".
   - Use up and down arrow to get your command history and tab-autocomplet to check you didn't just spell a directory or command wrong (most common error).
+
+- CHPC's OnDemand File Explorer review.
 
 We are working interactively with a smaller dataset first to test out our commands, but ultimately we are trying to build a batch script that can be submitted and run non-interactively for the full dataset. The overall structure of a batch script will usually look something like this (will add number 1 at the end):
 ![General Batch Script Process](https://drive.google.com/uc?export=view&id=1OmDxGQeS2wpe6I6B6Dtoin0xxqCvBqGw)
@@ -75,10 +78,16 @@ SCRATCH=/scratch/general/lustre/<YOUR_uNID/Part2_Qiime_16S/
 # mkdir -p ${SCRATCH}
 WRKDIR=~/BioinfWorkshop2021/Part2_Qiime_16S/
 ```
+Remember that we installed a separate miniconda3 module so we must load this first then QIIME2. We will use this set of commands frequently:
 ```bash
 module use ~/MyModules
 module load miniconda3/latest
 source activate qiime2-2020.2
+```
+**ONLY IF you didn't get the conda environment setup previously, use the CHPC installed module** (only use the above command OR the below command)
+```bash
+module load anaconda3/2019.03
+source activate qiime2-2019.4
 ```
 
 ## Continue our First Bioinformatics Project
@@ -254,7 +263,9 @@ The last step before we start to use more community-level analytical tools to ex
 
 For taxonomic calls in QIIME2 we need a trained classifier. This can be done in just a couple steps, but can take awhile and only needs be done once.
 - It's been shown that classifiers work better if the input is trimmed to the region of the query (what you amplified). I've already done this for you and provide the classsifier. Just make a variable reference to it for simplicity. This one is trained on the Greengenes taxonomy and reference set.
-- **NOTE**: I would argue the most useful bacterial taxonomy was just released a couple years ago. It is called the GTDB or Genome Taxonomy Database. We won't use it here for ease, but in the future I would not use this Greengenes taxonomy in the future and instead use the GTDB (or SILVA). The Greengenes was most commonly employed but is no longer maintained and was always recognized as somewhat more inclusive but lower quality.
+- **NOTE**: I would argue the most useful bacterial taxonomy was just released a couple years ago. It is called the GTDB or [Genome Taxonomy Database](https://gtdb.ecogenomic.org/). It uses relationships based almost entirly on genome relatedness (believe it or not, this is not primary info for other taxonomies - they have lots of historical baggage).
+  - We won't use GTDB here for ease, but in the future I would not use this Greengenes taxonomy and instead use the GTDB (or SILVA). The Greengenes was most commonly employed, but is no longer maintained and was always recognized as somewhat more inclusive but lower quality.
+  - The names in the GTDB are not what many folks expect so I understand why many may not like it. But, it had to make new taxonomic names as genomes reveal the high amount of innaccuracies and misplacements (relative to genome relatedness) within current taxonomies.
 
 ```bash
 CLASSIFIER=/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/gg_13_8_515F806R_classifier_sk0.24.1.qza
@@ -292,7 +303,7 @@ rm *.qz[av]
 **IMPORTANT: Stop copying commands to your bash script, unless noted**
 
 ### Final Step: Finish the batch script and submit.
-At this stage, you should have a full pipeline that takes input seqs and outputs a feature table, representative sequences, phylogeny and taxonomy. Nice! You know it works because you tested it out, so you can now extend it to the full 16S sequence dataset. But this will take a bit longer to run (mostly just the pulling and importing of the sequences), so we will submit it as a batch job script as CHPC is intended. If you've been adding your commands as you were supposed to you are mostly ready for submission. 2 tasks remain.
+At this stage, you should have a full pipeline that takes input seqs and outputs a **feature table, representative sequences, phylogeny and taxonomy**. Nice! You know it works because you tested it out, so you can now extend it to the full 16S sequence dataset. But this will take a bit longer to run (mostly just the pulling and importing of the sequences), so we will submit it as a batch job script as CHPC is intended. If you've been adding your commands as you were supposed to you are mostly ready for submission. 2 tasks remain.
 
 #### Change the sra-toolkit command to pull all the 16S sequences.
 I'm going to provide you with a `while` loop for this and leave it to as an exercise to understand it further. Normally, you are going to have your own sequences in a single directory already. You'll also need the full accessions number list so copy this over and place in your metadata folder:
@@ -316,7 +327,7 @@ done < ${ACCESSIONS}
 ```
 
 #### Add SBATCH/Slurm directives
-Normally, any line that starts with a # in a bash script would be a comment, but for slurm processed bash scripts if the lines at the beginning start with a `#SBATCH` (sbatch directives) they will be interpreted by slurm to provide the options required to schedule your job. These are the same options (plus some) that you used for `srun`! One of the other cool bits about OnDemand is that they have some of these templates for you already and you should check them out. For this first sbatch submission, I'll just provide those you should add and tell you about them. Add the following lines at the beginning of your script, after the first line containing the shebang (shown for clarity, don't enter it twice)().
+Normally, any line that starts with a # in a bash script would be a comment, but for slurm processed bash scripts if the lines at the beginning start with a `#SBATCH` (sbatch directives) they will be interpreted by slurm to provide the options required to schedule your job. These are the same options (plus some) that you used for `salloc`! One of the other cool bits about OnDemand is that they have some of these templates for you already and you should check them out. For this first sbatch submission, I'll just provide those directives you should add and tell you about them. Add the following lines at the beginning of your script, after the first line containing the shebang (shown for clarity, don't enter it twice)().
 
 ```bash
 #!/bin/bash
@@ -330,7 +341,7 @@ Normally, any line that starts with a # in a bash script would be a comment, but
 
 # your commands begin here..
 ```
-- The `-o` option specifies a file to save the standard output to. By default sbatch actually combines standard eror and standard output, hence the extension I like to add, but you can add any extension you want as well. It usually makes sense to name this at least with the same name as script it came from
+- The `-o` option specifies a file to save the standard output to. By default sbatch actually combines standard eror and standard output, hence the extension I like to add, but you can add any extension you want as well. It usually makes sense to name this at least with the same name as script it came from.
 - `-J` is the jobname that it will be under when you view the queue.
 
 ##### Note on partition, processes and time
@@ -355,6 +366,7 @@ squeue -u <YOUR_uNID>
   - **DEBUGGING**: Start with first error!!
 
 # Practice / With Your Own Data
+- Most importantly, try submitting your job script with full seqeunces input and working through any errors that occur.
 - Use your for loops knowledge and variable expansion knowledge to loop over a seqeucne process command (such as `qiime vsearch join-pairs`) and see the effect on the outputs of using differnet parameters.
   - Hint1: Start with `for PARAMETER in <INTEGER_LIST_SEP_BY_SPACES`
   - Hint2: You'll need to use different output file names in each loop iteration or you'll just overwrite the same one each loop.
