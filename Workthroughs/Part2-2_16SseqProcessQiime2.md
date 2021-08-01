@@ -452,6 +452,6 @@ cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_1
 
 # Links, Cheatsheets and Today's Commands
 - Why ASVs: [https://www.nature.com/articles/ismej2017119](https://www.nature.com/articles/ismej2017119)
-- Qiime2 Plugins Documenation: [https://docs.qiime2.org/2020.2/plugins/available/](https://docs.qiime2.org/2021.4/plugins/available/)
+- Qiime2 Plugins Documenation: [https://docs.qiime2.org/2021.4/plugins/available/](https://docs.qiime2.org/2021.4/plugins/available/)
 - Today's New Commands:
   - `while`: A loop that performs commands "while" some condition is true.
