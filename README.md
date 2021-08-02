@@ -24,7 +24,7 @@ Day #  |  Date  | Title  | Topics | VideoLink
 3 | July 21 | Part 1-3: Linux, CHPC and Software Install Methods |  CHPC, paths, install methods, QIIME2 conda install | [Class 3](https://www.youtube.com/playlist?list=PL_Pe_9PaIEBN-MDiucIgx4sR1NLbneDDE)
 4 | July 23 | NO CLASSS |
 5 | July 28 | Part 2-1: regex and for loop in Linux, Begin 16S seq process with QIIME2,  | sra-toolkit, grep, for loops, QIIME2 16S seq processing | [Class 4](https://www.youtube.com/watch?v=xfRUAr7F0BE&list=PL_Pe_9PaIEBN-MDiucIgx4sR1NLbneDDE&index=4)
-6 | July 30 | Part 2-2: 16S seq process with QIIME2 | 16S seq preprocessing, batch job submission | [Class 5]
+6 | July 30 | Part 2-2: 16S seq process with QIIME2 | 16S seq preprocessing, batch job submission | [Class 5](https://www.youtube.com/watch?v=8xwjIng3LrE&list=PL_Pe_9PaIEBN-MDiucIgx4sR1NLbneDDE&index=5)
 7 | Aug 4 | Part 2-3: 16S seq analysis with QIIME2 | microbiome data analysis in QIIME2, intro to git and github | [Class 6]
 8 | Aug 6 | Part 3-1: RNAseq process and alignments | sequence QC and alignments | [Class 7]
 9 | Aug 11 | Part 3-2: Intro to R and R Studio | basic R, R packages, bioconductor | [Class 8]

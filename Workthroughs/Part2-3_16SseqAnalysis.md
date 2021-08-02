@@ -34,15 +34,15 @@
 
 1. The feature table: `table_full.qza`
 ```bash
-/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/table_full.qza
+/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/results/table_full.qza
 ```
 2. The rooted phylogeny: `tree_root_full.qza`
 ```bash
-/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/tree_root_full.qza
+/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/results/tree_root_full.qza
 ```
 3. The taxonomy calls `taxonomy_full.qza`
 ```bash
-/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/taxonomy_full.qza
+/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/results/taxonomy_full.qza
 ```
 4. The metadata table `SraRunTable_full.txt`
 ```bash
@@ -54,10 +54,9 @@
 ```bash
 /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/Qiime2_2019_outs/
 ```
-
-
-
 ## Review
+
+**Review batch job script from before and what outputs are expected to look like / time to run**
 
 We are working interactively with a smaller dataset first to test out our commands, but ultimately we are trying to build a batch script that can be submitted and run non-interactively for the full dataset. The overall structure of a batch script will usually look something like this (will add number 1 at the end):
 ![General Batch Script Process](https://drive.google.com/uc?export=view&id=1OmDxGQeS2wpe6I6B6Dtoin0xxqCvBqGw)
@@ -84,12 +83,153 @@ module load anaconda3/2019.03
 source activate qiime2-2019.4
 ```
 
+
+
 ##### My batch job script created during class.
 If you want to check what a working job script should look like (based off how we created it in class), mine can be copied from the shared directory. Just remember, to replace the value in the `SBATCH -o` option with your home directory path (use `echo $HOME` to get it).
 
 ```bash
 cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/code/PreProcess_16S.sh ~/BioinfWorkshop2021/Part2_Qiime_16S/code/PreProcess_16S.sh
 ```
+
+## Step 1: Remove poorly sequenced samples
+16S sequence data can be generated quite cheap because one can multiplex quite a few samples and capture the vast majority of diversity with only a few thousand sequences (depending on sample type). However, it's difficult to evenly multiplex 100% of the samples and even with great care, some degree of random sampling at high multiplex numbers will result in some samples that are very poorly sequenced. It's always a good idea to remove these from further analysis. Often very low sequences per sample are indicative of poor sample quality to begin with. Additionally, even if good quality, the very low sampling effort will introduce a high level of error due to random sampling that can obscure your ability to uncover real patterns in your data. The appropriate sequencing depth cutoff is always a bit difficult to determine and experiment specific. This is one of the most important piece of information to document and provide in your methods.
+
+### 1.1 Summarize Table
+Let's first determine the number of *quality* sequences (observations now) in each sample. If you were able to run the full dataset as a batch script you previously generated a summarized table visualization already. If not, let's generate this now. First, make sure you are in the correct directory since I'm using relative paths to refer to the filenames succinctly.
+```bash
+$ cd ~/BioinfWorkshop2020/Part2_Qiime_16S/
+```
+```bash
+$ qiime feature-table summarize \
+ --i-table table_full.qza \
+ --o-visualization table_full.qzv
+```
+
+Examine the .qzv visualization file as we did before on the qiime2 visualization webpage. [view.qiime2.org](view.qiime2.org). We can see that there is quite a range from almost a million to only 504. I suspect the original authors already filtered some that were lower, which is common for public deposited datasets, and cutoffs of around 500-1000 seem frequent.
+
+### 1.2 Filter out samples
+Let's filter out the bottom 2 samples that only have a few hundred observations. I'm mainly doing this just to show those commands and keep this method in your thoughts as an important QC. I suspect the 500 seqs / sample aren't actually bad at all given some of these are lung communities that are relatively low in microbes.
+```bash
+$ qiime feature-table filter-samples \
+ --i-table table_full.qza \
+ --o-filtered-table table_full1k.qza \
+ --p-min-frequency 1000
+```
+
+### 1.3 (optional) Create a collector's curve
+One way to assess if your level of sequencing is covering the community is to look at "collector's curves". You've probably seen these before in other settings. In ecology, the shape of these curves when shown as a function of diversity metrics is actually a type of alpha diversity analysis itself called rarefaction. The so-called collector's curve with observations/species is the simplest. Often we hear "rarefaction" and "subsampling" used interchangeably, which isn't quite correct. Let's examine *all* our samples with a sequence depth up to 5000 to see the number of observations (ASVs) we continue to gain with increasing depth. You'll notice the metric we provide is still called "observed_otus", a remnant of OTU clustering not so long ago.
+
+(I'll note that this command and the graph generated is actually much more useful if you provide the metadata table as well, but it's quite so slow already due to the repeated subsampling required so for in class I am not doing this, but it's a good idea if you do are doing this outside of class).
+
+```bash
+$ qiime diversity alpha-rarefaction \
+ --i-table table_full.qza \
+ --o-visualization collector_curve.qzv \
+ --p-metrics observed_otus \
+ --p-max-depth 5000 \
+ --p-steps 20
+```
+
+You can see that nearly all samples level out by around 2500 observations/sequences. That is, we collect most of the ASVs by that point. At the same time, most samples continue to increase, albeit very slowly, past that point. These curves never totally flatten. It's interesting to think deeply about why this is and much has been written on it. Suffices to say there is both technical artifacts and potentially real community ecology at play here.
+
+As our aim is to compare the different sample types we included them all. If your aim was mainly to compare one of the metadatum then you would want to be careful to examine this for that subset.  Either way, here's an example where QIIME2 provides a pretty useful function that could be applied to non-microbial ecology data just as well. Check out the metrics one can input in this method besides "observed_otus". They can tell you a lot about the distribution of your data.
+
+## Step 2: Perform core diversity calculations
+If you take one ecology concept from this course I hope it is that there is many ways to describe diversity. You might say that there is no such thing as simply "diversity". A community with many species (what we usually intuitively call diversity) can be very "uneven" and dominated by only a few species. Thus, from a single observational point you may only see a few species which makes the community appear, paradoxically, not very diverse at all. In fact, this is frequently what microbial communities look like: they are often highly uneven.
+
+Because a few diversity metrics are more commonly used than others and together do a pretty good job describing diversity of communities, qiime2 has made a "core-diversity" method that does this most common calculations. As we like to weight by phylogenetic dissimilarity as well, I'll use the phylogenetic method. These methods within Qiime require a depth for even subsampling (random, without replacement). This has become a fairly contentious method, but has much precedence as well. Some good arguments can be made on both sides in my opinion and I'm not going to get into it. However, be aware you can still do diversity calculations without it in Qiime2 if you don't use this "core-diversity" method. Given that we saw a pretty good amount of species in each sample by 2500 sequences per sample, and that I want to speed up some calculations in class, let's choose that as our sequencing depth.
+
+```bash
+$ qiime diversity core-metrics-phylogenetic \
+ --i-table table_full1k.qza \
+ --i-phylogeny tree_root_full.qza \
+ --output-dir core-div \
+ --p-sampling-depth 2500 \
+ --m-metadata-file metadata/SraRunTable_full.txt \
+ --p-n-jobs 2
+```
+
+That's pretty cool. It calculated alpha and beta diversity and made visualizations in one step and very fast. We'll look at these as we also calculate some stats on them.
+
+- Check out this [great post on qiime2 forum regarding diversity metrics and their calculations.](https://forum.qiime2.org/t/alpha-and-beta-diversity-explanations-and-commands/2282). You may have seen many of these metrics before outside of the context of "diversity". As I mentioned before, many have nothing to do with community ecology, *per se*, but are used to describe distributions.
+
+## Step 3: Examine alpha diversity
+While the alpha diversity metrics are calculated for each sample in the previous command, no visualizer is created until you perform a test. For our dataset we will just examine the differences in within sample diversity among the different sample types. There are methods for standard statistical tests of groups or correlation with a continuous variable. Notably, there are also a few 3rd party plugins that address this. While this may seem simple, how to properly assess alpha diversity is an active area of research and actually very complex. Folks from my lab will expect a lengthy rant from me here, but I will mercifully spare you in the interest of time. Trying to pin absolute numbers to something that is repeatedly subsampled and has many technical artefacts is hard, and not just limited to ecology (think harder about absolute numbers from flow data!!), it's just very up front in that field.
+
+As a simple example, let's just examine Shannon diversity among the different sample types:
+```bash
+$ qiime diversity alpha-group-significance \
+ --i-alpha-diversity core-div/shannon_vector.qza \
+ --o-visualization core-div/shannon_SampleType.qzv \
+ --m-metadata-file metadata/SraRunTable_full.txt
+```
+
+- Download the visualization and check it out. A couple things to notice. First, while qiime calculates for every category within that metadata file, it wouldn't make any sense to use this to examine, for example, asthma status because we have all 4 sample types in there. This is just doing Kruskal-Wallis test. Grab the dropdown menu for column and look at SampleType. Shannon diversity is significantly different among all sample types. Second, I have got to point out that **Shannon diversity does NOT == EVENNESS**. This is *frequently* misinterpreted in the literature. It does indeed account for evenness, but richness (or number of species) as well. Notice how high the fecal samples are, which if this was only evenness would suggest they are highly even communities. Let's use one of a couple different evenness measures to directly ask this. For a proper comparison, we'll use the same subsampled (aka rarefied) table to calculate this, then do the significance tests:
+
+```bash
+$ qiime diversity alpha \
+ --i-table core-div/rarefied_table.qza \
+ --p-metric mcintosh_e \
+ --o-alpha-diversity core-div/mcintosh_vector.qza
+```
+```bash
+$ qiime diversity alpha-group-significance \
+ --i-alpha-diversity core-div/mcintosh_vector.qza \
+ --o-visualization core-div/mcintosh_SampleType.qzv \
+ --m-metadata-file metadata/SraRunTable_full.txt
+```
+
+- Download and examine that result as well by sample type. Mcintosh's evenness is an index, so values have a closed range, in this case between 0 and 1. As values approach 1, the community is more even, or more homogenously distributed. This is not only different than the Shannon result, the pattern is completely opposite! So, if we (as is frequently done) said that our Shannon diversity shows fecal communities are more even, we would have completely misinterpreted the data! Wow. Why? As Shannon is a combination of richness and evenness we need to look at richness to understand. That's easy, just count the species, which was already done for us with the core diversity metric. Do the statistical test to create the visualizer.
+
+```bash
+$ qiime diversity alpha-group-significance \
+ --i-alpha-diversity core-div/observed_otus_vector.qza \
+ --o-visualization core-div/observed_otus_SampleType.qzv \
+ --m-metadata-file metadata/SraRunTable_full.txt
+```
+
+Again, download and view the results. You can see that there are many less features (ASVs) in the nasal samples than in the others. The mean of observed features is highest in fecal, but surprisingly not higher. This likely reflects the measure itself and the effect of our relatively low sampling depth, and illustrates the caveats to comparing alpha diversities. It's good to think about how these samples were collected, the biological and laboratory media they were in, and how they are extracted to consider the difficulties normalizing. It's truly a task still best suited to careful qPCR assays. Yea, molecular biology still rules! However, this example nicely illustrates that a similar Shannon metric can result from different combinations of species richness and evenness, and all alpha diversity are highly influenced by sampling effort. This is not to say Shannon is not useful, it does still provide what most people find to be the most intuitive measure of diversity I think. But that also doesn't make it the best measure or appropriate for the question being asked.
+
+## Step 4: Examine beta diversity
+Beta diversity describes the differences *between* communities. As such, it is generally less sensitive to sampling effects than alpha diversity. More so with some metrics than others. QIIME2 does a few different functions for you in order to give you a principle coordinates analysis plot right away with the core diversity functions. The core diversity function calculates the distance matrices for 3 of the most common beta diversity metrics, then calculates eigen vectors and principle components and plots them with a cool visualizer that is pretty easy to format (too easy sometimes, be careful!). Before we look at the graphs let's also calculate significance with permanova so we can discuss what it means with the graph as a visualization. In order to do this, use the "beta-group-significance" command. Add the `--p-pairwise` option to test for differences between all pairs of sample types.
+
+```bash
+$ qiime diversity beta-group-significance \
+ --i-distance-matrix core-div/weighted_unifrac_distance_matrix.qza \
+ --m-metadata-file metadata/SraRunTable_full.txt \
+ --m-metadata-column sample_type \
+ --o-visualization core-div/weighted_unifrac_SigTest_SampleType.qzv \
+ --p-pairwise
+```
+
+- Download the 2 files in the core-div directory: `weighted_unifrac_emperor.qzv` and `weighted_unifrac_SigTest_SampleType.qzv`.
+
+Bring them both into the qiime2 visualizer and let's examine them. First, a couple things to note about the test. This is a non-parametric test (PERMANOVA = permutational multivariate ANOVA) where the distribution to test against is created by performing a number of random shuffling of the data. The number of digits of the p-value cannot exceed the number of permutations. By default this does 999 permutations, thus the minimum p-value is 0.001. It is NOT p < 0.001. Second, the pairwise option is off by default because if you have a number of factor levels with many permutations this can take quite a long time to finish. Third, note that a significant value just tells us the communities are significantly different.
+
+Look at the PCoA visualization. This emperor plugin is pretty nice and has lots of options for visualizing your data. You can color by any of the variables in your metadata file. Go to the color tab and choose "sample_type". You can really see how the samples are different from one another, and get a qualitative sense that the nasal and BAL sample types are more similar to one another. You can get the actual distances between the types downloaded from the significance visualizer.
+
+A couple points on these PCoA plots though. First, notice there are 3 axes shown. This is one of the advantages and disadvantages of PCoA as a multidimensional reduction method. Some methods you may be familiar with such as NMDS, tSNE and UMAP reduce the data into a 2D space. These are probably more appropriate for publication (usually a 2D space), but almost inevitably have more stress in them. Basically error, because it's usually unlikely to find a single 2D solution for high dimensional data. They tend to not look as nicely clustered. At least when they work on the original distances. tSNE and UMAP in scRNAseq you are probably used to seeing now are usually operated on the principal components, so are sort of reductions upon reductions and give the impression of nicer clusters than they usually would if operated on the original distances. Nothing wrong with this, just be aware of what you are really looking at. The reason PCoA gives the impression of nice clusters usually is because you are seeing the first 3 (or 2) of many axes of variation and the axes are ordered by decreasing amount of variation. Notice this in the % for each PC (principle component). QIIME2 is only showning the first 5 for some reason (they used to have ability to see all), but most of the variation is captured in the first 3 (~60%). It's important when looking at these graphs to see how much of the variation you are seeing and which axes. There may be much more than the presenter is showing you and it can be evident by the axes.
+
+Second, the space these points are in (the axes) is created by the input dataset itself (as in other multidimensional reduction methods) - the axes have no absolute meaning. Notice there is a tab for "visibility". It's hard for me to imagine what situation warrants this option. As a clearer example:
+1. Get only 2 axes: Click on the axes tab and get axes 1 and axes 4. For the third option, choose "hide axis".
+2. Click on the visibility tab and click on fecal to remove it's visibility
+
+Notice how the points stretch all the way up the top of the y-axis, but without the fecal data the points don't stretch to the end of the x-axis. This shows how the axes are determined by the dataset, and thus hiding data is misleading. You would need to subset the data and recalculate the PCs to do this properly.
+
+## Step 5 (sort of): Subset the table
+We went through much more of an exploratory analysis of the full data in the above sections. This is not a bad idea with your own dataset either, but ultimately you likely want to test specific hypotheses about some of your data that would probably require you to subset it first. Going through the full dataset also allowed some opportunities for me to discuss some potential pitfalls and poor inference possible with diversity analyses in HTseq. So, although it seems strange to end at subsetting, it was fun to see the full dataset first and the potential differences among body sites. Let's subset the data before we look to see if we can detect taxonomic differences among asthmatics. While frequently reported, this does remain a bit unclear and it there seems to be little consistency between studies.
+
+There's a couple different ways to subset your data with the same qiime2 command. The simplest way is probably to provide a list of the sample IDs. A more efficient way to subset is using the statements with the `--p-where` option. These use SQL syntax. This syntax is used all over for working with data tables and we'll see similar methods with some R packages. It's easy when you are only trying to grab one category, but a bit more complicated when trying to pass multiple options. Let's subset to just the BAL samples for further exploration.
+
+```bash
+$ qiime feature-table filter-samples \
+ --i-table table_full.qza \
+ --o-filtered-table table_full_BAL.qza \
+ --m-metadata-file metadata/SraRunTable_full.txt \
+ --p-where "SampleType == 'BAL'"
+```
+
 
 # Practice / With Your Own Data
 
