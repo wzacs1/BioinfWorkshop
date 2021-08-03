@@ -1,4 +1,28 @@
+<!-- TOC -->
 
+- [Main](#main)
+  - [Setup and Background](#setup-and-background)
+    - [Today's Objectives:](#todays-objectives)
+    - [Requirements, Expected Inputs and Review](#requirements-expected-inputs-and-review)
+      - [Expected Inputs from Previous Class](#expected-inputs-from-previous-class)
+  - [Review](#review)
+  - [Core Analyses of 16S rRNA Gene Sequences](#core-analyses-of-16s-rrna-gene-sequences)
+    - [Step 0: (optional) A little environment setup makes it easier and more reproducible](#step-0-optional-a-little-environment-setup-makes-it-easier-and-more-reproducible)
+    - [Step 1: Remove poorly sequenced samples](#step-1-remove-poorly-sequenced-samples)
+      - [1.1 Summarize Table](#11-summarize-table)
+      - [1.2 Filter out samples](#12-filter-out-samples)
+      - [1.3 (optional) Create a collector's curve](#13-optional-create-a-collectors-curve)
+    - [Step 2: Perform core diversity calculations](#step-2-perform-core-diversity-calculations)
+    - [Step 3: Examine alpha diversity](#step-3-examine-alpha-diversity)
+    - [Step 4: Examine beta diversity](#step-4-examine-beta-diversity)
+    - [Step 5 (sort of): Subset the table](#step-5-sort-of-subset-the-table)
+    - [Step 6: Rerun core diversity analyses](#step-6-rerun-core-diversity-analyses)
+    - [Step 7: Subsetting by taxonomic levels](#step-7-subsetting-by-taxonomic-levels)
+    - [Step 8: Differential abundance testing of taxa.](#step-8-differential-abundance-testing-of-taxa)
+- [Practice / With Your Own Data](#practice--with-your-own-data)
+- [Links, Cheatsheets and Today's Commands](#links-cheatsheets-and-todays-commands)
+
+<!-- /TOC -->
 # Main
 
 ## Setup and Background
@@ -21,7 +45,7 @@
 - Understand the main components of a 16S rRNA gene analysis workflow.
 - Gaining more command line practice.
 
-#### II. Introduce Git and GitHub fd
+#### II. Introduce Git and GitHub (if time)
 
 ### Requirements, Expected Inputs and Review
 - CHPC connection and interactive shell session

@@ -14,6 +14,7 @@ as individual pages. Each served as the basis for the slides from each day, and 
 - [Part 1-3: Linux, CHPC and Software Install Methods](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part1-3_CHPCandLinuxContinued.md)
 - [Part 2-1: Regex and For Loops, Begin 16S Seq Pull and Processing](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part2-1_SRAPull_16SseqProcessQiiime2.md)
 - [Part 2-2: 16S Seq Process with QIIME2](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part2-2_16SseqProcessQiime2.md)
+- [Part 2-3: 16S Seq analysis with QIIME2](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part2-3_16SseqAnalysis.md)
 
 Tentative Schedule:
 
