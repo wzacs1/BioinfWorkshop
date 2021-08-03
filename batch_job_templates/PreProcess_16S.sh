@@ -59,7 +59,8 @@ qiime tools import \
    --i-data seqs_import.qza \
    --o-visualization seqs_import.qzv
 
-cp seqs_import.qzv ${WRKDIR}/seqs_import.qzv
+# Don't copy the seqs_import.qza, just the vizualizer. The seqs_import.qza is large and just a different format of the input fastq files, so unnecessary to retain.
+cp seqs_import.qzv ${WRKDIR}/results/
 
 qiime cutadapt trim-paired \
   --i-demultiplexed-sequences seqs_import.qza \
@@ -125,5 +126,6 @@ qiime feature-classifier classify-sklearn \
 
 cp taxonomy_full.qza ${SCRATCH}
 
-rm *.fastq
-rm *.qz[av]
+# Good idea to comment out the remove input fastq until you know it worked. Most of the time of this script is spent downloading the files and imorting them to the QIIME2 artifact file file.
+# rm *.fastq
+# rm *.qz[av]

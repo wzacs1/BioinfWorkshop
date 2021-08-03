@@ -16,38 +16,61 @@
 ### Today's Objectives:
 
 #### I. Analyze 16S Sequences with QIIME2 on the Linux CLI
-- Understand an amplicon sequencing process workflow.
+- Understand an amplicon sequencing analysis workflow.
 - Gaining more command line practice.
 
+#### II. Introduce Git and GitHub fd
 
-### Requirements and Expected Inputs
+### Requirements, Expected Inputs and Review
 - CHPC connection and interactive shell session
 - QIIME2 install in Conda virtual environment or CHPC QIIME2 module
   - Note that some commands may differ slightly if you use the older CHPC module. Look at the help file of commands to see if options are different.
 - Atom or other plain text editor.
-- **Expected Inputs**:
-	- Working Directory: `~/BioinfWorkshop2021/Part2_Qiime_16S/`
-	- Scratch Directory: `/scratch/general/lustre/<YOUR_uNID>/Part2_Qiime_16S/`
-```
 
-- In previous session, we used 2 samples to first workup our sequence processing pipeline and get to a feature table with taxonomy calls, representative sequences and a phylogeny. Then, we worked up a submitted batch script to run the full dataset. The full dataset, including the metadata table, is the input for our analysis. If you were able to generate these yourself, continue to use them. If not, copy the inputs to your Project directory for the day (`~/BioinfWorkshop2021/Part2_Qiime_16S/` if you named it as I suggested). Each path is given below:
+#### Expected Inputs
+
+- Working Directory: `~/BioinfWorkshop2021/Part2_Qiime_16S/` with:
+  	- `results` directory
+  	- `metadata` directory
+  	- `code` directory
+
+
+- In previous session, we used 2 samples to first workup our sequence processing pipeline and get to a feature table with taxonomy calls, representative sequences and a phylogeny. Then, we worked up a submitted batch script to run the full dataset. The full dataset, including the metadata table, is the input for our analysis. If you were able to generate these yourself, continue to use them. If not, copy the inputs to your Project directory for the day (`~/BioinfWorkshop2021/Part2_Qiime_16S/` if you named it as I suggested). Each path is given below in a copy command to copy both the .qza and .qzv (`qz[av]`) files to your directory:
 
 1. The feature table: `table_full.qza`
 ```bash
-/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/results/table_full.qza
+cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/results/table_full.qz[av] ~/BioinfWorkshop2021/Part2_Qiime_16S/results/
 ```
 2. The rooted phylogeny: `tree_root_full.qza`
 ```bash
-/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/results/tree_root_full.qza
+cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/results/tree_root_full.qza ~/BioinfWorkshop2021/Part2_Qiime_16S/results/
 ```
 3. The taxonomy calls `taxonomy_full.qza`
 ```bash
-/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/results/taxonomy_full.qza
+cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/results/taxonomy_full.qz[av] ~/BioinfWorkshop2021/Part2_Qiime_16S/results/
 ```
-4. The metadata table `SraRunTable_full.txt`
+4. The representative sequence of each ASV `repseq.qza`:
 ```bash
-/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/metadata/SraRunTable_full.txt
+cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/results/repseq.qz[av] ~/BioinfWorkshop2021/Part2_Qiime_16S/results/
 ```
+5. The metadata table `SraRunTable_full.txt`
+```bash
+cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_16S/metadata/SraRunTable_full.txt ~/BioinfWorkshop2021/Part2_Qiime_16S/metadata/
+```
+
+The last item (`SraRunTable_full.txt`) we didn't use in last session. We downloaded from the SRA run-selector tool, though I've cleaned it up to remove some extraneous columnd for clarity and changed the first header line to be compatible with QIIME2's minimal metadata requirements. See that page for more info when you need to create your own.
+
+- Scratch directory is not needed for this session. The large input files have been processed and now only smaller files are needed to do analysis.
+  - View the size of your input files from before in human-readable format (`-h`) to get a sense of the size reduction due to the dereplication and counting of amplicons to ASVs with a representative sequence. If you only have the 2 test files we downloaded they are each only a couple dozen to hundreds of MB, but the full set contains 277 paired-end sequenced samples and so contains 50 GB (you can summarize the size of a file location with the " **d**isk **u**sage command and summarize option `du -s`).
+
+```bash
+ls -lh /scratch/general/lustre/<YOUR_uNID>/Part2_Qiime_16S/
+ls -lh ~/BioinfWorkshop2021/Part2_Qiime_16S/results/repseq.qza
+du -sh /scratch/general/lustre/<YOUR_uNID>/Part2_Qiime_16S/
+```
+
+- 50 GB input of 42 million raw sequences reads were reduced to a couple files that total just a bit more than 2 MB (`repseq.qza` and `table.qza`) and 9,220 sequences.
+  - Notably, if we look at deblur logs there were initially 53098 sequences, but only 9,220 with >=10 reads/observations. This size filtering can be set in a denoising command's parameters but 10 is typical. There can be good reason to retain ASVs with even less observations but you can probably guess by the high proportion with less than 10 observations that 16S data tends to have a lot of this type of "noise". DADA2 has similar options and tends to retain more ASVs, but it isn't quite an accurate comparison at this stage of denoising because this comes after the main denoising algorithm.
 
 **NOTE if using Qiime 2019 CHPC module**: There may be some version incompatibilities. Mostly, looks to not be a problem, so you just use the same as above if possible, but if  there are issues use the 2019 files of the same name I created in the folder:
 
@@ -56,7 +79,15 @@
 ```
 ## Review
 
+- Examine your batch job scripts from the previous class and the `/results` directory.
+  - `/code/PreProcess_16S.outerror`: Notice timestamp of when it was finished versus when your initial job was submitted.
+    - Hint: Make use of the `date` command in your batch scripts for finding time of different steps.
+  - `/results`:
+
 **Review batch job script from before and what outputs are expected to look like / time to run**
+
+
+
 
 We are working interactively with a smaller dataset first to test out our commands, but ultimately we are trying to build a batch script that can be submitted and run non-interactively for the full dataset. The overall structure of a batch script will usually look something like this (will add number 1 at the end):
 ![General Batch Script Process](https://drive.google.com/uc?export=view&id=1OmDxGQeS2wpe6I6B6Dtoin0xxqCvBqGw)
@@ -98,10 +129,10 @@ cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2_Qiime_1
 ### 1.1 Summarize Table
 Let's first determine the number of *quality* sequences (observations now) in each sample. If you were able to run the full dataset as a batch script you previously generated a summarized table visualization already. If not, let's generate this now. First, make sure you are in the correct directory since I'm using relative paths to refer to the filenames succinctly.
 ```bash
-$ cd ~/BioinfWorkshop2020/Part2_Qiime_16S/
+cd ~/BioinfWorkshop2020/Part2_Qiime_16S/
 ```
 ```bash
-$ qiime feature-table summarize \
+qiime feature-table summarize \
  --i-table table_full.qza \
  --o-visualization table_full.qzv
 ```
@@ -111,7 +142,7 @@ Examine the .qzv visualization file as we did before on the qiime2 visualization
 ### 1.2 Filter out samples
 Let's filter out the bottom 2 samples that only have a few hundred observations. I'm mainly doing this just to show those commands and keep this method in your thoughts as an important QC. I suspect the 500 seqs / sample aren't actually bad at all given some of these are lung communities that are relatively low in microbes.
 ```bash
-$ qiime feature-table filter-samples \
+qiime feature-table filter-samples \
  --i-table table_full.qza \
  --o-filtered-table table_full1k.qza \
  --p-min-frequency 1000
@@ -123,7 +154,7 @@ One way to assess if your level of sequencing is covering the community is to lo
 (I'll note that this command and the graph generated is actually much more useful if you provide the metadata table as well, but it's quite so slow already due to the repeated subsampling required so for in class I am not doing this, but it's a good idea if you do are doing this outside of class).
 
 ```bash
-$ qiime diversity alpha-rarefaction \
+qiime diversity alpha-rarefaction \
  --i-table table_full.qza \
  --o-visualization collector_curve.qzv \
  --p-metrics observed_otus \
@@ -141,7 +172,7 @@ If you take one ecology concept from this course I hope it is that there is many
 Because a few diversity metrics are more commonly used than others and together do a pretty good job describing diversity of communities, qiime2 has made a "core-diversity" method that does this most common calculations. As we like to weight by phylogenetic dissimilarity as well, I'll use the phylogenetic method. These methods within Qiime require a depth for even subsampling (random, without replacement). This has become a fairly contentious method, but has much precedence as well. Some good arguments can be made on both sides in my opinion and I'm not going to get into it. However, be aware you can still do diversity calculations without it in Qiime2 if you don't use this "core-diversity" method. Given that we saw a pretty good amount of species in each sample by 2500 sequences per sample, and that I want to speed up some calculations in class, let's choose that as our sequencing depth.
 
 ```bash
-$ qiime diversity core-metrics-phylogenetic \
+qiime diversity core-metrics-phylogenetic \
  --i-table table_full1k.qza \
  --i-phylogeny tree_root_full.qza \
  --output-dir core-div \
@@ -159,7 +190,7 @@ While the alpha diversity metrics are calculated for each sample in the previous
 
 As a simple example, let's just examine Shannon diversity among the different sample types:
 ```bash
-$ qiime diversity alpha-group-significance \
+qiime diversity alpha-group-significance \
  --i-alpha-diversity core-div/shannon_vector.qza \
  --o-visualization core-div/shannon_SampleType.qzv \
  --m-metadata-file metadata/SraRunTable_full.txt
@@ -168,13 +199,13 @@ $ qiime diversity alpha-group-significance \
 - Download the visualization and check it out. A couple things to notice. First, while qiime calculates for every category within that metadata file, it wouldn't make any sense to use this to examine, for example, asthma status because we have all 4 sample types in there. This is just doing Kruskal-Wallis test. Grab the dropdown menu for column and look at SampleType. Shannon diversity is significantly different among all sample types. Second, I have got to point out that **Shannon diversity does NOT == EVENNESS**. This is *frequently* misinterpreted in the literature. It does indeed account for evenness, but richness (or number of species) as well. Notice how high the fecal samples are, which if this was only evenness would suggest they are highly even communities. Let's use one of a couple different evenness measures to directly ask this. For a proper comparison, we'll use the same subsampled (aka rarefied) table to calculate this, then do the significance tests:
 
 ```bash
-$ qiime diversity alpha \
+qiime diversity alpha \
  --i-table core-div/rarefied_table.qza \
  --p-metric mcintosh_e \
  --o-alpha-diversity core-div/mcintosh_vector.qza
 ```
 ```bash
-$ qiime diversity alpha-group-significance \
+qiime diversity alpha-group-significance \
  --i-alpha-diversity core-div/mcintosh_vector.qza \
  --o-visualization core-div/mcintosh_SampleType.qzv \
  --m-metadata-file metadata/SraRunTable_full.txt
@@ -183,7 +214,7 @@ $ qiime diversity alpha-group-significance \
 - Download and examine that result as well by sample type. Mcintosh's evenness is an index, so values have a closed range, in this case between 0 and 1. As values approach 1, the community is more even, or more homogenously distributed. This is not only different than the Shannon result, the pattern is completely opposite! So, if we (as is frequently done) said that our Shannon diversity shows fecal communities are more even, we would have completely misinterpreted the data! Wow. Why? As Shannon is a combination of richness and evenness we need to look at richness to understand. That's easy, just count the species, which was already done for us with the core diversity metric. Do the statistical test to create the visualizer.
 
 ```bash
-$ qiime diversity alpha-group-significance \
+qiime diversity alpha-group-significance \
  --i-alpha-diversity core-div/observed_otus_vector.qza \
  --o-visualization core-div/observed_otus_SampleType.qzv \
  --m-metadata-file metadata/SraRunTable_full.txt
@@ -195,7 +226,7 @@ Again, download and view the results. You can see that there are many less featu
 Beta diversity describes the differences *between* communities. As such, it is generally less sensitive to sampling effects than alpha diversity. More so with some metrics than others. QIIME2 does a few different functions for you in order to give you a principle coordinates analysis plot right away with the core diversity functions. The core diversity function calculates the distance matrices for 3 of the most common beta diversity metrics, then calculates eigen vectors and principle components and plots them with a cool visualizer that is pretty easy to format (too easy sometimes, be careful!). Before we look at the graphs let's also calculate significance with permanova so we can discuss what it means with the graph as a visualization. In order to do this, use the "beta-group-significance" command. Add the `--p-pairwise` option to test for differences between all pairs of sample types.
 
 ```bash
-$ qiime diversity beta-group-significance \
+qiime diversity beta-group-significance \
  --i-distance-matrix core-div/weighted_unifrac_distance_matrix.qza \
  --m-metadata-file metadata/SraRunTable_full.txt \
  --m-metadata-column sample_type \
@@ -223,7 +254,7 @@ We went through much more of an exploratory analysis of the full data in the abo
 There's a couple different ways to subset your data with the same qiime2 command. The simplest way is probably to provide a list of the sample IDs. A more efficient way to subset is using the statements with the `--p-where` option. These use SQL syntax. This syntax is used all over for working with data tables and we'll see similar methods with some R packages. It's easy when you are only trying to grab one category, but a bit more complicated when trying to pass multiple options. Let's subset to just the BAL samples for further exploration.
 
 ```bash
-$ qiime feature-table filter-samples \
+qiime feature-table filter-samples \
  --i-table table_full.qza \
  --o-filtered-table table_full_BAL.qza \
  --m-metadata-file metadata/SraRunTable_full.txt \

@@ -39,3 +39,6 @@ qiime tools import \
  --input-path ${MANIFEST} \
  --output-path seqs_import.qza \
  --input-format PairedEndFastqManifestPhred33
+
+ # Don't copy the seqs_import.qza, just the vizualizer. The seqs_import.qza is large and just a different format of the input fastq files, so unnecessary to retain.
+ cp seqs_import.qzv ${WRKDIR}/results/
