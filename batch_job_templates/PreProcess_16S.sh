@@ -5,10 +5,10 @@
 #SBATCH -n 2
 #SBATCH -J PreProcess16S
 #SBATCH --time=12:00:00
-#SBATCH -o <YOUR_ABSOLUTE_PATH_TO_HOME>/BioinfWorkshop2021/Part2_Qiime_16S/jobs/PreProcess_16S.outerror
+#SBATCH -o <YOUR_ABSOLUTE_PATH_TO_HOME>/BioinfWorkshop2021/Part2_Qiime_16S/code/PreProcess_16S.outerror
 
 mkdir -p ~/BioinfWorkshop2021/Part2_Qiime_16S
-mkdir -p ~/BioinfWorkshop2021/Part2_Qiime_16S/jobs
+mkdir -p ~/BioinfWorkshop2021/Part2_Qiime_16S/results
 mkdir -p ~/BioinfWorkshop2021/Part2_Qiime_16S/metadata
 
 SCRATCH=/scratch/general/lustre/<Your_uNID>/Part2_Qiime_16S
@@ -87,28 +87,28 @@ qiime deblur denoise-16S \
   --i-demultiplexed-seqs seqs_trim_join.qzv \
   --p-trim-length 250 \
   --p-jobs-to-start 12 \
-  --o-table table_full.qza \
-  --o-representative-sequences repseq_full.qza \
-  --o-stats table_full_stats.qza
+  --o-table table.qza \
+  --o-representative-sequences repseq.qza \
+  --o-stats table_stats.qza
 
 qiime feature-table summarize \
-   --i-table table_full.qza \
-   --o-visualization table_full.qzv
+   --i-table table.qza \
+   --o-visualization table.qzv
 
 qiime feature-table tabulate-seqs \
-   --i-data repseq_full.qza \
-   --o-visualization repseq_full.qzv
+   --i-data repseq.qza \
+   --o-visualization repseq.qzv
 
 
-cp table_full.qz[av] ${WRKDIR}
-cp repseq_full.qz[av] ${WRKDIR}
+cp table.qz[av] ${WRKDIR}
+cp repseq.qz[av] ${WRKDIR}
 
 qiime phylogeny align-to-tree-mafft-fasttree \
---i-sequences repseq_full.qza \
+--i-sequences repseq.qza \
 --o-alignment aligned_repseq.qza \
 --o-masked-alignment masked_aligned_repseq.qza \
---o-tree tree_unroot_full.qza \
---o-rooted-tree tree_root_full.qza
+--o-tree tree_unroot.qza \
+--o-rooted-tree tree_root.qza
 
 cp tree*.qza ${WRKDIR}
 
@@ -120,11 +120,11 @@ CLASSIFIER=/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part2
 
 qiime feature-classifier classify-sklearn \
 --i-classifier ${CLASSIFIER} \
---i-reads repseq_full.qza \
---o-classification taxonomy_full.qza \
+--i-reads repseq.qza \
+--o-classification taxonomy.qza \
 --p-n-jobs 2
 
-cp taxonomy_full.qza ${SCRATCH}
+cp taxonomy.qza ${SCRATCH}
 
 # Good idea to comment out the remove input fastq until you know it worked. Most of the time of this script is spent downloading the files and imorting them to the QIIME2 artifact file file.
 # rm *.fastq
