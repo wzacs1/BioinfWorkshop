@@ -165,7 +165,7 @@ MAP=${HOME}/BioinfWorkshop2021/Part2_Qiime_16S/metadata/SraRunTable_full.txt
 - Let's first determine the number of *quality* sequences (observations now) in each sample. If you were able to run the full dataset as a batch script you previously generated a summarized table visualization already.
 - Either way, let's generate this again, but this time let's add the map file with metadata which will adds some useful breakdown by metadata categories as well. First, make sure you are in the correct directory since I'm using relative paths to refer to the filenames succinctly.
 ```bash
-cd ~/BioinfWorkshop2020/Part2_Qiime_16S/results
+cd ~/BioinfWorkshop2021/Part2_Qiime_16S/results
 ```
 ```bash
 qiime feature-table summarize \
@@ -174,7 +174,7 @@ qiime feature-table summarize \
  --m-sample-metadata-file ${MAP}
 ```
 
-- Download to your local computer then examine the .qzv visualization file as we did before on the qiime2 visualization webpage. [view.qiime2.org](view.qiime2.org). Go to the "Interactive Sample Detail" tab.
+- Download to your local computer then examine the .qzv visualization file as we did before on the qiime2 visualization webpage. [https://view.qiime2.org](https://view.qiime2.org/). Go to the "Interactive Sample Detail" tab.
 - We can see that there is quite a range from almost a million to only 504. I suspect the original authors already filtered some that were lower, which is common for public deposited datasets, and cutoffs of around 500-1000 are frequent.
 
 #### 1.2 Filter out samples
