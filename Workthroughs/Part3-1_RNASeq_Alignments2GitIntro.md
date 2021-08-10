@@ -1,3 +1,38 @@
+<!-- TOC -->
+
+- [Main](#main)
+	- [Objectives](#objectives)
+	- [Requirements / Inputs](#requirements--inputs)
+	- [Plan Overall Method](#plan-overall-method)
+	- [RNAseq QC/trim and alignments with Salmon](#rnaseq-qctrim-and-alignments-with-salmon)
+		- [Step 0: Setup directory structure](#step-0-setup-directory-structure)
+		- [Step 1: Obtain sequences](#step-1-obtain-sequences)
+			- [Step 1 - test dataset: Copy the raw fastq sequences to your scratch directory.](#step-1---test-dataset-copy-the-raw-fastq-sequences-to-your-scratch-directory)
+			- [Step 1 - full dataset: Copy the raw fastq sequences to your scratch directory.](#step-1---full-dataset-copy-the-raw-fastq-sequences-to-your-scratch-directory)
+			- [(optional) Step 1 - full dataset: Pull the full dataset from SRA](#optional-step-1---full-dataset-pull-the-full-dataset-from-sra)
+		- [Step 2: Trim adapters, low quality sequences and create quality plots](#step-2-trim-adapters-low-quality-sequences-and-create-quality-plots)
+			- [Step 2: test dataset](#step-2-test-dataset)
+			- [Step 2: full dataset](#step-2-full-dataset)
+		- [Step 3: Run alignments](#step-3-run-alignments)
+			- [Step 3a (optional): Build the reference index](#step-3a-optional-build-the-reference-index)
+			- [Step 3b - test dataset](#step-3b---test-dataset)
+			- [Step 3b - full dataset](#step-3b---full-dataset)
+		- [Step 4: Summarize your sequences and alignments with MultiQC](#step-4-summarize-your-sequences-and-alignments-with-multiqc)
+			- [Step 4 - test dataset](#step-4---test-dataset)
+			- [Step 4 - full dataset](#step-4---full-dataset)
+		- [Step 5: Cleanup](#step-5-cleanup)
+	- [Step 6: Submit batch script](#step-6-submit-batch-script)
+	- [Git and GitHub](#git-and-github)
+		- [Step 0: First time setup on CHPC](#step-0-first-time-setup-on-chpc)
+		- [Step 1: Create a new, empty repository on GitHub](#step-1-create-a-new-empty-repository-on-github)
+		- [Step 2: Initialize your repository on the command line and associate it with the remote repository on GitHub](#step-2-initialize-your-repository-on-the-command-line-and-associate-it-with-the-remote-repository-on-github)
+		- [Step 3: Continue adding files to track and address conflicts](#step-3-continue-adding-files-to-track-and-address-conflicts)
+			- [Step 3b: Address issues and incorporate changes from remote repo to local (`pull`)](#step-3b-address-issues-and-incorporate-changes-from-remote-repo-to-local-pull)
+		- [Use GitHub Desktop application to collaborate with yourself and/or easily edit scripts and push to CHPC](#use-github-desktop-application-to-collaborate-with-yourself-andor-easily-edit-scripts-and-push-to-chpc)
+- [Practice / With Your Own Data](#practice--with-your-own-data)
+- [Links / Cheatsheets](#links--cheatsheets)
+
+<!-- /TOC -->
 
 # Main
 
@@ -5,10 +40,16 @@
 ##### I. Workthrough a test RNAseq dataset to QC and align reads, adding to batch script as we go.
 ##### II. Submit full batch script.
 	- The template for this is here: [PreProcess_RNAseq.sh](https://github.com/wzacs1/BioinfWorkshop/blob/master/batch_job_templates/PreProcess_RNAseq.sh)
+##### III. Understand Git and GitHub.
 
 ## Requirements / Inputs
-1. A CHPC account and interactive session on compute node (obtained as in previous classes with `salloc` command)
-2. A plain text editor installed locally for your job submission script. Prefer Atom.
+1. A CHPC account and interactive session on compute node (obtained as in previous classes with `salloc` command):
+```bash
+salloc -A mib2020 -p lonepeak-shared -n 2 --time 3:00:00
+# OR
+salloc -A notchpeak-shared-short -p notchpeak-shared-short -n 2 --time 3:00:00
+```
+2. **Atom** and **GitHub Desktop** (optional) installed locally
 3. All inputs can be found *within* (i.e. directories within this directory):
 `/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part3_R_RNAseq`
 - Probably a good idea to make a soft link (`ln -s`) to this location in your BioinfWorkshop2021/Part3_R_RNAseq directory. Let's call the link "class_space"
@@ -89,7 +130,7 @@ mkdir -p code; mkdir -p metadata
 
 - *NOTE*: Use only option 1 (for interactive testing) or option 2 (for full batch job). The "(optional)" part is shown only if you want to see how the whole dataset was downloaded from the SRA.
 
-### Step 1 - test dataset: Copy the raw fastq sequences to your scratch directory.
+#### Step 1 - test dataset: Copy the raw fastq sequences to your scratch directory.
 - Throughout this class, I will give the test dataset commands and then the full dataset commands. Mostly, they will be the same.
   - Use the "test dataset" to run interactively today and test our commands are working
   - Use the "full dataset" commands to add to your batch script. Keep in mind that the "full dataset" only contains the **Biopsy** samples.
@@ -104,7 +145,7 @@ cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part3_R_RNAse
  ./
 ```
 
-### Step 1 - full dataset: Copy the raw fastq sequences to your scratch directory.
+#### Step 1 - full dataset: Copy the raw fastq sequences to your scratch directory.
 Below we copy the full biopsy dataset to your scratch directory.
 **Add to batch script**.
 ```bash
@@ -115,7 +156,7 @@ cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part3_R_RNAse
  ./
 ```
 
-### (optional) Step 1 - full dataset: Pull the full dataset from SRA
+#### (optional) Step 1 - full dataset: Pull the full dataset from SRA
 - **We won't go through this in class**, and newer sra-toolkit that actually works well as expected with `fasterq-dump` makes this easier, but I keep it here for now as documentation if you need to fall back to the previous version using `prefetch` and `fastq-dump` commands.
 
 If you want to work on pulling the full dataset from SRA I'll also show you this command, but otherwise it is easier and faster to just copy the full raw seq dataset over from what I have already downloaded (above). This also shows that there is an issue with SRA-toolkit assigning the temporary cache space to your home normally, and then running out of space because you only have 50 Gb there. First, create a directory which sra-toolkit already knows to look in and place a single line definition there to refer it to your scratch space for temporary cache instead of your home space. You could add this to your batch script as well. As before, make sure to add your values for your scratch space. It doesn't really matter where in your scratch space as these are temporary files. I just point it to my main scratch space.
@@ -170,7 +211,7 @@ module list
   - Most programs will happily take in gzipped files like this and unzip and rezip them before and after (respectively) operating on them.
   - **.gz** files are "gzipped". Use the `pigz` command with the `-p` option to specify number of processors and parallel / quickly zip files. Unzipping is not parallelizable. Use `gunzip` for this.
 
-### Step 2: test dataset
+#### Step 2: test dataset
 ```bash
 cd ${SCRATCH}/TestSet
 for read1 in *_1.fastq.gz
@@ -183,7 +224,7 @@ done
   - A good way to work through understanding it is to replace with "trim_galore" command and all of it's options with just the `ls` command (or `echo` depending on what you are doing), to see how the loop is iterating over these files.
     - Each time it takes an input the `%` within the variable references is stripping everything after the `%` from the variable in order to remove the "_1.fastq" and replace it with "_2.fastq"; thus passing both read1 and read2 files. In this way, we referred to the read pairs by just inputting the read1.
 
-### Step 2: full dataset
+#### Step 2: full dataset
 **Add to batch script**.
 ```bash
 cd ${SCRATCH}/BiopsyOnly
@@ -339,6 +380,8 @@ sbatch <Full_Path_To_Your_Home>/BioinfWorkshop2021/Part3_R_RNAseq/code/PreProces
   - The terminology can be a bit confusing at first. Don't worry too much if you feel a bit lost. You will get more comfortable with practice and this is meant to just introduce it as with most parts of this workshop.
   - It is mainly geared towards software engineers that are working as part of team to develop software. However, many bioinformatics-focused groups also use it and it is also quite useful even if you only use it with yourself.
   - Useful just by itself on one computer, but most useful when used in conjuction with a "remote" repository, for example hosted on GitHub.
+  - Many tutorials out there, but I think this page (also linked at bottom in links section) has some of the simpler and more useful pages (though it uses BitBucket instead of GitHub): [https://www.atlassian.com/git/tutorials](https://www.atlassian.com/git/tutorials)
+  - CHPC's page is also very concise and useful: [https://www.chpc.utah.edu/documentation/software/git-scm.php](https://www.chpc.utah.edu/documentation/software/git-scm.php)
 
 - **GitHub** is one of several sites that hosts Git repositories. Along with Git, really can help you collaborate with others, yourself and share your code.
     - Facilitates documentation and reproducibility.
@@ -356,9 +399,21 @@ sbatch <Full_Path_To_Your_Home>/BioinfWorkshop2021/Part3_R_RNAseq/code/PreProces
 
 ### Step 0: First time setup on CHPC
 - It is very helpful (and some required) to do a bit of first time setup on CHPC.
-- Git is available without a module, but the version is somewhat old. Generally, useful to load the module first (usually fine to do this all on head node, very minimal computation is done).
+- Git is available without a module, but the version is somewhat old. Generally, useful to load the module first that is kept more up-to-date (usually fine to do this all on head node, very minimal computation is done).
 ```bash
 module load git
+```
+- (*you'll only need to do this once*) Add a couple configuration values so your projects are properly associated with you and git knows to use the `nano` editor when needed.
+  - Use your publishing / professional name. If you are serious about bioinformatics your GitHub account may become as important as your CV! And these repositories may well be referenced in your publications.
+  - Use the email address you signed up for GitHub with. **Don't add the < >!**
+```bash
+git config --global user.name "<ADD_YOUR_NAME_HERE>"
+```
+```bash
+git config --global user.email "<ADD_YOUR_EMAIL_ADDRESS_HERE>"
+```
+```bash
+git config --global core.editor nano
 ```
 
 
@@ -469,7 +524,7 @@ git push -u origin main
 ```
 - **Oh no! Error!** Well that's actually good, as you can see by the message. There are changes we made to our README.md online that's not in our local one on CHPC. We need to address this conflict and update our local first with these changes.
 
-#### Step 3b: Address issuses and incorporate changes from remote repo to local (`pull`)
+#### Step 3b: Address issues and incorporate changes from remote repo to local (`pull`)
 
 - In order to incorporated changes we need to "fetch" the remote repo changes, then "merge" them with the local changes.
   - `git pull` is a quick way to fetch and merge because this is so common.
@@ -500,15 +555,54 @@ git push -u origin main
 
 1. Open GitHub Desktop on your computer and sign in to it with your GitHub credentials
    - Should ask at first setup, or you can go to File --> Options
-2.
 
+2. "Clone" your remote repository to your local computer. Cloning is just copying but Git's terminology. You need it all local first to work on it. Multiple ways to do this around the app and you may have such an option on your startup screen already. Here's the menu-based way:
+   1. "File" --> "Clone repository"
+   2. On the "GitHub.com" tab, find your newly created repository. Called "Bioinf2021" if you named it as I did above.
+   3. Chooose a local (on your laptop/desktop) path for this repository. By default GitHub Desktop will try to create a folder called "GitHub" in your user direcotry somewhere and store all your repos there. I would keep this the same, but you could try to merge it into a pre-existing folder elsewhere if you desired. **Just take note of this file location** because I'll have you save a file to it in a moment.
+   4. Click the "Clone" button and wait for it to download your repository.
+
+3. Explore the GitHub Desktop structure .
+   1. Note the current repository and current branch dropdowns.
+   2. Note the "History" tab.
+      - All the stuff we did before is kept track of. For each commit there is a history entry. Green things are new, yellow are changes to existing, reds are deletions.
+      - Here, we could review and accept or reject changes to our whole project much like one would do in Word for a single doc. But right now we are just collaborating with ourselves so there are now differences to accept / reject.
+
+4. Open the repository in Atom. Go back to the "Changes" tab and click on the button to the right to "Open the repository in Atom".
+   - Notice the "project-centric" structure again. Your whole repo is there with the parts we pushed from CHPC already and organized around your repo.
+
+5. Edit the README.md file to make changes. Let's make that initial README.md a little more useful by adding some links to the different sections:
+   1. Navigate to your GitHub repo and the Part1 folder.
+   2. Copy the link.
+   3. Open your README.md in Atom, by clicking on it.
+   4. Highlight the whole "Part 1 Linux:" bit you already had and hit the first bracket key `[`. You could just add the brackets one at a time, but this just shows how Atom makes common scripting a bit easier. It should add the brackets surrounding what you highlighted.
+   5. After the "Part 1 Linux:" now enclosed in square brackets, paste the link enclosed in parentheses immediately (no spaces) after it. It should now read something like (with your link in <>): `[Part 1 Linux:](<https://YOUR_ADDRESS_HERE>)`
+      - This is how markdown recognizes links and should make the "Part 1 Linux:" a link out to that folder. Don't worry about the syntax too much for now, it's just an example.
+			- Notice how Atom is adding a vertical color bar to highlight your changes. They aren't seen by GitHub Desktop till you save the file.
+   6. Save the README.md file.
+
+6. (optional) Add your batch script we made locally or other files. If you didn't add your batch script for 16S processing to CHPC before (maybe didn't finish it?) add it to this repo where it belongs (likely in the `code` folder).
+   1. Simply "Save as..." or copy another file to the local location of your repo. Everything you add there gets tracked and can then be pushed to your remote.
+
+7. Return to GitHub Desktop and see how the changes have been highlighted.
+8. Add a commit message and push your changes.
+   1. Add a message to the box (probably with "Update README.md" already filled in).
+   2. Click "Commit to main".
+   3. On the resulting page, now push your commits by clicking the "Push origin" button.
+
+**GitHub Desktop Summary**:
+
+- We now did the same thing on GitHub desktop that we did on the command line for CHPC.
+- You would now need to "pull" those changes from your GitHub repo to your CHPC location to keep them up to date. I leave it for you to do this as practice.
+- The "Fetch origin" button will look at the remote and fetch any changes. If there are changes, you then need to review and merge them. Remember, "pull" is "fetch" and then "merge" in one command. Try this out by making changes on CHPC, pushing them, then clicking (or really just hovering over) the fetch button.
 
 # Practice / With Your Own Data
-- Understand the while loop and commands I used in the optional section shown how to pull the full dataset from the SRA. You don't need to actually pull them all, but load the sra-toolkit and examine options. This can help understand the SRA format.
-- Submit and work through any errors that come up with your batch script.
+- Submit and work through any errors that come up with your RNAseq batch script.
 - Upload your own RNAseq data and work through the day's commands. You may need to modify settings depending on your organism and sequencing setup. This is an excellent opportunity to ensure you know each command well.
+- Make changes in your CHPC and local repos and practice pushing and pulling to see those effects.
 
 # Links / Cheatsheets
-- Node sharing page on CHPC: [https://www.chpc.utah.edu/documentation/software/node-sharing.php](https://www.chpc.utah.edu/documentation/software/node-sharing.php)
 - Salmon page: [https://salmon.readthedocs.io/en/latest/salmon.html](https://salmon.readthedocs.io/en/latest/salmon.html)
 - MultiQC tutorial video: [https://www.youtube.com/watch?v=qPbIlO_KWN0](https://www.youtube.com/watch?v=qPbIlO_KWN0)
+- Great Git tutorials on Atlassian: [https://www.atlassian.com/git/tutorials](https://www.atlassian.com/git/tutorials)
+- CHPC's page on Git: [https://www.chpc.utah.edu/documentation/software/git-scm.php](https://www.chpc.utah.edu/documentation/software/git-scm.php)

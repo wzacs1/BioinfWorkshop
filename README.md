@@ -15,6 +15,7 @@ as individual pages. Each served as the basis for the slides from each day, and 
 - [Part 2-1: Regex and For Loops, Begin 16S Seq Pull and Processing](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part2-1_SRAPull_16SseqProcessQiiime2.md)
 - [Part 2-2: 16S Seq Process with QIIME2](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part2-2_16SseqProcessQiime2.md)
 - [Part 2-3: 16S Seq analysis with QIIME2](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part2-3_16SseqAnalysis.md)
+- [Part 3-1: RNAseq process and alignments, Git and GitHub](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part3-1_RNASeq_Alignments2GitIntro.md)
 
 Tentative Schedule:
 
@@ -26,9 +27,9 @@ Day #  |  Date  | Title  | Topics | VideoLink
 4 | July 23 | NO CLASSS |
 5 | July 28 | Part 2-1: regex and for loop in Linux, Begin 16S seq process with QIIME2,  | sra-toolkit, grep, for loops, QIIME2 16S seq processing | [Class 4](https://www.youtube.com/watch?v=xfRUAr7F0BE&list=PL_Pe_9PaIEBN-MDiucIgx4sR1NLbneDDE&index=4)
 6 | July 30 | Part 2-2: 16S seq process with QIIME2 | 16S seq preprocessing, batch job submission | [Class 5](https://www.youtube.com/watch?v=ujmYcYiC6Ls&list=PL_Pe_9PaIEBN-MDiucIgx4sR1NLbneDDE&index=5)
-7 | Aug 4 | Part 2-3: 16S seq analysis with QIIME2 | microbiome data analysis in QIIME2, intro to git and github | [Class 6]
+7 | Aug 4 | Part 2-3: 16S seq analysis with QIIME2 | microbiome data analysis in QIIME2, intro to git and github | [Class 6](https://www.youtube.com/watch?v=dSmLceHxSiU&list=PL_Pe_9PaIEBN-MDiucIgx4sR1NLbneDDE&index=6)
 8 | Aug 6 | CLASS CANCELLED  |   |
-9 | Aug 11 | Part 3-1: RNAseq process and alignments | sequence QC and alignments | [Class 7]
+9 | Aug 11 | Part 3-1: RNAseq process and alignments, Git and GitHub | sequence QC and alignments, Git/GitHub | [Class 7]
 10 | Aug 13 | Part 3-2: Intro to R and R Studio | basic R, R packages, bioconductor | [Class 8]
 11 | Aug 18 | Part 3-3: Intro to R and R Studio. | basic R, R markdown | [Class 9]
 12 | Aug 20 | Part 3-4: RNAseq analysis 1: DE analysis | differential expression analysis | [Class 10]
