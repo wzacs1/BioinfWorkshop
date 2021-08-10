@@ -113,7 +113,7 @@ cd /scratch/general/lustre/${USER}/Part3_R_RNAseq/
 pwd -P
 ```
 
-- If your prompt displays the directory before the `$`, notice how the direcory name was the same in both places. This naming of the directories the same in both places (scratch and working directory) to some confusion, and is not at all required. It's just a conventional way I name the different directories in order to make it easy to copy the full scratch directory over when I'm done and maintain the same naming if desired.
+- If your prompt displays the directory before the `$`, notice how the directory name was the same in both places. This naming of the directories the same in both places (scratch and working directory) to some confusion, and is not at all required. It's just a conventional way I name the different directories in order to make it easy to copy the full scratch directory over when I'm done and maintain the same naming if desired.
 
 Finally, create `code` and `metadata` directories in your working directory. You'll save your batch script in your `code` directory as before.
 
@@ -216,7 +216,7 @@ module list
 cd ${SCRATCH}/TestSet
 for read1 in *_1.fastq.gz
   do
-  trim_galore --paired --fastqc --dont_gzip --length 20 -q 20 -o ./ ${read1} ${read1%_1.fastq.gz}_2.fastq.gz
+  trim_galore --paired --fastqc --length 20 -q 20 -o ./ --cores 2 ${read1} ${read1%_1.fastq.gz}_2.fastq.gz
 done
 ```
 
@@ -289,7 +289,7 @@ done
       -  [https://salmon.readthedocs.io/en/latest/library_type.html#fraglibtype](https://salmon.readthedocs.io/en/latest/library_type.html#fraglibtype)
 
 #### Step 3b - full dataset
-Now, the command for the full dataset, where we really just replaced the direcotry here, but just to be clear. Here, I'll also add a couple statement to just print the time of start and end. These are often useful when running something expected to take a long time so you can compare later and make faster as needed. Not super helpful in an interactive session, but with the submitted job script these will be recorded to your output and you can `grep` for them to quickly build reports, for example. Also note that the number of processes is changed to 12 because I'll assume you run this with 12 processes requested in your SBATCH -n directive.
+Now, the command for the full dataset, where we really just replaced the directory here, but just to be clear. Here, I'll also add a couple statement to just print the time of start and end. These are often useful when running something expected to take a long time so you can compare later and make faster as needed. Not super helpful in an interactive session, but with the submitted job script these will be recorded to your output and you can `grep` for them to quickly build reports, for example. Also note that the number of processes is changed to 12 because I'll assume you run this with 12 processes requested in your SBATCH -n directive.
 
 **Add to batch script**.
 ```bash
@@ -435,7 +435,7 @@ git config --global core.editor nano
 git <A_GIT_COMMAND> <OPTIONAL_SUB_FUNCTIONS>  -<OPTIONS>
 ```
 
-1. Move into the directory of the project you want to create a repository for. For us, this is the parent direcotry of the BioinfWorskhop2021 class.
+1. Move into the directory of the project you want to create a repository for. For us, this is the parent directory of the BioinfWorskhop2021 class.
 ```bash
 cd ~/BioinfWorkshop2021
 ```
@@ -559,7 +559,7 @@ git push -u origin main
 2. "Clone" your remote repository to your local computer. Cloning is just copying but Git's terminology. You need it all local first to work on it. Multiple ways to do this around the app and you may have such an option on your startup screen already. Here's the menu-based way:
    1. "File" --> "Clone repository"
    2. On the "GitHub.com" tab, find your newly created repository. Called "Bioinf2021" if you named it as I did above.
-   3. Chooose a local (on your laptop/desktop) path for this repository. By default GitHub Desktop will try to create a folder called "GitHub" in your user direcotry somewhere and store all your repos there. I would keep this the same, but you could try to merge it into a pre-existing folder elsewhere if you desired. **Just take note of this file location** because I'll have you save a file to it in a moment.
+   3. Chooose a local (on your laptop/desktop) path for this repository. By default GitHub Desktop will try to create a folder called "GitHub" in your user directory somewhere and store all your repos there. I would keep this the same, but you could try to merge it into a pre-existing folder elsewhere if you desired. **Just take note of this file location** because I'll have you save a file to it in a moment.
    4. Click the "Clone" button and wait for it to download your repository.
 
 3. Explore the GitHub Desktop structure .
