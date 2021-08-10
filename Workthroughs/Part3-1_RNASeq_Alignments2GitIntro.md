@@ -496,6 +496,7 @@ git push -u origin main
 ### Use GitHub Desktop application to collaborate with yourself and/or easily edit scripts and push to CHPC
 
 - The desktop application can now get a 3rd location (your local laptop/desktop computer) in the mix. I find this most useful just for more easily editing files in Atom and not having to worry about upload/download manually and checking what is where. However, it's graphic interface also helps highlight changes more easily.
+- Here, we will also see how well this integrates with Atom.
 
 1. Open GitHub Desktop on your computer and sign in to it with your GitHub credentials
    - Should ask at first setup, or you can go to File --> Options
