@@ -39,7 +39,7 @@
 ## Objectives
 ##### I. Workthrough a test RNAseq dataset to QC and align reads, adding to batch script as we go.
 ##### II. Submit full batch script.
-	- The template for this is here: [PreProcess_RNAseq.sh](https://github.com/wzacs1/BioinfWorkshop/blob/master/batch_job_templates/PreProcess_RNAseq.sh)
+- The template for this is here: [PreProcess_RNAseq.sh](https://github.com/wzacs1/BioinfWorkshop/blob/master/batch_job_templates/PreProcess_RNAseq.sh)
 ##### III. Understand Git and GitHub.
 
 ## Requirements / Inputs
@@ -297,9 +297,9 @@ module purge
 module load salmon
 cd ${SCRATCH}/BiopsyOnly
 echo "TIME:Start Salmon Biopsy Alignment: `date`"
-for read1 in *_1_val_1.fq
+for read1 in *_1_val_1.fq.gz
  do
- salmon quant -i ${SALMONINDEX} --numGibbsSamples 20 --gcBias -l A -p 12 -1 ${read1} -2 ${read1%_1_val_1.fq}_2_val_2.fq --validateMappings -o ${read1%_1_val_1.fq}_salm_quant
+ salmon quant -i ${SALMONINDEX} --numGibbsSamples 20 --gcBias -l A -p 12 -1 ${read1} -2 ${read1%_1_val_1.fq.gz}_2_val_2.fq.gz --validateMappings -o ${read1%_1_val_1.fq.gz}_salm_quant
 done
 echo "TIME:End Salmon Biopsy Alignment: `date`"
 ```
@@ -359,7 +359,7 @@ Just as we did before with the 16S data, we have built up a full batch script to
 ```
 #!/bin/bash
 
-#SBATCH --account=mib2021
+#SBATCH --account=mib2020
 #SBATCH --partition=lonepeak-shared
 #SBATCH -n 12
 #SBATCH -J PreProcessRNAseq
@@ -463,17 +463,22 @@ git add .gitignore
 git status
 ```
 
-5. Set the branch of the repository to be named "main" branch. Branches are mostly used when multiple people or versions are working on the same thing simultaneously. Notice "on branch master" changed to "on branch main". This is a recent change made by git to change from using the "master" terminology, but the installed Git version is still a bit behind so we need to change the name here so it is the same name as the branch on our remote repository on GitHub.
+5. Commit your changes. Before you can do anything else, you need to "commit" these changes you've made as ready to be pushed. You can just type `git commit` and it will bring up your default editor (nano as we set it) to add a message (required), or you can just add a short message with the `-m` option as below.
+```bash
+git commit -m "add README and gitignore file"
+```
+
+6. Set the branch of the repository to be named "main" branch. Branches are mostly used when multiple people or versions are working on the same thing simultaneously. Notice "on branch master" changed to "on branch main". This is a recent change made by git to change from using the "master" terminology, but the installed Git version is still a bit behind so we need to change the name here so it is the same name as the branch on our remote repository on GitHub.
 ```bash
 git branch -M main
 git status
 ```
 
-6. Add the location of the remote repository (on GitHub) so this local repo knows where to send it to. Copy the `<https://<YOUR_REPO_INFO.git>` from the GitHub page
+7. Add the location of the remote repository (on GitHub) so this local repo knows where to send it to. Copy the `<https://<YOUR_REPO_INFO.git>` from the GitHub page
 ```bash
 git remote add origin <https://YOUR_REPO_LOCATION.git>
 ```
-7. Finally, push your committed changes to your remote repository and check them on your GitHub page.
+8. Finally, push your committed changes to your remote repository and check them on your GitHub page.
 ```bash
 git push -u origin main
 ```

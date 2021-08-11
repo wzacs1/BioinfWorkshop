@@ -1,10 +1,10 @@
 #!/bin/bash
 
-#SBATCH --account=MIB2020
+#SBATCH --account=mib2020
 #SBATCH --partition=lonepeak-shared
 #SBATCH -n 12
 #SBATCH -J PreProcessRNAseq
-#SBATCH --time=12:00:00
+#SBATCH --time=36:00:00
 #SBATCH -o <YOUR_ABSOLUTE_PATH_TO_HOME>/BioinfWorkshop2021/Part2_Qiime_16S/jobs/PreProcess_16S_QIIME2019_2020Classifier.outerror
 
 WRKDIR=~/BioinfWorkshop2021/Part3_R_RNAseq/
