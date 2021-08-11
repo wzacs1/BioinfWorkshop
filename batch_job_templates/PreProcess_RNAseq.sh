@@ -5,7 +5,7 @@
 #SBATCH -n 12
 #SBATCH -J PreProcessRNAseq
 #SBATCH --time=36:00:00
-#SBATCH -o <YOUR_ABSOLUTE_PATH_TO_HOME>/BioinfWorkshop2021/Part2_Qiime_16S/jobs/PreProcess_16S_QIIME2019_2020Classifier.outerror
+#SBATCH -o <YOUR_ABSOLUTE_PATH_TO_HOME>/BioinfWorkshop2021/Part3_R_RNAseq/code/PreProcess_RNAseq.outerror
 
 WRKDIR=${HOME}/BioinfWorkshop2021/Part3_R_RNAseq/
 SCRATCH=/scratch/general/lustre/${USER}/Part3_R_RNAseq/
