@@ -393,9 +393,8 @@ sbatch <Full_Path_To_Your_Home>/BioinfWorkshop2021/Part3_R_RNAseq/code/PreProces
     - Repositories can be private at first, then made public later.
     - Can make group or lab pages and transfer repos to them or share with lab.
 
-**Process Overview Image**
+![](https://drive.google.com/uc?export=view&id=1hu9Ru4Qfn4Lmdgj-DckhpoMYQQnB5HXs)
 
-**Branches**
 
 ### Step 0: First time setup on CHPC
 - It is very helpful (and some required) to do a bit of first time setup on CHPC.
