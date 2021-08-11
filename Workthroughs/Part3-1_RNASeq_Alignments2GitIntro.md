@@ -363,7 +363,7 @@ Just as we did before with the 16S data, we have built up a full batch script to
 #SBATCH --partition=lonepeak-shared
 #SBATCH -n 12
 #SBATCH -J PreProcessRNAseq
-#SBATCH --time=16:00:00
+#SBATCH --time=36:00:00
 #SBATCH -o <Full_Path_To_Your_Home>/BioinfWorkshop2021/Part3_R_RNAseq/code/PreProcess_RNAseq.outerror
 ```
 Upload your batch script to the code directory as "PreProcess_RNAseq.sh". You can of course call it whatever you like and put it wherever you like. This is just for consistency within the class.

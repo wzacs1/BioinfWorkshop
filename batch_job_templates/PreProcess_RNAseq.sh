@@ -7,37 +7,32 @@
 #SBATCH --time=36:00:00
 #SBATCH -o <YOUR_ABSOLUTE_PATH_TO_HOME>/BioinfWorkshop2021/Part2_Qiime_16S/jobs/PreProcess_16S_QIIME2019_2020Classifier.outerror
 
-WRKDIR=~/BioinfWorkshop2021/Part3_R_RNAseq/
-SCRATCH=/scratch/general/lustre/u0210816/Part3_R_RNAseq/
+WRKDIR=${HOME}/BioinfWorkshop2021/Part3_R_RNAseq/
+SCRATCH=/scratch/general/lustre/${USER}/Part3_R_RNAseq/
 mkdir -p $SCRATCH
 
+# Here, we just copy over the input files from my shared space
 cd $SCRATCH
-mkdir -p TestSet
-cd TestSet
-cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part3_R_RNAseq/TestSet/*.fastq ./
-
-# the path to full BiopsyOnly dataset is here: /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part3_R_RNAseq/BiopsyOnly/
+mkdir -p BiopsyOnly
+cd BiopsyOnly
+cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part3_R_RNAseq/BiopsyOnly/*.gz ./
 
 module purge
-module load cutadapt/1.14
-module load fastqc/0.11.4
-module load trim_galore/0.4.4
+module load trim_galore/0.6.6
 
-cd ${SCRATCH}/TestSet
-for read1 in *_1.fastq
+for read1 in *_1.fastq.gz
   do
-  trim_galore --paired --fastqc --length 20 -q 20 -o ./ ${read1} ${read1%_1.fastq}_2.fastq
+  trim_galore --paired --fastqc --length 20 -q 20 -o ./ --cores 4 ${read1} ${read1%_1.fastq.gz}_2.fastq.gz
 done
 
-SALMONINDEX=/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part3_R_RNAseq/Hs.GRCh38.cdna.all_salmon_0.11
+SALMONINDEX=/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part3_R_RNAseq/Homo_sapiens.GRCh38.cdna.all_1.3
 
 module purge
-module load salmon
+module load salmon/1.3.0
 
-cd ${SCRATCH}/TestSet
-for read1 in *_1_val_1.fq
+for read1 in *_1_val_1.fq.gz
   do
-  salmon quant -i ${SALMONINDEX} -l A -p 2 -1 ${read1} -2 ${read1%_1_val_1.fq}_2_val_2.fq --validateMappings -o ${read1%_1_val_1.fq}_salm_quant
+  salmon quant -i ${SALMONINDEX} --numGibbsSamples 20 --gcBias -l ISR -p 12 -1 ${read1} -2 ${read1%_1_val_1.fq.gz}_2_val_2.fq.gz --validateMappings -o ${read1%_1_val_1.fq.gz}_salm_quant
 done
 
 cd ${SCRATCH}/BiopsyOnly/
