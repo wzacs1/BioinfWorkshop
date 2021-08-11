@@ -25,6 +25,11 @@ for read1 in *_1.fastq.gz
   trim_galore --paired --fastqc --length 20 -q 20 -o ./ --cores 4 ${read1} ${read1%_1.fastq.gz}_2.fastq.gz
 done
 
+module purge
+module load multiqc
+cd ${SCRATCH}/BiopsyOnly
+multiqc ./
+
 SALMONINDEX=/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part3_R_RNAseq/Homo_sapiens.GRCh38.cdna.all_1.3
 
 module purge
