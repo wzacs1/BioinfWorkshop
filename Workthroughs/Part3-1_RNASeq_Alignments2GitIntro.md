@@ -294,7 +294,7 @@ Now, the command for the full dataset, where we really just replaced the directo
 **Add to batch script**.
 ```bash
 module purge
-module load salmon
+module load salmon/1.3.0
 cd ${SCRATCH}/BiopsyOnly
 echo "TIME:Start Salmon Biopsy Alignment: `date`"
 for read1 in *_1_val_1.fq.gz
