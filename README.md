@@ -29,7 +29,7 @@ Day #  |  Date  | Title  | Topics | VideoLink
 6 | July 30 | Part 2-2: 16S seq process with QIIME2 | 16S seq preprocessing, batch job submission | [Class 5](https://www.youtube.com/watch?v=ujmYcYiC6Ls&list=PL_Pe_9PaIEBN-MDiucIgx4sR1NLbneDDE&index=5)
 7 | Aug 4 | Part 2-3: 16S seq analysis with QIIME2 | microbiome data analysis in QIIME2, intro to git and github | [Class 6](https://www.youtube.com/watch?v=dSmLceHxSiU&list=PL_Pe_9PaIEBN-MDiucIgx4sR1NLbneDDE&index=6)
 8 | Aug 6 | CLASS CANCELLED  |   |
-9 | Aug 11 | Part 3-1: RNAseq process and alignments, Git and GitHub | sequence QC and alignments, Git/GitHub | [Class 7]
+9 | Aug 11 | Part 3-1: RNAseq process and alignments, Git and GitHub | sequence QC and alignments, Git/GitHub | [Class 7](https://www.youtube.com/watch?v=aEjxUhSzuWE&list=PL_Pe_9PaIEBN-MDiucIgx4sR1NLbneDDE&index=7)
 10 | Aug 13 | Part 3-2: Intro to R and R Studio | basic R, R packages, bioconductor | [Class 8]
 11 | Aug 18 | Part 3-3: Intro to R and R Studio. | basic R, R markdown | [Class 9]
 12 | Aug 20 | Part 3-4: RNAseq analysis 1: DE analysis | differential expression analysis | [Class 10]
