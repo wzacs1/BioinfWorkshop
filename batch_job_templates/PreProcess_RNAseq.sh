@@ -30,7 +30,7 @@ module load multiqc
 cd ${SCRATCH}/BiopsyOnly
 multiqc ./
 
-SALMONINDEX=/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part3_R_RNAseq/Homo_sapiens.GRCh38.cdna.all_1.3
+SALMONINDEX=/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part3_R_RNAseq/Homo_sapiens.GRCh38.cdna.all_1.3
 
 module purge
 module load salmon/1.3.0
