@@ -466,8 +466,17 @@ table_baseR <- table_baseR[,-3]
   - In the top right, choose Project -> Close Project (don't do this quite yet though. If you did reload your project).
     - This may ask to save your .RData file if setup to do so, or it may just save it automatically on exit. Your project is now saved and can be reloaded later.
 
+## RStudio Settings to Check
+- There a number of settings and options in RStudio that I encourage you to look through and customize your environment. There are a couple important ones that we talk about though so I have an idea of how your environment is behaving and are just generally useful.
+  1. Go to the "Tools" menu and "Global Options".
+  2. Go to or stay on the "General" tab
+  3. "Save Workspace to Rdata on exit". I recommend putting it as "Ask" or "Always"
+  4. "Restore most recently opened project at startup" and "Restore .RData into workspace" go hand-in-hand and it probably makes most sense to keep both checked or neither. Else you can end up loading a different .RData file into a different project. Not a big deal, but probably not ideal behavior either.
+- Note you can also set options per Project in the "Project Options" file menu item.
+
 ## Install other packages for next time:
 - We will try to get out ahead of next class and ensure we are setup and not spending time in class waiting for installs.
+  - Note again that installs are permanent and not tied to a project, but may be tied to major versions of R. The package loading (`library()`) is specific to the project.
 - Use `c()` to construct a vector or list of values containing the packages to install.
   - We will come back to vectors next class with a better example.
 - The first 2 commands just show how a vector looks and is structured. Only the last is important for install.
