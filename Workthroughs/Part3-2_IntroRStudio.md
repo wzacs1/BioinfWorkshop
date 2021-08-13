@@ -85,7 +85,7 @@ I've tried to have you work with a "project-centric" mindset in this workshop so
   - Open a new Rmarkdown document. File -> New File -> R Markdown...
     - Keep it as a "Document" and enter your name and a title () and click "OK".
 
-### What is "markdown"?  
+### What is "markdown"?
   - Markdown allows you to easily do common formatting *inline*. So you never have to mouse click and leave the keyboard as in Word Processors. Think about all the formatting options in Microsoft Word and how many you actually use for writing a manuscript for example.
   - Markdown allows to display code chunks (and even outputs at times) in the same document next to your natural language documentation of the code. It allows you to create a narrative around your code.
   - Markdown is not a coding language, but more of a set of syntax guidelines which derives from the rich-text format (.rtf) originally. You may have used some of these rich text formatting characters in the past for blogging or posting in online forums.
@@ -282,11 +282,13 @@ library(tidyverse)
    - This is useful where you need the original that got masked because it had the same name or access direct without loading.
 
 ## R Packages with Bioconductor
-- Bioconductor is a package repository with biology specific packages. So big and useful it has it's own installer/package manager. It's already installed with the RStudio Server version we chose. Load it and watch it complain about being .01 version behind.
+- Bioconductor is a package repository with biology specific packages. So big and useful it has it's own installer/package manager (which actually just calls the normal `install.packages`). It's already installed with the RStudio Server version we chose. Load it and watch it complain about being .01 version behind.
 ```r
 library(BiocManager)
 ```
-- Now unload it. Uncheck box or use detach function:
+- Now unload it. Use detach function or uncheck box:
+  - Why should we generally NOT use the GUI and checking boxes? No documentation.
+  - **unload packages**.
 ```r
 detach("package:BiocManager", unload = TRUE)
 ```
@@ -299,8 +301,9 @@ BiocManager::install("tximport")
 ```r
 library(tximport)
 ```
-- We will 2 other packages for differential expression analysis. Let's install them both by providing a list to the BiocManager.
+- We will use 2 other packages for differential expression analysis. Let's install them both by providing a list to the BiocManager.
   - Use `c()` to construct a vector or list of values.
+  - List values are separated by commas, spaces are not required but help readability.
 ```r
 c("DESeq2", "swish")
 str(c("DESeq2", "swish"))
@@ -315,7 +318,7 @@ BiocManager::install(c("DESeq2", "swish"))
 $ cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part3_R_RNAseq/metadata/SraRunTable_RNAseq_BiopsyOnly.txt \
  ~/BioinfWorkshop2021/Part3_R_RNAseq/metadata/
 ```
-There are a number of ways to import tables in R. There are common base R packages you should at least be familiar with because you'll encounter them, and we just installed a few more with the tidyverse. There's also a package to read in excel files directly (`readxl`)! Because we manipulated tables in Linux already, some of the options that might have sounded unfamiliar and confuse new R users, should make a little more sense to you. All the read functions can now be used with a GUI interactively in RStudio. They also print the command so you still get to see how the commands work.
+There are a number of ways to import tables in R. There are common base R packages you should at least be familiar with because you'll encounter them, and we just installed a few more with the tidyverse. There's also a package to read in excel files directly (`readxl`)! Because we manipulated tables in Linux already, some of the options that might have sounded unfamiliar and confuse new R users, should make a little more sense to you. All the read functions can now be used with a GUI interactively in RStudio. They also print the command so you still get to see how the commands work and can copy the actualy command back to your markdown for documentation.
 
 ## Read in data table into R - `base` R fxns
 - Base R read functions: In the Environment pane (top right by default), click on the "Import Dataset" button. First choose, "From text (base)". This is accesses the family of "base R" functions.
@@ -324,9 +327,9 @@ There are a number of ways to import tables in R. There are common base R packag
   3. Change The "Row names" option to "First Column" and click OK to import it.
 
 - It should have opened a table view in top left pane by default. If not, double click on the "table_baseR" object in top right to open it for viewing.
-- Note how it also printed the command you used exactly at the bottom.
+- Note how it also printed the command you used exactly at the bottom. You can (and should) copy this back to your markdown for documentation.
 - Notice in the table_baseR 2 important things in contrast with an Excel table. The columns each are named, instead of the column heading as a letter and header line in row 1 as you might in an excel doc. This was done by the "Header" option we chose and is almost always how you will want your data in R.
-  - Similarly, notice the row names are not numbers, but named samples / features. We accomplished this by changing the "Row Names" option. This is frequently preferred and solidifies the structure of most tables. Feature/samples in rows and observations/variables in columns. They don't have to be ordered like this, but usually are.
+  - Similarly, notice the row names are not numbers, but named samples / features. We accomplished this by changing the "Row Names" option. This is frequently preferred and solidifies the structure of most tables. Feature/samples in rows and observations/variables in columns. They don't have to be ordered like this, but frequently are.
 
 ## Read in data table into R - `readr` fxns
 - `readr` package read functions: As before import the file with the button in the Environment pane, but choose "From text (readr)":
@@ -343,15 +346,17 @@ str(table_baseR)
 str(table_readr)
 ```
 
-
 ## Data frames in R
 - Notice the baseR table is a data frame.
 - Data frames are the most common data format in R you will work with.
-  - Much like a table you are used to thinking about, but explicitly allows any type of data in the fields. A strict "table" can only have one type (i.e. integers or character strings)
+  - At their simplest, much like a table you are used to thinking about. However, explicitly allows any type of data in the fields. A strict "table" in R can only have one type (i.e. integers or character strings)
+    - As data frames allow ANY type of data in them, that can include other tables so can become nested "tables".
 
 - The table read in by `readr` package turned the table into a "tibble". This is an extension of the data frame concept in the tidyverse.
   - Notice how it adds an entry for the structure of the object that explicitly specifies the data type for each column. This is the most visible difference, but there are other in how the data is stored and handled. Notably, we could have changed these data types to factors as the baseR functions appears to recognize them. Many functions downstream will implicitly do this, so it's nice to keep them just as character strings to start with.
+  - Most of the time a tibble will input fine when a data frame is expected.
 
+- `data.table` is another great R package with useful features for table interaction you should be aware of. We won't really use it in this workshop though.
 
 ## Accessing data frames
 - Again, some of the functions you encountered in Linux are available in R

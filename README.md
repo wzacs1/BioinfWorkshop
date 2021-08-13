@@ -16,6 +16,7 @@ as individual pages. Each served as the basis for the slides from each day, and 
 - [Part 2-2: 16S Seq Process with QIIME2](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part2-2_16SseqProcessQiime2.md)
 - [Part 2-3: 16S Seq analysis with QIIME2](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part2-3_16SseqAnalysis.md)
 - [Part 3-1: RNAseq process and alignments, Git and GitHub](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part3-1_RNASeq_Alignments2GitIntro.md)
+- [Part 3-2: Intro R and RStudio](https://github.com/wzacs1/BioinfWorkshop/blob/master/Workthroughs/Part3-2_IntroRStudio.md)
 
 Tentative Schedule:
 
