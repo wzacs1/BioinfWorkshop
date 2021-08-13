@@ -1,3 +1,36 @@
+<!-- TOC -->
+
+- [Main](#main)
+  - [Requirements / Inputs](#requirements--inputs)
+  - [Objectives](#objectives)
+  - [Start RStudio Server Interactive App on OnDemand](#start-rstudio-server-interactive-app-on-ondemand)
+  - [The RStudio Interface Overview](#the-rstudio-interface-overview)
+  - [RStudio options](#rstudio-options)
+  - [RStudio Projects](#rstudio-projects)
+  - [RMarkdown in RStudio](#rmarkdown-in-rstudio)
+    - [What is "markdown"?](#what-is-markdown)
+    - [The Most Common Markdown Formatting Marks](#the-most-common-markdown-formatting-marks)
+    - [R Markdown specifics](#r-markdown-specifics)
+  - [Basic R commands - mathematical expressions](#basic-r-commands---mathematical-expressions)
+  - [R (variables) objects](#r-variables-objects)
+  - [R functions](#r-functions)
+  - [R packages](#r-packages)
+  - [Accessing elements in a list/array/table in R](#accessing-elements-in-a-listarraytable-in-r)
+  - [R Packages - install](#r-packages---install)
+  - [R Packages with Bioconductor](#r-packages-with-bioconductor)
+  - [Read in data table into R](#read-in-data-table-into-r)
+    - [Read in data table into R - `base` R fxns](#read-in-data-table-into-r---base-r-fxns)
+    - [Read in data table into R - `readr` fxns](#read-in-data-table-into-r---readr-fxns)
+  - [Data frames in R](#data-frames-in-r)
+  - [Accessing data frames](#accessing-data-frames)
+  - [Accessing data frames: Variable accession](#accessing-data-frames-variable-accession)
+  - [Saving workspaces and closing Projects in R](#saving-workspaces-and-closing-projects-in-r)
+  - [Install other packages for next time:](#install-other-packages-for-next-time)
+- [Links](#links)
+- [Today's New Commands (R)](#todays-new-commands-r)
+
+<!-- /TOC -->
+
 # Main
 
 ## Requirements / Inputs
@@ -292,7 +325,8 @@ library(BiocManager)
 ```r
 detach("package:BiocManager", unload = TRUE)
 ```
-- Let's install a couple packages we'll use to understand the RNAseq data we aligned.
+- Let's install one more package we'll use to import the RNAseq data we aligned. We'll do more at end of class, but this will suffice for now as an example.
+  - **Booleans**: Notice the "TRUE" statement. This is a boolean (True/False, Yes/No,  1/0). Typically in R, these are written as all caps TRUE/FALSE.
 - Check out [Bioconductor page of `tximport` package](http://bioconductor.org/packages/release/bioc/html/tximport.html). They always have this install command you can copy and paste, but notice how it trys to update to latest BiocManager each time. You only need to access BiocManager directly to install this packages. Just use the last command to install:
 ```
 BiocManager::install("tximport")
@@ -301,18 +335,10 @@ BiocManager::install("tximport")
 ```r
 library(tximport)
 ```
-- We will use 2 other packages for differential expression analysis. Let's install them both by providing a list to the BiocManager.
-  - Use `c()` to construct a vector or list of values.
-  - List values are separated by commas, spaces are not required but help readability.
-```r
-c("DESeq2", "swish")
-str(c("DESeq2", "swish"))
-BiocManager::install(c("DESeq2", "swish"))
-```
-- That may take a bit as well, but should install okay. If problems with install path, explicitly tell it your path by adding `lib=<LIBRARY_PATH>` option to BiocManager::install().
-- Both these packages have a number of other package dependencies they need to install as well likely. But many of them are very common dependancies of other bioinformatics packages so once they are installed others will install faster as well.
+- If problems with install path, explicitly tell it your path by adding `lib=<LIBRARY_PATH>` option to BiocManager::install().
+- We will use a couple other packages for differential expression analysis. We'll install them at the end of class so we are ready to go next time.
 
-# Read in data table into R
+## Read in data table into R
 - Copy metadata table using Terminal to your Project Directory if you have not already.
 ```bash
 $ cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part3_R_RNAseq/metadata/SraRunTable_RNAseq_BiopsyOnly.txt \
@@ -320,7 +346,7 @@ $ cp /uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2021/Part3_R_RNA
 ```
 There are a number of ways to import tables in R. There are common base R packages you should at least be familiar with because you'll encounter them, and we just installed a few more with the tidyverse. There's also a package to read in excel files directly (`readxl`)! Because we manipulated tables in Linux already, some of the options that might have sounded unfamiliar and confuse new R users, should make a little more sense to you. All the read functions can now be used with a GUI interactively in RStudio. They also print the command so you still get to see how the commands work and can copy the actualy command back to your markdown for documentation.
 
-## Read in data table into R - `base` R fxns
+### Read in data table into R - `base` R fxns
 - Base R read functions: In the Environment pane (top right by default), click on the "Import Dataset" button. First choose, "From text (base)". This is accesses the family of "base R" functions.
   1. Browse to the table to import. leave all as defaults, but notice the "Heading", "Separator" and "Row names" options.
   2. Call the new table at the top `table_baseR`. Notice the values by default, especially "Header", "Separator" and "NA" options.
@@ -331,7 +357,7 @@ There are a number of ways to import tables in R. There are common base R packag
 - Notice in the table_baseR 2 important things in contrast with an Excel table. The columns each are named, instead of the column heading as a letter and header line in row 1 as you might in an excel doc. This was done by the "Header" option we chose and is almost always how you will want your data in R.
   - Similarly, notice the row names are not numbers, but named samples / features. We accomplished this by changing the "Row Names" option. This is frequently preferred and solidifies the structure of most tables. Feature/samples in rows and observations/variables in columns. They don't have to be ordered like this, but frequently are.
 
-## Read in data table into R - `readr` fxns
+### Read in data table into R - `readr` fxns
 - `readr` package read functions: As before import the file with the button in the Environment pane, but choose "From text (readr)":
   1. Browse to file, change table name to `table_readr`.
   2. Change delimiter to tab. Notice how the function name in code on the right changes.
@@ -376,13 +402,13 @@ row.names(table_readr)
 row.names(table_baseR)
 ```
 
-- The fact that 'names' function does the same as colnames hints at common structure of tables in R. Really expecting names of variables to be in columns, not rows. You can certainly import data in the other way and work with it, but R definitley thinks more columns = variables.
+- The fact that 'names' function does the same as colnames hints at common structure of tables in R. Really expecting names of variables to be in columns, not rows. You can certainly import data in the other way and work with it, but R definitley thinks more along the lines of columns == variables and rows == observations.
 
 - The `summary` function is helpful as well to display more info about a table and even show distribution of data.
 ```r
 summary(table_readr)
 ```
-- Note there are several other functions that came with tidyverse for this type of data summation. We'll stick with base functions where possible.
+- Note there are several other functions that came with tidyverse for this type of data summation. We'll stick with base functions where possible though.
 - You can transpose tables so easily in R it's hard to find the function: `t`:
 ```r
 table_readr.t <- t(table_readr)
@@ -407,13 +433,13 @@ table_readr$Age[4]
 - Data frames are 2 dimensional, so can be described with the same square brackets but with [row,column] notation.
 - Let's create a new table removing the extraneous "BioSample" column. We'll pass a list of column numbers, but we could do the same with the quoted names.
 ```r
-table_readr <- table_readr[,c(1,2,3,5,6,7,8,9,10)]
+table_readr <- table_readr[, c(1,2,3,5,6,7,8,9,10)]
 ```
 - Notice how we could directly overwrite the table_readr in the same function.
   - Very common in R. Think about if you went back and redid this command?
 
 ```r
- table_readr <- table_readr[,c(1,2,3,5,6,7,8,9,10)]
+ table_readr <- table_readr[, c(1,2,3,5,6,7,8,9,10)]
 ```
 - Error here because of way we listed all columns.
 - However, here's another way to accomplish the same thing (with the other table), using a negative to say NOT this column:
@@ -421,7 +447,38 @@ table_readr <- table_readr[,c(1,2,3,5,6,7,8,9,10)]
 table_baseR <- table_baseR[,-3]
 ```
 - Now, repeat that command. It executes okay, dropping the 3rd column again.
-- Be careful of repeating commands on overwritten data! When in doubt, save multiple version of your objects / rename them as you go.
+- **Be careful of repeating commands on overwritten data!** When in doubt, save multiple version of your objects / rename them as you go.
+
+- Let's read back in that table now since we messed it up and it is actually our metadata table for the rest of class. **This time call the object "metadata"**. While reading in, change a few things as before:
+1. Change "Delimiter" (at the bottom) to "Tab".
+2. Make sure "First Row As Names" box is checked.
+3. For column "Age", click the arrow drop down and change it to "Integer"
+4. In bottom left "Name" field, change the name of the object to import into to: "metadata".
+
+
+## Saving workspaces and closing Projects in R
+- First, save your "workspace". This includes all your objects. 2 ways to do this:
+  1. Click "Session" -> "Save Workspace As..", OR in Environment pane, just click the save button. Name it ".RData". You can name it different but this is the default.
+  2. Just close your project and exit and RStudio will ask or do it for you by default. This working is dependent on some user settings, so we will cover this next to make sure we are on the same page.
+- **Saving your Project**
+  - Mainly, the .RData is your project. This with your RMarkdown should be all you need, but using the project files helps maintain your RStudio state with packages loaded and windows.
+  - Save your markdown. In that window click save button and name it and place in your project directory.
+  - In the top right, choose Project -> Close Project (don't do this quite yet though. If you did reload your project).
+    - This may ask to save your .RData file if setup to do so, or it may just save it automatically on exit. Your project is now saved and can be reloaded later.
+
+## Install other packages for next time:
+- We will try to get out ahead of next class and ensure we are setup and not spending time in class waiting for installs.
+- Use `c()` to construct a vector or list of values containing the packages to install.
+  - We will come back to vectors next class with a better example.
+- The first 2 commands just show how a vector looks and is structured. Only the last is important for install.
+```r
+c("DESeq2", "fishpond", "tximeta", "tidyverse")
+str( c("DESeq2", "fishpond", "tximeta", "tidyverse") )
+BiocManager::install( c("DESeq2", "fishpond", "tximeta", "tidyverse") )
+```
+- You'll need to monitor this to say yes to all updates, OR you can just include `ask = FALSE` which, perhaps confusingly, will just update all packages without prompting you.
+- Notably, the tidyverse isn't biology specific at all and is normally installed through the standard install.packages command, but again because BiocManager just calls this function it works okay.
+
 
 # Links
   - R Markdown: [http://rmarkdown.rstudio.com](http://rmarkdown.rstudio.com)
