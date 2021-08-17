@@ -449,146 +449,42 @@ Additionally, usually we will need factors within variables to be explicitly sto
 
 ``` r
 metadata_singleSamp <- filter(metadata_singleSamp, smoking_status != "Ex-smoker")
-```
-
-Now, change our two variables of interest to factors.
-
-``` r
 str(metadata_singleSamp)
 ```
 
-    ## tibble [37 × 8] (S3: tbl_df/tbl/data.frame)
-    ##  $ names         : chr [1:37] "SRR10571666" "SRR10571669" "SRR10571671" "SRR10571672" ...
-    ##  $ Age           : int [1:37] 41 52 41 53 57 29 52 54 47 52 ...
-    ##  $ asthma_status : chr [1:37] "Asthma" "Non-asthma" "Asthma" "Asthma" ...
-    ##  $ LibraryName   : chr [1:37] "Biopsy_SIB049" "Biopsy_SIB047" "Biopsy_SIB046_rep1" "Biopsy_SIB006_rep1" ...
-    ##  $ obesity_status: chr [1:37] "Obese" "Non-obese" "Obese" "Obese" ...
-    ##  $ sex           : chr [1:37] "female" "female" "male" "female" ...
-    ##  $ smoking_status: chr [1:37] "No" "Yes" "No" "No" ...
-    ##  $ files         : chr [1:37] "/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part3_R_RNAseq/BiopsyOnly/SRR10571666_salm_quant/quant.sf" "/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part3_R_RNAseq/BiopsyOnly/SRR10571669_salm_quant/quant.sf" "/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part3_R_RNAseq/BiopsyOnly/SRR10571671_salm_quant/quant.sf" "/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part3_R_RNAseq/BiopsyOnly/SRR10571672_salm_quant/quant.sf" ...
+- Now, change our two variables of interest to factors using, you guessed it, the `as.factor` function.
 
 ``` r
 metadata_singleSamp <- metadata_singleSamp %>% mutate(asthma_status = as.factor(asthma_status), smoking_status = as.factor(smoking_status))
 head(str(metadata_singleSamp))
 ```
 
-    ## tibble [37 × 8] (S3: tbl_df/tbl/data.frame)
-    ##  $ names         : chr [1:37] "SRR10571666" "SRR10571669" "SRR10571671" "SRR10571672" ...
-    ##  $ Age           : int [1:37] 41 52 41 53 57 29 52 54 47 52 ...
-    ##  $ asthma_status : Factor w/ 2 levels "Asthma","Non-asthma": 1 2 1 1 1 1 1 1 1 1 ...
-    ##  $ LibraryName   : chr [1:37] "Biopsy_SIB049" "Biopsy_SIB047" "Biopsy_SIB046_rep1" "Biopsy_SIB006_rep1" ...
-    ##  $ obesity_status: chr [1:37] "Obese" "Non-obese" "Obese" "Obese" ...
-    ##  $ sex           : chr [1:37] "female" "female" "male" "female" ...
-    ##  $ smoking_status: Factor w/ 2 levels "No","Yes": 1 2 1 1 2 1 2 1 1 1 ...
-    ##  $ files         : chr [1:37] "/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part3_R_RNAseq/BiopsyOnly/SRR10571666_salm_quant/quant.sf" "/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part3_R_RNAseq/BiopsyOnly/SRR10571669_salm_quant/quant.sf" "/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part3_R_RNAseq/BiopsyOnly/SRR10571671_salm_quant/quant.sf" "/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part3_R_RNAseq/BiopsyOnly/SRR10571672_salm_quant/quant.sf" ...
-
-    ## NULL
-
 ``` r
-summary(metadata_singleSamp)
+str(metadata_singleSamp)
 ```
 
-    ##     names                Age           asthma_status LibraryName       
-    ##  Length:37          Min.   :21.00   Asthma    :19    Length:37         
-    ##  Class :character   1st Qu.:32.00   Non-asthma:18    Class :character  
-    ##  Mode  :character   Median :41.00                    Mode  :character  
-    ##                     Mean   :42.22                                      
-    ##                     3rd Qu.:53.00                                      
-    ##                     Max.   :60.00                                      
-    ##  obesity_status         sex            smoking_status    files          
-    ##  Length:37          Length:37          No :25         Length:37         
-    ##  Class :character   Class :character   Yes:12         Class :character  
-    ##  Mode  :character   Mode  :character                  Mode  :character  
-    ##                                                                         
-    ##                                                                         
-    ##
-
-Certainly you can do these two steps in the opposite order without
-error, but what happens to the levels? If you set the levels first, then
-remove the “Ex-smoker”, while the rows will be removed, the information
-on those levels will remain associated with the tibble. A small, but
-important point.
+Certainly you can do these two steps in the opposite order without error, but what happens to the levels?
+  - If you set the levels first, then remove the “Ex-smoker”, while the rows will be removed, the information on those levels will remain associated with the tibble. A small, but important point showing how "levels" are stored, which can impact downstream statistical testing.
 
 ### Step 2. Import mapping/alignment counts
 
-As I noted above, `tximeta` depends on the commonly used
-SummarizedExperiment package, and it will export a common “SE” or
-summarized experiment object which contains counts per feature as well
-as metadata you provide. `tximeta` additionally adds metadata for the
-transcriptome reference as well. It is made to work with Salmon by
-default but results from other methods can be imported as well, and by
-default transcript-level info is assumed, but again can be used with
-gene-level info. We’ll call the imported object simply `sS_se` for
-“single sample summarized experiment”. Because our metadata file has the
-paths to the alignment/counts files we just need to provide this table.
+As I noted above, `tximeta` depends on the commonly used SummarizedExperiment package, and it will export a common summarized experiment ('se') object which contains counts per feature as well as metadata you provide. `tximeta` additionally adds metadata for the transcriptome reference as well. It is made to work with Salmon by default but results from other methods can be imported as well, and by default transcript-level info is assumed, but again can be used with gene-level info. We’ll call the imported object simply `sS_se` for “single sample summarized experiment”. Because our metadata file has the paths to the alignment/counts files we just need to provide this table, however, it's often a good idea for readability sake to include default options (such as the type below)
 
 ``` r
-sS_se <- tximeta(metadata_singleSamp)
+sS_se <- tximeta(metadata_singleSamp, type = "salmon")
 ```
 
-    ## importing quantifications
+- It’s worth noticing the warning of differences between annotations and transcripts that were quantified. We quantified/mapped/aligned >178k transcripts! Of course it is a much greater number than the number of genes in the human genome, but why are >8k of these transcripts missing a listing from the GTF file? The warning gives the answer generally as well, and since human genomes will have a very high amount of *known* haplotypic differences this is as expected.
+  - In fact, if we look at the list of transcripts missing they are almost all TCR and BCR/Ig sequences. They often don't map well because they need a genomic range that may be uncertain given SHM. It’s worth noting this and thinking carefully about your input reference. This could be a potential downside to transcript-level quantification if the features of the transcripts are not at the same resolution as the reference transcripts. Generally, specific tools are required for assessing immune repertoires.
 
-    ## reading in files with read_tsv
-
-    ## 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37
-
-    ## Warning: `select_()` is deprecated as of dplyr 0.7.0.
-    ## Please use `select()` instead.
-    ## This warning is displayed once every 8 hours.
-    ## Call `lifecycle::last_warnings()` to see where this warning was generated.
-
-    ## Warning: `filter_()` is deprecated as of dplyr 0.7.0.
-    ## Please use `filter()` instead.
-    ## See vignette('programming') for more help
-    ## This warning is displayed once every 8 hours.
-    ## Call `lifecycle::last_warnings()` to see where this warning was generated.
-
-    ## found matching linked transcriptome:
-    ## [ Ensembl - Homo sapiens - release 100 ]
-    ## loading existing EnsDb created: 2020-06-10 16:49:58
-    ## loading existing transcript ranges created: 2020-06-10 16:51:46
-
-    ## Warning in checkAssays2Txps(assays, txps):
-    ##
-    ## Warning: the annotation is missing some transcripts that were quantified.
-    ## 8176 out of 178517 txps were missing from GTF/GFF but were in the indexed FASTA.
-    ## (This occurs sometimes with Ensembl txps on haplotype chromosomes.)
-    ## In order to build a ranged SummarizedExperiment, these txps were removed.
-    ## To keep these txps, and to skip adding ranges, use skipMeta=TRUE
-    ##
-    ## Example missing txps: [ENST00000631435, ENST00000632524, ENST00000633009, ...]
-
-It’s worth noticing the warning of differences between annotations and
-transcripts that were quantified. We quantified/mapped/aligned &gt;178k
-transcripts! Of course it is a much greater number than the number of
-genes in the human genome, but why are &gt;8k of these transcripts
-missing a listing from the GTF file? The warning gives the answer
-generally as well, and since human genomes will have a very high amount
-of known haplotypic differences this is as expected. In fact, if we look
-at the slit of transcripts missing they are almost all TCR and BCR/Ig
-sequences. It’s worth noting this and thinking carefully about your
-input reference. This could be a potential downside to transcript-level
-quantification if the features of the transcripts are not at the same
-resolution as the reference transcripts.
+- (*side note on size of data and instance*): Notice how big that imported object is. This is still an okay size for what we are doing (and a decent sized dataset all-in-all), but keep in mind in R that object is in memory when you have this project open. So, you need to ensure your RStudio Server session actually has enough memory.
+  - If your session is failing, try asking for more cores (or explicitly requesting enough memory). CHPC has set a default amount of memory per core requested depending on the cluster you are on.
 
 ### Step 4. Prepare summarized experiment for DE
 
-``` r
-suppressPackageStartupMessages(library(fishpond))
-```
-
-First, we run a couple functions to prepare the summarized experiment
-object. We will scale the inferential replicates so they are properly
-compared and then do a default filtering of transcripts for which we
-have few counts among few samples. The latter is an important
-consideration which should always be performed at some level in order to
-reduce the amount of noise in your data and reduce multiple hypothesis
-testing correction effect due to features/transcripts which we don’t
-have enough counts to do reasonable tests in the first place. Think of a
-transcript that shows up in only one of your samples as an extreme
-situation which would be filtered here. Nicely, the function does not
-actually “filter” them out, but simply masks them from the subsequent
-tests.
+- First, we run a couple functions to prepare the summarized experiment object. We will scale the inferential replicates so they are properly compared and then do a default filtering of transcripts for which we have few counts among few samples.
+  - The latter is an important consideration which should always be performed at some level in order to reduce the amount of noise in your data and reduce multiple hypothesis testing correction effect due to features/transcripts which we don’t have enough counts to do reasonable tests in the first place. Think of a transcript that shows up in only one of your samples as an extreme situation which would be filtered here. How much could you really infer from this? Do you really want to correct for testing that transcript?
+  - Nicely, the function does not actually “filter” these out, but simply masks them from the subsequent tests.
 
 ``` r
 sS_se <- scaleInfReps(sS_se)
@@ -597,52 +493,26 @@ sS_se <- labelKeep(sS_se, minCount = 100, minN = 5)
 
 #### (aside) S4 objects in R and the SummarizedExperiment Object
 
-It is important to understand a little bit about how this big object is
-storing data because it is not just a very big data frame or table. S4
-class objects and functions in R are very common amongst bioinformatics
-packages. What are these? You can probably imagine it would be very
-difficult (impossible?) to maintain all the information about a
-gene/transcript/feature, sample, experiment/assay, sample metadata,
-gene/feature metadata and experimental model in a single 2D table or
-data frame. Thus, different classes of data storage have been devised
-which allow nesting of data in a standardized manner and allow you to
-store multiple data types together. I think of them as tables within
-tables, though this is an oversimplification. The S4 class is one of
-these which is frequently used in bioconductor packages. The `sS_se`
-summarized experiment object is an S4 class object. First, use the `str`
-function to view the structure of this object.
+It is useful to understand a little bit about how this big object is storing data because it is not just a very big data frame or table. S4 class objects and functions in R are very common amongst bioinformatics packages. What are these?
 
+- You can probably imagine it would be very difficult (impossible?) to maintain all the information about a gene/transcript/feature, sample, experiment/assay, sample metadata, gene/feature metadata and experimental model in a single 2D table. Thus, different classes of data storage have been devised which allow nesting of data in a standardized manner and allow you to store multiple data types together. I think of them as tables within tables, though this is an oversimplification. The S4 class is one of these which is frequently used in bioconductor packages. The `sS_se` summarized experiment object is an S4 class object.
+  - Use the `str` function to view the structure of this object.
 ``` r
 str(sS_se)
 ```
 
-Woa! A lot of information is stored in this object! That makes sense
-given that we have counts for each transcript in each sample, linked
-transcriptome and metadata in here, among others. Scroll through the
-printed structure to get a sense of it, but head to the first part of
-the output. Notice how it says the “… with 6 slots”. These “slots” each
-have a type of data and can have slots nested within them as well as you
-can see in this hierarchical structure. These slots can be accessed with
-the `@` if you want to access them directly, just like you accessed
-variables/columns in a data frame with the `$`. Use `slotNames` to view
-the top-level slots:
+Woa! A lot of information is stored in this object! That makes sense given that we have counts for each transcript in each sample, linked transcriptome and metadata in here, among others.
+
+- Scroll through the printed structure to get a sense of it, but head to the first part of the output. Notice how it says the “… with 6 slots”. These “slots” each have a type of data and can have slots nested within them as well as you can see in this hierarchical structure. These slots can be accessed with the `@` if you want to access them directly, just like you accessed variables/columns in a data frame with the `$`. Use `slotNames` to view the top-level slots:
 
 ``` r
 slotNames(sS_se)
 ```
 
-    ## [1] "rowRanges"       "colData"         "assays"          "NAMES"          
-    ## [5] "elementMetadata" "metadata"
+Generally though, you won’t access these slots or data in an S4 object like this because you need to know a bit about how each specific S4 class object is constructed in order to make sense of them.
+  - Instead, these S4 class objects usually have associated functions specific to the object type in order to access the data within them, so-called **“accessor”** function. One such accessor for SummarizedExperiments is the `colData()` function to show the experimental metadata. Let’s look at it to see if our experimental metadata was read in correctly.
 
-Generally though, you won’t access these slots or data in an S4 object
-like this because you need to know a bit about how each specific S4
-class object is constructed in order to make sense of them. Instead,
-these S4 class objects usually have associated functions specific to the
-object type in order to access the data within them, so-called
-“accessor” function. One such accessor for SummarizedExperiments is the
-`colData()` function to show the experimental metadata. Let’s look at it
-to see if our experimental metadata was read in correctly.
-
+- SummarizedExperiment package is a dependency of tximeta but it doesn't actually get loaded, just called.
 ``` r
 library(SummarizedExperiment)
 ```
@@ -651,219 +521,73 @@ library(SummarizedExperiment)
 colData(sS_se)
 ```
 
-    ## DataFrame with 37 rows and 7 columns
-    ##                   names       Age asthma_status        LibraryName
-    ##             <character> <integer>      <factor>        <character>
-    ## SRR10571666 SRR10571666        41        Asthma      Biopsy_SIB049
-    ## SRR10571669 SRR10571669        52    Non-asthma      Biopsy_SIB047
-    ## SRR10571671 SRR10571671        41        Asthma Biopsy_SIB046_rep1
-    ## SRR10571672 SRR10571672        53        Asthma Biopsy_SIB006_rep1
-    ## SRR10571674 SRR10571674        57        Asthma Biopsy_SIB045_rep1
-    ## ...                 ...       ...           ...                ...
-    ## SRR10571748 SRR10571748        26        Asthma      Biopsy_SIB012
-    ## SRR10571751 SRR10571751        58    Non-asthma Biopsy_SIB010_rep1
-    ## SRR10571760 SRR10571760        34        Asthma      Biopsy_SIB002
-    ## SRR10571749 SRR10571749        32    Non-asthma      Biopsy_SIB011
-    ## SRR10571717 SRR10571717        41    Non-asthma      Biopsy_SIB018
-    ##             obesity_status         sex smoking_status
-    ##                <character> <character>       <factor>
-    ## SRR10571666          Obese      female             No
-    ## SRR10571669      Non-obese      female            Yes
-    ## SRR10571671          Obese        male             No
-    ## SRR10571672          Obese      female             No
-    ## SRR10571674          Obese      female            Yes
-    ## ...                    ...         ...            ...
-    ## SRR10571748          Obese      female             No
-    ## SRR10571751          Obese      female             No
-    ## SRR10571760      Non-obese        male             No
-    ## SRR10571749          Obese      female            Yes
-    ## SRR10571717          Obese        male            Yes
-
-Notice how the “asthma\_status” and “smoking\_status” are listed as
-factors as we specified them, but the others are not. Another useful
-accessor is `rowRanges()` for the genomic ranges info of all the
-features. `mcols()` function is a generic S4 accessor function (i.e. not
-specific to SummarizedExperiment) which we can use to get info for each
-gene. Use this to see how some of the first listed transcripts (TCRs and
-Ig) which have 0 or very low mean counts are set to keep = FALSE by the
-`labelKeep()` function earlier.
+Notice how the “asthma_status” and “smoking_status” are listed as factors since we specified them, but the others are not.
+- Another useful accessor is `rowRanges()` for the genomic ranges info of all the features.
+- `mcols()` function is a generic S4 accessor function (i.e. not specific to SummarizedExperiment) which we can use to get info for each gene. Use this to see how some of the first listed transcripts (TCRs and Ig) which have 0 or very low mean counts are set to keep = FALSE by the `labelKeep()` function earlier.
 
 ``` r
 mcols(sS_se)
 ```
 
-    ## DataFrame with 170341 rows and 8 columns
-    ##                           tx_id             tx_biotype tx_cds_seq_start
-    ##                     <character>            <character>        <integer>
-    ## ENST00000415118 ENST00000415118              TR_D_gene         22438547
-    ## ENST00000434970 ENST00000434970              TR_D_gene         22439007
-    ## ENST00000448914 ENST00000448914              TR_D_gene         22449113
-    ## ENST00000604642 ENST00000604642              IG_D_gene         20003840
-    ## ENST00000603326 ENST00000603326              IG_D_gene         20004797
-    ## ...                         ...                    ...              ...
-    ## ENST00000612259 ENST00000612259 unprocessed_pseudogene               NA
-    ## ENST00000506922 ENST00000506922 unprocessed_pseudogene               NA
-    ## ENST00000420212 ENST00000420212 unprocessed_pseudogene               NA
-    ## ENST00000538284 ENST00000538284 unprocessed_pseudogene               NA
-    ## ENST00000411576 ENST00000411576 unprocessed_pseudogene               NA
-    ##                 tx_cds_seq_end         gene_id         tx_name
-    ##                      <integer>     <character>     <character>
-    ## ENST00000415118       22438554 ENSG00000223997 ENST00000415118
-    ## ENST00000434970       22439015 ENSG00000237235 ENST00000434970
-    ## ENST00000448914       22449125 ENSG00000228985 ENST00000448914
-    ## ENST00000604642       20003862 ENSG00000270961 ENST00000604642
-    ## ENST00000603326       20004815 ENSG00000271317 ENST00000603326
-    ## ...                        ...             ...             ...
-    ## ENST00000612259             NA ENSG00000278589 ENST00000612259
-    ## ENST00000506922             NA ENSG00000250114 ENST00000506922
-    ## ENST00000420212             NA ENSG00000231258 ENST00000420212
-    ## ENST00000538284             NA ENSG00000256626 ENST00000538284
-    ## ENST00000411576             NA ENSG00000236504 ENST00000411576
-    ##                            log10mean      keep
-    ##                            <numeric> <logical>
-    ## ENST00000415118                    0     FALSE
-    ## ENST00000434970                    0     FALSE
-    ## ENST00000448914 6.51217099699069e-05     FALSE
-    ## ENST00000604642                    0     FALSE
-    ## ENST00000603326                    0     FALSE
-    ## ...                              ...       ...
-    ## ENST00000612259                    0     FALSE
-    ## ENST00000506922                    0     FALSE
-    ## ENST00000420212   0.0172819268991122     FALSE
-    ## ENST00000538284                    0     FALSE
-    ## ENST00000411576    0.534121869151834     FALSE
-
-Check out SummarizedExperiments’s bioconductor page (listed below in
-links) for more information, but this very short intro should suffice to
-understand that these objects are different than just a big table or
-data frame and require different methods to access the data within them.
+- Check out SummarizedExperiments’s bioconductor page (listed below in links) for more information.
+    - This very short intro should suffice to understand that these objects are different than just a big table or data frame and require different methods to access the data within them.
 
 ### Step 5: DTE analysis with swish
 
-Now we get to the heart of differential expression analysis with the
-swish function. The function itself is fairly straightforward when only
-testing for one effect, but has options for covariates and pairing of
-samples which I hoped to get into as well, but this “intro” was getting
-too long. An important point though is that this method performs a
-number of permutations with random sampling. Whenever any function does
-these type of permutational analyses they will not be totally
-reproducible if you don’t set the random seed to the same number, so we
-do this first (the number is somewhat arbitrary, but setting 1 is always
-safest and allows you to be consistent). We are going to reduce the
-number of permutations to 10 just to run this a bit faster in class, and
-we will test for effect of smoking.
+Now we get to the heart of differential expression (DE) analysis with the swish function. The function itself is fairly straightforward when only testing for one effect, but has options for covariates and pairing of samples which we won't have time to get into.
+
+- An important point is that this method performs a number of permutations with random sampling. Whenever any function does these type of permutational analyses they will not be totally reproducible if you don’t set the random seed to the same number, so we do this first (the number is somewhat arbitrary, but setting 1 is always safest and allows you to be consistent).
+    - We are going to reduce the  number of permutations to 10 just to run this a bit faster in class, and we will test for effect of smoking.
 
 ``` r
 set.seed(1)
 sS_se <- swish(sS_se, x = "smoking_status", nperms = 10)
 ```
 
-Now, briefly, use the `mcols()` function again to see how the p-values,
-q-values and fold changes were added as a column to the transcripts.
+Now, briefly, use the `mcols()` function again to see how the p-values, q-values and fold changes were added as a column to the transcripts.
 
 ``` r
 mcols(sS_se)
 ```
 
-`mcols()` is returning a data frame of an S4 class (not a tibble data
-frame like we used earlier) so we can’t yet use our tidyverse functions
-on it directly, but we could change it to a tibble data-frame and use
-tidyverse functions. Importantly however, this dissociates it from the
-specific hypothesis test we made so leaves no context for those pvalues.
-Thus, if you do this, make sure it is named as such. Let’s just use some
-of the functions we already have used to count to see how many values
-have q &lt; 0.05.
+`mcols()` is returning a data frame of an S4 class (not a tibble data frame like we used earlier) so we can’t yet use our tidyverse functions on it directly, but we could change it to a tibble data-frame and use tidyverse functions. Importantly however, this dissociates it from the specific hypothesis test we made so leaves no context for those pvalues. Therefore, if you do this, make sure it is named in a way that helps you know what the test was. Let’s just use some of the functions we already have used to count to see how many values have q < 0.05.
 
 ``` r
 mcols(sS_se) %>% as_tibble() %>% filter(qvalue < 0.05) %>% nrow()
 ```
 
-    ## [1] 231
-
 ### Step 6 (optional): DGE analysis with swish
 
-We can still perform gene-level differential expression (DGE) analysis
-because transcripts can be grouped by the genes they come from. The
-reverse is not necessarily true (i.e. if we did gene level
-counting/alignments we couldn’t necessarily back out to
-transcript-level). The testing of differences is basically the same, but
-we first need to regroup them to genes. `tximeta` provides a function
-for this, and because we linked all the reference information to the
-index, all the information required to do this is already together.
+We can still perform gene-level differential expression (DGE) analysis because transcripts can be grouped by the genes they come from. The reverse is not necessarily true (i.e. if we did gene level counting/alignments we couldn’t necessarily back out to transcript-level). The testing of differences is basically the same, but we first need to regroup them to genes. `tximeta` provides a function for this, and because we linked all the reference information to the index, all the information required to do this is already together.
 
 ``` r
 sS_se_gene <- summarizeToGene(sS_se)
 ```
 
-    ## loading existing EnsDb created: 2020-06-10 16:49:58
-
-    ## obtaining transcript-to-gene mapping from TxDb
-
-    ## loading existing gene ranges created: 2020-06-14 22:59:17
-
-    ## summarizing abundance
-
-    ## summarizing counts
-
-    ## summarizing length
-
-    ## summarizing inferential replicates
-
-Notice the object is still a summarized experiment object, but is \~
-4.5X smaller. Clearly we have lost a LOT of information by doing
-gene-level analysis. That is not to say this is inappropriate or not
-what we are looking for. As before, we scale filter/mask genes with low
-counts. If we started with gene level grouping we would need to do
-`scaleInfReps()` as well first, but since these reps are at the level of
-transcript and we already scaled them we don’t need to do it again.
+Notice the object is still a summarized experiment object, but is ~ 4.5X smaller. Clearly we have lost a LOT of information by doing gene-level analysis. That is not to say that this is inappropriate or not what we are looking for. As before, we scale filter/mask genes with low counts. If we started with gene level grouping we would need to do `scaleInfReps()` as well first, but since these reps are at the level of transcript and we already scaled them we don’t need to do it again.
 
 ``` r
 sS_se_gene <- labelKeep(sS_se_gene, minCount = 100, minN = 5)
 ```
 
-Let’s run swish again to test for differences at the gene-level. Because
-this is much smaller we can run a lot more permutations quickly than we
-did with the transcript-level data set.
+Let’s run swish again to test for differences at the gene-level. Because this is much smaller we can run a lot more permutations quickly than we did with the transcript-level data set.
 
 ``` r
 set.seed(1)
 sS_se_gene <- swish(sS_se_gene, x = "smoking_status", nperms = 50)
 ```
 
-Then, let’s just retrieve the number of genes with a q &lt; 0.05 as
-before.
+Then, let’s just retrieve the number of genes with a q < 0.05 as before.
 
 ``` r
 mcols(sS_se_gene) %>% as_tibble() %>% filter(qvalue < 0.05) %>% nrow()
 ```
 
-    ## [1] 180
-
-It’s interesting to compare this gene-level number with the
-transcript-level result. Proportionally, there are \~5X as many genes
-differential abundant than there are transcripts (there’s \~31k genes
-and 170k transcripts). Why? Love and Patro lab’s papers provide some
-great discussion on this and why transcript-level expression makes more
-sense usually. There certainly some biologically reasonbale reasons for
-this, but there’s also different amounts of variation between the 2
-datasets and so different filtering/masking of low abundance features
-should really be applied. This is dataset-specific and I think should be
-considered more carefully for your experiments. Regardless, we do have
-some differences between smokers and non-smokers.
+It’s interesting to compare this gene-level number with the transcript-level result. *Proportionally*, there are ~5X as many genes differential abundant than there are transcripts (there’s ~31k genes and ~170k transcripts). Why? Love and Patro lab’s papers provide some great discussion on this and why transcript-level expression makes more sense usually. There certainly some biologically reasonable reasons for this, but there’s also different amounts of variation between the 2 datasets and so different filtering/masking of low abundance features should really be applied. This is dataset-specific and I think should be considered more carefully for your experiments. Regardless, we do have some differences between smokers and non-smokers.
 
 ### Step 7 (optional): Examine differential transcript isoform usage
 
-We actually can’t do this with the package version we have. In order to
-install the newer versions of fishpond that contain a function for this
-we would need to upgrade our R installation as well, which we cannot do
-with OnDemand through CHPC (admins must do this although you can run any
-version of regular R without R Studio on CHPC). I just note here that
-this is an option, which you would need to perform on your local RStudio
-installation or when the OnDemand install is updated soon. It is nice to
-be able to do this within the same package. If you have the newer
-version (&gt;1.4) of fishpond, the transcript isoform analysis will
-filter/mask transcripts with only one isoform then perform the test for
-differential usage with the following commands:
+- In the interest of time in class, we will skip this section, but briefly how this can be performed (requires fishpond > 1.4):
 
 ``` r
 sS_se_iso <- isoformProportions(sS_se)
