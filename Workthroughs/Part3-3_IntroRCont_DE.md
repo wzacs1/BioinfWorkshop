@@ -1,3 +1,44 @@
+<!-- TOC -->
+
+- [Main](#main)
+  - [Requirements / Inputs](#requirements--inputs)
+  - [Objectives](#objectives)
+  - [Start RStudio Server Interactive App on OnDemand](#start-rstudio-server-interactive-app-on-ondemand)
+  - [Load Project](#load-project)
+  - [Read in metadata table as "tibble"](#read-in-metadata-table-as-tibble)
+  - [Accessing data frames (quick review)](#accessing-data-frames-quick-review)
+  - [Accessing data frames: Variable accession](#accessing-data-frames-variable-accession)
+    - [Create vectors and lists with c()](#create-vectors-and-lists-with-c)
+  - [Accessing data frames: by coordinates](#accessing-data-frames-by-coordinates)
+  - [Basic data wrangling with the tidyverse](#basic-data-wrangling-with-the-tidyverse)
+    - [The pipe operator](#the-pipe-operator)
+    - [Better summarization with `dplyr`](#better-summarization-with-dplyr)
+    - [Subsetting data with filter and select](#subsetting-data-with-filter-and-select)
+      - [Evaluating expressions](#evaluating-expressions)
+      - [`filter()`](#filter)
+      - [`select()`](#select)
+      - [Combine commands to filter and subset in one step](#combine-commands-to-filter-and-subset-in-one-step)
+    - [Adding new variables with mutate()](#adding-new-variables-with-mutate)
+    - [Joining tables in the tidyverse](#joining-tables-in-the-tidyverse)
+  - [Save and export objects](#save-and-export-objects)
+  - [Begin Part3-4 RNA seq analysis](#begin-part3-4-rna-seq-analysis)
+    - [Start new Project for our RNAseq analysis](#start-new-project-for-our-rnaseq-analysis)
+    - [Step 0. Link transcriptome indexes](#step-0-link-transcriptome-indexes)
+    - [Step 1. Format the metadata for `tximeta` and `fishpond`](#step-1-format-the-metadata-for-tximeta-and-fishpond)
+    - [Step 2. Import mapping/alignment counts](#step-2-import-mappingalignment-counts)
+    - [Step 4. Prepare summarized experiment for DE](#step-4-prepare-summarized-experiment-for-de)
+      - [(aside) S4 objects in R and the SummarizedExperiment Object](#aside-s4-objects-in-r-and-the-summarizedexperiment-object)
+    - [Step 5: DTE analysis with swish](#step-5-dte-analysis-with-swish)
+    - [Step 6 (optional): DGE analysis with swish](#step-6-optional-dge-analysis-with-swish)
+    - [Step 7 (optional): Examine differential transcript isoform usage](#step-7-optional-examine-differential-transcript-isoform-usage)
+    - [Step 8: Built-in plots with fishpond](#step-8-built-in-plots-with-fishpond)
+    - [Step 9: Extract the table of results](#step-9-extract-the-table-of-results)
+- [Practice / With Your Own Data](#practice--with-your-own-data)
+- [Links](#links)
+- [Today's New Commands (R)](#todays-new-commands-r)
+
+<!-- /TOC -->
+
 # Main
 
 ## Requirements / Inputs
