@@ -301,12 +301,12 @@ metadata_repsOnly <- filter(metadata,
 - Can you think of another way to do this with the `!` symbol?
 
 #### `select()`
-Selects works pretty naturally as you might expect, and in the term hints to SQL terminology usage. We could use the same data table accession coordinates we showed earlier, but select has as very common type of syntax derived from SQL that is great for working with tables and is similar to how QIIME2 filters out data. As an initial simple example, let's just get rid of the extra columns "replicate" and "tissue" which are the same for all samples now. We'll use the `-` in front of the variable to remove, which is commonly used in R notation to remove something, but in this case we could have also used the `!`.
+Selects works pretty naturally as you might expect, and in the term hints to SQL terminology usage. We could use the same data table accession coordinates we showed earlier, but select has as very common type of syntax derived from SQL that is great for working with tables and is similar to how QIIME2 filters out data. As an initial simple example, let's just get rid of the extra columns "replicate" (in the `metadata_singleSamp`) and "tissue" which is the same for all samples now. We'll use the `-` in front of the variable to remove, which is commonly used in R notation to remove something, but in this case we could have also used the `!`.
 - Why do I mention SQL and why spend so much time on the tidyverse? This kind of big table manipulation and data extraction usually required this specialized coding knowledge (SQL). The tidyverse makes these tasks more reasonable and, I believe, much more understandable and doable by those of us that aren't coders.
 - Can't I do this in excel? Not efficiently, not on big tables you'll get in HT-seq projects, and not reproducibly with good documentation.
 
 ```r
-metadata_repsOnly <- select(metadata_repsOnly, -replicate & -tissue)
+metadata_repsOnly <- select(metadata_repsOnly, -tissue)
 ```
 Pretty straightforward as you might expect. Usually you will be passing simpler criteria to select than to filter().
 
@@ -482,6 +482,8 @@ makeLinkedTxome(indexDir = indexDir, source = "Ensembl", organism = "Homo sapien
 
 First, we need to rename the column names as expected by tximeta (using tidyverse “rename” function). It’s a little unusual you can’t just specify the column names but, for now at least, tximeta looks for specific column names for the name of the sample and the filepath.
 
+- Keep in mind I'm showing the commands for the metadata_singleSamp object/dataset, but the commands would also need be run on the metadata_repsOnly as well if you want to examine that dataset. (we just use the singleSamp because it will run faster in class, but the other is actually a bit better IMO)
+
 ``` r
 metadata_singleSamp <- rename(metadata_singleSamp, files = fullpath, names = Run)
 ```
@@ -493,10 +495,10 @@ metadata_singleSamp <- filter(metadata_singleSamp, smoking_status != "Ex-smoker"
 str(metadata_singleSamp)
 ```
 
-- Now, change our two variables of interest to factors using, you guessed it, the `as.factor` function.
+- Now, change the potential variables of interest (we'll focus on just 2, but might as well change others here also) to factors using, you guessed it, the `as.factor` function.
 
 ``` r
-metadata_singleSamp <- metadata_singleSamp %>% mutate(asthma_status = as.factor(asthma_status), smoking_status = as.factor(smoking_status))
+metadata_singleSamp <- metadata_singleSamp %>% mutate(asthma_status = as.factor(asthma_status), smoking_status = as.factor(smoking_status), sex = as.factor(sex), obesity_status = as.factor(obesity_status) )
 head(str(metadata_singleSamp))
 ```
 
@@ -514,6 +516,8 @@ As I noted above, `tximeta` depends on the commonly used SummarizedExperiment pa
 ``` r
 sS_se <- tximeta(metadata_singleSamp, type = "salmon")
 ```
+
+- This is generally the slowest part, but even with 2 cores runs pretty fast.
 
 - It’s worth noticing the warning of differences between annotations and transcripts that were quantified. We quantified/mapped/aligned >178k transcripts! Of course it is a much greater number than the number of genes in the human genome, but why are >8k of these transcripts missing a listing from the GTF file? The warning gives the answer generally as well, and since human genomes will have a very high amount of *known* haplotypic differences this is as expected.
   - In fact, if we look at the list of transcripts missing they are almost all TCR and BCR/Ig sequences. They often don't map well because they need a genomic range that may be uncertain given SHM. It’s worth noting this and thinking carefully about your input reference. This could be a potential downside to transcript-level quantification if the features of the transcripts are not at the same resolution as the reference transcripts. Generally, specific tools are required for assessing immune repertoires.
@@ -585,161 +589,21 @@ set.seed(1)
 sS_se <- swish(sS_se, x = "smoking_status", nperms = 10)
 ```
 
-Now, briefly, use the `mcols()` function again to see how the p-values, q-values and fold changes were added as a column to the transcripts.
+Now, briefly, use the `mcols()` function again to see how the p-values, q-values and fold changes were added as a column to the transcripts. (you may need to specifically call SummarizedExperiment package here)
 
 ``` r
-mcols(sS_se)
+SummarizedExperiment::mcols(sS_se)
 ```
 
 `mcols()` is returning a data frame of an S4 class (not a tibble data frame like we used earlier) so we can’t yet use our tidyverse functions on it directly, but we could change it to a tibble data-frame and use tidyverse functions. Importantly however, this dissociates it from the specific hypothesis test we made so leaves no context for those pvalues. Therefore, if you do this, make sure it is named in a way that helps you know what the test was. Let’s just use some of the functions we already have used to count to see how many values have q < 0.05.
 
-``` r
-mcols(sS_se) %>% as_tibble() %>% filter(qvalue < 0.05) %>% nrow()
-```
-
-### Step 6 (optional): DGE analysis with swish
-
-We can still perform gene-level differential expression (DGE) analysis because transcripts can be grouped by the genes they come from. The reverse is not necessarily true (i.e. if we did gene level counting/alignments we couldn’t necessarily back out to transcript-level). The testing of differences is basically the same, but we first need to regroup them to genes. `tximeta` provides a function for this, and because we linked all the reference information to the index, all the information required to do this is already together.
+- Depending on your load order and environment you may need to specifiy the specific package for this command to work (there are probably 3 "filter" functions now loaded). This can't hurt even if package IS loaded, and actually adds some specificity to our documentation so I will show it here:
 
 ``` r
-sS_se_gene <- summarizeToGene(sS_se)
+SummarizedExperiment::mcols(sS_se) %>% as_tibble() %>% dplyr::filter(qvalue < 0.05) %>% nrow()
 ```
 
-Notice the object is still a summarized experiment object, but is ~ 4.5X smaller. Clearly we have lost a LOT of information by doing gene-level analysis. That is not to say that this is inappropriate or not what we are looking for. As before, we scale filter/mask genes with low counts. If we started with gene level grouping we would need to do `scaleInfReps()` as well first, but since these reps are at the level of transcript and we already scaled them we don’t need to do it again.
-
-``` r
-sS_se_gene <- labelKeep(sS_se_gene, minCount = 100, minN = 5)
-```
-
-Let’s run swish again to test for differences at the gene-level. Because this is much smaller we can run a lot more permutations quickly than we did with the transcript-level data set.
-
-``` r
-set.seed(1)
-sS_se_gene <- swish(sS_se_gene, x = "smoking_status", nperms = 50)
-```
-
-Then, let’s just retrieve the number of genes with a q < 0.05 as before.
-
-``` r
-mcols(sS_se_gene) %>% as_tibble() %>% filter(qvalue < 0.05) %>% nrow()
-```
-
-It’s interesting to compare this gene-level number with the transcript-level result. *Proportionally*, there are ~5X as many genes differential abundant than there are transcripts (there’s ~31k genes and ~170k transcripts). Why? Love and Patro lab’s papers provide some great discussion on this and why transcript-level expression makes more sense usually. There certainly some biologically reasonable reasons for this, but there’s also different amounts of variation between the 2 datasets and so different filtering/masking of low abundance features should really be applied. This is dataset-specific and I think should be considered more carefully for your experiments. Regardless, we do have some differences between smokers and non-smokers.
-
-### Step 7 (optional): Examine differential transcript isoform usage
-
-- In the interest of time in class, we will skip this section, but briefly how this can be performed (requires fishpond > 1.4):
-
-``` r
-sS_se_iso <- isoformProportions(sS_se)
-sS_se_iso <- swish(sS_se_iso, x="smoking_status", nperms=50)
-```
-
-### Step 8: Built-in plots with fishpond
-
-The `fishpond` package as with most good packages, provides a few simple
-graphing functions to help you get a sense of your data as you move
-along. However, most of your graphing will be done with
-graphing-specific packages (such as `ggplots`) or other downstream
-analysis packages. We’ll just look at an MA plot and a plot of
-inferential replicates for a gene to see how they look.
-
--   First, the MA plot.
-
-It’s always good to inspect your data with significant differences
-highlighted with an MA plot to see if there is any obvious systematic
-bias. These should *usually* look pretty evenly centered around 0
-log2FC. If you have a strong detection bias you might see only
-significant differences towards the right or only major fold changes at
-one end of these plots. Because one of Salmon and swish’s main goals is
-to model and correct for known biases these plots look really good.
-
-``` r
-plotMASwish(sS_se)
-```
-
-![](Part3-4_DE_Markdown_w_3-3_Markdown_files/figure-markdown_github/unnamed-chunk-36-1.png)
-
--   Plot the range of counts from inferential replicates for a given
-    gene amongst all samples.
-
-``` r
-plotInfReps(sS_se, idx = "ENST00000380859", x = "smoking_status")
-```
-
-![](Part3-4_DE_Markdown_w_3-3_Markdown_files/figure-markdown_github/unnamed-chunk-37-1.png)
-This transcript actually has one of the lowest q-values. You can see it
-is different amongst smokers (orange) and non-smokers (blue), but many
-smokers it is still quite low. While this difference may not look very
-impressive, it is reflective of how actual human data often looks, and I
-think serves as a better example than data often attached to packages
-and worked through in vignettes because it is more reflective of how
-human data tends to look.
-
-### Step 9: Extract the table of results
-
-Before we extract the results let’s add NCBI Entrez Gene IDs to the
-data. These common numeric IDs are frequently used to access genes and
-their associated annotations and are supposed to be resistant to gene
-name changes. We currently have ENSEMBL IDs that serve a similar
-purpose.
-
--   Install the genome wide annotation for humans.
-
-These genome wide annotations are available precompiled for many model
-organisms and you can create your own as well quite easilty from NCBI’s
-repository for an organism with the annotation forge package. These are
-very useful packages because they contain just about all the info for an
-organism you can think of in a single place (genes, transcripts,
-functions, ontological annotations/terms, alternative gene names/IDs,
-etc.). These greatly facilitate the downstream analysis and regrouping
-functions and we will use it extensively in the following section for
-graphing and regrouping.
-
-``` r
-BiocManager::install('org.Hs.eg.db')
-```
-
-Load the library:
-
-``` r
-library(org.Hs.eg.db)
-```
-
-Now add the ENTREZIDs for each gene. Notice that we use gene = TRUE flag
-for the transcrtipts because ENTREZIDs are for genes.
-
-``` r
-sS_se <- addIds(sS_se, column = "ENTREZID", gene = TRUE)
-```
-
-    ## mapping to new IDs using 'org.Hs.eg.db' data package
-    ## if all matching IDs are desired, and '1:many mappings' are reported,
-    ## set multiVals='list' to obtain all the matching IDs
-
-    ## gene=TRUE and rows are transcripts: using 'gene_id' column to map IDs
-
-    ## 'select()' returned 1:many mapping between keys and columns
-
-``` r
-sS_se_gene <- addIds(sS_se_gene, column = "ENTREZID", gene = TRUE)
-```
-
-    ## mapping to new IDs using 'org.Hs.eg.db' data package
-    ## if all matching IDs are desired, and '1:many mappings' are reported,
-    ## set multiVals='list' to obtain all the matching IDs
-    ## 'select()' returned 1:many mapping between keys and columns
-
-Now, let’s create a tibble with the results for ALL transcripts and one
-for ALL genes using commands we have learned before. We’ll just maintain
-all that were tested for now, but this is often a good time to do some
-extra filtering as well (maybe log fold changles, or only those which
-were 1 q &lt; 0.05):
-
-``` r
-txps <- mcols(sS_se) %>% as_tibble() %>% filter(keep == TRUE)
-genes <- mcols(sS_se_gene) %>% as_tibble() %>% filter(keep == TRUE)
-```
+- We will pick up next class with DGE and some plotting. For now save this project workspace for next time.
 
 # Practice / With Your Own Data
 - Create a metadata table with file paths for your own alignment data. Likely doesn't matter what alignment method you used, tximeta can handle multiple different kinds (but check out it's documentation if unsure).
