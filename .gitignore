@@ -1,2 +1,10 @@
-
+*.qzv
+*.qza
+*.Rproj
+*.Rproj.user
+*.outerror
+*.RData
+*.Rhistory
 .DS_Store
+NOTE_Changes4NextWorkshop.txt
+

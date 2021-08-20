@@ -1,0 +1,111 @@
+---
+title: "RStudioIntro"
+author: "Zac Stephens"
+date: "6/8/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Setup / Background
+```{r}
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(tximeta))
+```
+Purpose: Practice data wrangling with tidyverse and import and clean our RNAseq metadata table.
+
+# Data import
+
+```{r}
+metadata <- read_delim("/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part3_R_RNAseq/metadata/SraRunTable_RNAseq_BiopsyOnly.txt",
+  "\t", escape_double = FALSE, col_types = cols(Age = col_integer()),
+  trim_ws = TRUE)
+```
+
+# Filter out unneeded metadata
+1. Remove the BioSample identifier because these are all unique and redundant with Run.
+```{r}
+metadata <- metadata[,c(1,2,3,5,6,7,8,9,10)]
+```
+
+
+# Create subsets of data
+1. Filter out samples without replicates for replicates only subset.
+```{r}
+metadata_repsOnly <- filter(metadata, Run != "SRR10571716" & Run != "SRR10571713" & Run != "SRR10571682" & is.na(replicate) == FALSE)
+```
+2. Remove the replicate and tissue columns no longer needed.
+```{r}
+metadata_repsOnly <- select(metadata_repsOnly, -replicate & -tissue)
+```
+
+3. In one command, create subset of samples without replicates:
+```{r}
+metadata_singleSamp <- metadata %>%
+  filter(replicate == "biological replicate 1" | is.na(replicate)) %>%
+  select(-replicate & -tissue)
+
+```
+
+# Add the paths for each alignment sample
+
+```{r}
+ShareDir <- "/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part3_R_RNAseq/BiopsyOnly"
+```
+Creat a new tibble data frame.
+```{r}
+align_paths <- tibble(Run = metadata$Run)
+```
+Add a new variable with the full shared directory path to each, and a varialbe with the quant.sf file name:
+```{r}
+align_paths <- mutate(align_paths, shared_dir = ShareDir, quant_file = "quant.sf")
+```
+Add a new variable for the sample/run specific directories.
+```{r}
+align_paths <- mutate(align_paths, samp_dir = paste(align_paths$Run, "salm_quant", sep = "_"))
+```
+Now add the 3 different columsn to give the full path to each file:
+```{r}
+align_paths <- mutate(align_paths, fullpath = paste(align_paths$shared_dir, align_paths$samp_dir, align_paths$quant_file, sep = "/")) %>% select(Run, fullpath)
+```
+
+# Join the paths into each subsetted table
+```{r}
+metadata_repsOnly <- left_join(metadata_repsOnly, align_paths)
+metadata_singleSamp <- left_join(metadata_singleSamp, align_paths)
+
+```
+# Cleaning
+Removing input metadata and ShareDir objects no longer required/duplicated
+```{r}
+rm(ShareDir, metadata)
+```
+
+
+## Actual import and DE (DTE) with tximeta and swish (fishpond)
+
+
+
+Forward: First, test single sample set only, but using minN = 5 and minCount = 100.
+  Second, group at gene level as per vignette and test.
+  Thirs, test for transcriptional chagnes
+  Fourth, get tables of genes with p and logFC abstracted (full table). Txps and gene.
+  Fifth, filter tables for q < 0.05.
+  Sixth, use clusterProfiler.
+
+
+Here, I've done it with replicates. 
+```{r}
+metadata <- read_delim("/uufs/chpc.utah.edu/common/home/round-group2/BioinfWorkshop2020/Part3_R_RNAseq/metadata/SraRunTable_RNAseq_BiopsyOnly.txt",
+   "\t", escape_double = FALSE, col_types = cols(Age = col_integer()),
+   trim_ws = TRUE)
+metadata <- metadata[,c(1,2,3,5,6,7,8,9,10)]
+metadata_repsOnly <- filter(metadata, Run != "SRR10571716" & Run != "SRR10571713" & Run != "SRR10571682" & is.na(replicate) == FALSE)
+metadata_repsOnly <- select(metadata_repsOnly, -tissue)
+metadata_repsOnly <- left_join(metadata_repsOnly, align_paths)
+metadata_repsOnly <- rename(metadata_repsOnly, files = fullpath, names = Run)
+metadata_repsOnly.smoke <- metadata_repsOnly %>% filter(smoking_status != "Ex-smoker") %>% mutate(smoking_status = as.factor(smoking_status), asthma_status = as.factor(asthma_status))
+```
+

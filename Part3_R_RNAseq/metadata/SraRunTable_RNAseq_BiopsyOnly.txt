@@ -1,0 +1,63 @@
+Run	Age	asthma_status	BioSample	LibraryName	obesity_status	sex	smoking_status	tissue	replicate
+SRR10571661	53	Asthma	SAMN08536713	Biopsy_SIB006_rep2	Obese	female	No	bronchial biopsy	biological replicate 2
+SRR10571666	41	Asthma	SAMN08536771	Biopsy_SIB049	Obese	female	No	bronchial biopsy	NA
+SRR10571667	59	Asthma	SAMN08536770	Biopsy_SIB048_rep2	Non-obese	female	Ex-smoker	bronchial biopsy	biological replicate 2
+SRR10571668	59	Asthma	SAMN08536769	Biopsy_SIB048_rep1	Non-obese	female	Ex-smoker	bronchial biopsy	biological replicate 1
+SRR10571669	52	Non-asthma	SAMN08536768	Biopsy_SIB047	Non-obese	female	Yes	bronchial biopsy	NA
+SRR10571670	41	Asthma	SAMN08536767	Biopsy_SIB046_rep2	Obese	male	No	bronchial biopsy	biological replicate 2
+SRR10571671	41	Asthma	SAMN08536766	Biopsy_SIB046_rep1	Obese	male	No	bronchial biopsy	biological replicate 1
+SRR10571672	53	Asthma	SAMN08536712	Biopsy_SIB006_rep1	Obese	female	No	bronchial biopsy	biological replicate 1
+SRR10571673	57	Asthma	SAMN08536765	Biopsy_SIB045_rep2	Obese	female	Yes	bronchial biopsy	biological replicate 2
+SRR10571674	57	Asthma	SAMN08536764	Biopsy_SIB045_rep1	Obese	female	Yes	bronchial biopsy	biological replicate 1
+SRR10571675	29	Asthma	SAMN08536763	Biopsy_SIB044_rep2	Obese	female	No	bronchial biopsy	biological replicate 2
+SRR10571676	29	Asthma	SAMN08536762	Biopsy_SIB044_rep1	Obese	female	No	bronchial biopsy	biological replicate 1
+SRR10571677	52	Asthma	SAMN08536761	Biopsy_SIB043	Non-obese	female	Yes	bronchial biopsy	NA
+SRR10571678	54	Asthma	SAMN08536760	Biopsy_SIB042	Non-obese	female	No	bronchial biopsy	NA
+SRR10571679	43	Asthma	SAMN08536759	Biopsy_SIB039_rep2	Non-obese	male	Ex-smoker	bronchial biopsy	biological replicate 2
+SRR10571680	43	Asthma	SAMN08536758	Biopsy_SIB039_rep1	Non-obese	male	Ex-smoker	bronchial biopsy	biological replicate 1
+SRR10571682	47	Asthma	SAMN08536756	Biopsy_SIB038_rep1	Non-obese	female	No	bronchial biopsy	biological replicate 1
+SRR10571683	33	Non-asthma	SAMN08536711	Biopsy_SIB005_rep2	Obese	female	No	bronchial biopsy	biological replicate 2
+SRR10571684	52	Asthma	SAMN08536755	Biopsy_SIB037_rep2	Obese	female	No	bronchial biopsy	biological replicate 2
+SRR10571685	52	Asthma	SAMN08536754	Biopsy_SIB037_rep1	Obese	female	No	bronchial biopsy	biological replicate 1
+SRR10571686	45	Non-asthma	SAMN08536753	Biopsy_SIB036_rep2	Non-obese	female	No	bronchial biopsy	biological replicate 2
+SRR10571687	45	Non-asthma	SAMN08536752	Biopsy_SIB036_rep1	Non-obese	female	No	bronchial biopsy	biological replicate 1
+SRR10571688	27	Asthma	SAMN08536751	Biopsy_SIB035_rep2	Obese	male	No	bronchial biopsy	biological replicate 2
+SRR10571689	27	Asthma	SAMN08536750	Biopsy_SIB035_rep1	Obese	male	No	bronchial biopsy	biological replicate 1
+SRR10571691	39	Asthma	SAMN08536748	Biopsy_SIB032_rep2	Non-obese	female	Yes	bronchial biopsy	biological replicate 2
+SRR10571692	39	Asthma	SAMN08536747	Biopsy_SIB032_rep1	Non-obese	female	Yes	bronchial biopsy	biological replicate 1
+SRR10571693	43	Non-asthma	SAMN08536746	Biopsy_SIB031_rep2	Non-obese	male	Yes	bronchial biopsy	biological replicate 2
+SRR10571694	33	Non-asthma	SAMN08536710	Biopsy_SIB005_rep1	Obese	female	No	bronchial biopsy	biological replicate 1
+SRR10571695	43	Non-asthma	SAMN08536745	Biopsy_SIB031_rep1	Non-obese	male	Yes	bronchial biopsy	biological replicate 1
+SRR10571696	47	Non-asthma	SAMN08536744	Biopsy_SIB030	Non-obese	male	No	bronchial biopsy	NA
+SRR10571697	40	Asthma	SAMN08536743	Biopsy_SIB029_rep2	Non-obese	female	No	bronchial biopsy	biological replicate 2
+SRR10571698	40	Asthma	SAMN08536742	Biopsy_SIB029_rep1	Non-obese	female	No	bronchial biopsy	biological replicate 1
+SRR10571699	26	Non-asthma	SAMN08536741	Biopsy_SIB028	Non-obese	female	No	bronchial biopsy	NA
+SRR10571700	28	Non-asthma	SAMN08536740	Biopsy_SIB026	Non-obese	male	Yes	bronchial biopsy	NA
+SRR10571701	37	Non-asthma	SAMN08536739	Biopsy_SIB025_rep2	Obese	female	No	bronchial biopsy	biological replicate 2
+SRR10571702	37	Non-asthma	SAMN08536738	Biopsy_SIB025_rep1	Obese	female	No	bronchial biopsy	biological replicate 1
+SRR10571703	21	Non-asthma	SAMN08536737	Biopsy_SIB024_rep2	Obese	female	No	bronchial biopsy	biological replicate 2
+SRR10571704	21	Non-asthma	SAMN08536736	Biopsy_SIB024_rep1	Obese	female	No	bronchial biopsy	biological replicate 1
+SRR10571705	54	Asthma	SAMN08536709	Biopsy_SIB004	Obese	male	No	bronchial biopsy	NA
+SRR10571706	57	Non-asthma	SAMN08536735	Biopsy_SIB023_rep2	Obese	male	No	bronchial biopsy	biological replicate 2
+SRR10571707	57	Non-asthma	SAMN08536734	Biopsy_SIB023_rep1	Obese	male	No	bronchial biopsy	biological replicate 1
+SRR10571708	26	Asthma	SAMN08536733	Biopsy_SIB022_rep2	Non-obese	male	No	bronchial biopsy	biological replicate 2
+SRR10571709	26	Asthma	SAMN08536732	Biopsy_SIB022_rep1	Non-obese	male	No	bronchial biopsy	biological replicate 1
+SRR10571710	25	Asthma	SAMN08536731	Biopsy_SIB021_rep2	Non-obese	male	No	bronchial biopsy	biological replicate 2
+SRR10571711	25	Asthma	SAMN08536730	Biopsy_SIB021_rep1	Non-obese	male	No	bronchial biopsy	biological replicate 1
+SRR10571713	60	Non-asthma	SAMN08536728	Biopsy_SIB020_rep1	Non-obese	female	Yes	bronchial biopsy	biological replicate 1
+SRR10571714	41	Non-asthma	SAMN08536727	Biopsy_SIB019_rep2	Non-obese	male	Yes	bronchial biopsy	biological replicate 2
+SRR10571715	41	Non-asthma	SAMN08536726	Biopsy_SIB019_rep1	Non-obese	male	Yes	bronchial biopsy	biological replicate 1
+SRR10571716	43	Non-asthma	SAMN08536708	Biopsy_SIB003_rep2	Obese	male	Yes	bronchial biopsy	biological replicate 2
+SRR10571718	30	Asthma	SAMN08536724	Biopsy_SIB016	Non-obese	female	No	bronchial biopsy	NA
+SRR10571729	45	Non-asthma	SAMN08536715	Biopsy_SIB008_rep1	Obese	female	Yes	bronchial biopsy	biological replicate 1
+SRR10571740	54	Non-asthma	SAMN08536714	Biopsy_SIB007	Obese	female	Yes	bronchial biopsy	NA
+SRR10571745	55	Asthma	SAMN08536723	Biopsy_SIB015	Obese	female	No	bronchial biopsy	NA
+SRR10571746	60	Non-asthma	SAMN08536722	Biopsy_SIB014_rep2	Obese	female	No	bronchial biopsy	biological replicate 2
+SRR10571747	60	Non-asthma	SAMN08536721	Biopsy_SIB014_rep1	Obese	female	No	bronchial biopsy	biological replicate 1
+SRR10571748	26	Asthma	SAMN08536720	Biopsy_SIB012	Obese	female	No	bronchial biopsy	NA
+SRR10571750	58	Non-asthma	SAMN08536718	Biopsy_SIB010_rep2	Obese	female	No	bronchial biopsy	biological replicate 2
+SRR10571751	58	Non-asthma	SAMN08536717	Biopsy_SIB010_rep1	Obese	female	No	bronchial biopsy	biological replicate 1
+SRR10571758	45	Non-asthma	SAMN08536716	Biopsy_SIB008_rep2	Obese	female	Yes	bronchial biopsy	biological replicate 2
+SRR10571760	34	Asthma	SAMN08536706	Biopsy_SIB002	Non-obese	male	No	bronchial biopsy	NA
+SRR10571749	32	Non-asthma	SAMN08536719	Biopsy_SIB011	Obese	female	Yes	bronchial biopsy	NA
+SRR10571717	41	Non-asthma	SAMN08536725	Biopsy_SIB018	Obese	male	Yes	bronchial biopsy	NA
