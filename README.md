@@ -34,6 +34,5 @@ Day #  |  Date  | Title  | Topics | VideoLink
 8 | Aug 6 | CLASS CANCELLED  |   |
 9 | Aug 11 | Part 3-1: RNAseq process and alignments, Git and GitHub | sequence QC and alignments, Git/GitHub | [Class 7](https://www.youtube.com/watch?v=aEjxUhSzuWE&list=PL_Pe_9PaIEBN-MDiucIgx4sR1NLbneDDE&index=7)
 10 | Aug 13 | Part 3-2: Intro to R and R Studio | basic R, R packages, R markdown | [Class 8](https://www.youtube.com/watch?v=gOma0g91o9w&list=PL_Pe_9PaIEBN-MDiucIgx4sR1NLbneDDE&index=8)
-11 | Aug 18 | Part 3-3: Intro to R cont. & RNAseq DTE/DGE analysis. | tidyverse functions, DTE/DGE with swish/fishpond | [Class 9]
-12 | Aug 20 | Part 3-4: RNAseq DTE/DGE analysis: | differential expression analysis | [Class 10]
-13 | TBD/Homework | Part 3-5: RNAseq analysis 2: Higher-level results interpretation and plotting | gsea/term enrichment, clusterprofiler, volcano plots, ggplots | [Class 11]
+11 | Aug 18 | Part 3-3: Intro to R cont. & RNAseq DTE/DGE analysis. | tidyverse functions, DTE/DGE with swish/fishpond | [Class 9](https://www.youtube.com/watch?v=gOma0g91o9w&list=PL_Pe_9PaIEBN-MDiucIgx4sR1NLbneDDE&index=9)
+12 | Aug 20 | Part 3-4: RNA seq analysis (cont.), plotting and intro to ggplot2 | DTE/DGE analysis (cont.), term enrichment in clusterProfiler, EnhancedVolcano plots, ggplot2 intro | [Class 10]
